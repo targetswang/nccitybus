@@ -1,0 +1,35 @@
+name: Verify external runtime dependencies
+on:
+  push:
+    branches: [delivery/full-system-20260920]
+    paths:
+      - deploy/integrations/package.json
+      - .github/workflows/dependency-verification.yml
+permissions:
+  contents: read
+jobs:
+  dependency-lock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Resolve an actual npm lockfile
+        working-directory: deploy/integrations
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Verify clean reproducible installation
+        working-directory: deploy/integrations
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          node -e "console.log(JSON.stringify({node:process.version,pg:require('pg/package.json').version,mqtt:require('mqtt/package.json').version}))" | tee runtime-versions.json
+          npm audit --json > dependency-audit.json || true
+      - name: Package lock and installed drivers for isolated local tests
+        working-directory: deploy/integrations
+        run: tar -czf verified-runtime.tgz package.json package-lock.json runtime-versions.json dependency-audit.json node_modules
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nanchong-verified-runtime
+          path: deploy/integrations/verified-runtime.tgz
+          retention-days: 7

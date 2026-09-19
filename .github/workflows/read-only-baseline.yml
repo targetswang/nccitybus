@@ -1,0 +1,64 @@
+name: Read-only deployed baseline backup
+on:
+  push:
+    branches: ['delivery/integrated-system-20260920']
+    paths: ['.github/workflows/read-only-baseline.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Snapshot deployed public content and asset references
+        shell: bash
+        run: |
+          mkdir -p baseline
+          python3 - <<'PY'
+          import urllib.request, urllib.parse, json, hashlib, pathlib, datetime, re
+          root=pathlib.Path('baseline')
+          urls={
+            'h5-content':'https://app-3hu1sz.v2.appdeploy.ai/api/v1/content',
+            'legacy-source':'https://app-3hu1sz.v2.appdeploy.ai/api/v1/legacy-source',
+            'preserved-content':'https://app-3hu1sz.v2.appdeploy.ai/api/v1/preserved-content',
+            'admin-health':'https://app-sz13s5.v2.appdeploy.ai/api/v1/health',
+            'h5-health':'https://app-3hu1sz.v2.appdeploy.ai/api/v1/health',
+            'h5-index':'https://app-3hu1sz.v2.appdeploy.ai/',
+            'admin-index':'https://app-sz13s5.v2.appdeploy.ai/'
+          }
+          report={'startedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'readOnly':True,'privateUserTablesRead':False,'results':[]}
+          for name,url in urls.items():
+            item={'name':name,'url':url}
+            try:
+              req=urllib.request.Request(url,headers={'User-Agent':'Nanchong-owned-system-baseline-backup/1.0','Accept':'application/json,text/html'})
+              with urllib.request.urlopen(req,timeout=30) as r:
+                data=r.read(2000001)
+                if len(data)>2000000: raise ValueError('response exceeds 2MB safety limit')
+                item.update(status=r.status,contentType=r.headers.get('content-type',''),sha256=hashlib.sha256(data).hexdigest(),bytes=len(data))
+              (root/(name+('.html' if name.endswith('index') else '.json'))).write_bytes(data)
+              if name.endswith('index'):
+                links=re.findall(r'(?:src|href)=[\"\x27]([^\"\x27]+)',data.decode('utf-8','replace'))
+                item['assets']=[]
+                for link in links:
+                  asset=urllib.parse.urljoin(url,link)
+                  if urllib.parse.urlparse(asset).netloc!=urllib.parse.urlparse(url).netloc or not re.search(r'\.(?:js|css)(?:\?|$)',asset):continue
+                  try:
+                    with urllib.request.urlopen(asset,timeout=20) as ar:body=ar.read(8000001)
+                    if len(body)>8000000:raise ValueError('asset too large')
+                    folder=root/name;folder.mkdir(exist_ok=True)
+                    dest=folder/pathlib.Path(urllib.parse.urlparse(asset).path).name;dest.write_bytes(body)
+                    item['assets'].append({'url':asset,'path':str(dest),'sha256':hashlib.sha256(body).hexdigest()})
+                  except Exception as e:item['assets'].append({'url':asset,'error':str(e)[:300]})
+            except Exception as e:item['error']=str(e)[:500]
+            report['results'].append(item)
+          report['finishedAt']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          (root/'backup-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+      - name: Preserve exact backup bytes
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: public-deployed-baseline
+          path: baseline/
+          retention-days: 30

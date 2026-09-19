@@ -1,0 +1,81 @@
+name: Backup public records and media
+on:
+  push:
+    branches: ['delivery/integrated-system-20260920']
+    paths: ['.github/workflows/backup-public-records-media.yml']
+  workflow_dispatch:
+permissions: { contents: read }
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Back up every public tourism row and media reference
+        shell: bash
+        run: |
+          mkdir -p public-backup/media
+          python3 - <<'PY'
+          import urllib.request,urllib.parse,hashlib,json,pathlib,datetime,socket,ipaddress
+          root=pathlib.Path('public-backup')
+          base='https://api-v2.appdeploy.ai/app/app-3hu1sz/api/v1/'
+          report={'readOnly':True,'privateTablesRead':False,'pages':[],'images':[],'startedAt':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          allrows=[];cursor=None;complete=False
+          for index in range(30):
+            url=base+'backup-public-tourism'+('?' + urllib.parse.urlencode({'cursor':cursor}) if cursor else '')
+            try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json'}),timeout=30) as r:
+                raw=r.read(2000001)
+                if len(raw)>2000000:raise ValueError('oversized export')
+              data=json.loads(raw)
+              if data.get('readOnly') is not True:raise ValueError('unexpected export format')
+              (root/('raw-page-%02d.json'%index)).write_bytes(raw)
+              report['pages'].append({'index':index,'sha256':hashlib.sha256(raw).hexdigest(),'count':len(data['records'])})
+              allrows.extend(data['records'])
+              cursor=data.get('nextCursor')
+              if not cursor:complete=True;break
+            except Exception as e:
+              report['databaseError']=str(e)[:400]
+              break
+          report['rawRows']=len(allrows);report['sourceComplete']=complete
+          groups={}
+          for row in allrows:groups.setdefault(row['publicData'].get('seedId',''),[]).append(row)
+          report['duplicates']=[{'id':key,'records':[r['recordId'] for r in values],'identicalPublicFields':len({json.dumps(r['publicData'],sort_keys=True,ensure_ascii=False) for r in values})==1} for key,values in groups.items() if len(values)>1]
+          (root/'all-public-rows.json').write_text(json.dumps(allrows,ensure_ascii=False,indent=2))
+          if complete:
+            with urllib.request.urlopen(base+'legacy-source',timeout=30) as r:raw=r.read(2000000)
+            source=json.loads(raw);(root/'legacy-source.json').write_bytes(raw)
+            hosts={'imgcdn.scol.com.cn','img.mala.cn','qcloud.dpfile.com','www.cscec.com','assets.hyatt.com','pavo.elongstatic.com','dimg04.c-ctrip.com','youimg1.c-ctrip.com','p9.itc.cn','k.sinaimg.cn','image.kkday.com','cdn.geo.zxaigc.com','cdn-cloudflare.meidianbang.cn','images.deliveryhero.io'}
+            class SafeRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,req,fp,code,msg,headers,newurl):
+                parsed=urllib.parse.urlparse(newurl)
+                if parsed.scheme!='https' or parsed.hostname not in hosts:raise ValueError('redirect outside inherited approved host list')
+                return super().redirect_request(req,fp,code,msg,headers,newurl)
+            opener=urllib.request.build_opener(SafeRedirect())
+            for poi in source.get('pois',[]):
+              url=poi.get('inheritedImage',{}).get('originalUrl') or poi.get('mediaCandidate',{}).get('originalUrl')
+              item={'poiId':poi['id'],'name':poi['name'],'url':url,'originalLabel':poi.get('imageLabel'),'originalMatchType':poi.get('imageStatus'),'rightsStatus':'inherited_pending','newMatchVerification':False}
+              if not url:
+                item['error']='no original image reference';report['images'].append(item);continue
+              try:
+                parsed=urllib.parse.urlparse(url)
+                if parsed.scheme!='https' or parsed.hostname not in hosts or parsed.username or parsed.password:raise ValueError('source host not allowed')
+                if any(not ipaddress.ip_address(x[4][0]).is_global for x in socket.getaddrinfo(parsed.hostname,443)):raise ValueError('non-public address rejected')
+                req=urllib.request.Request(url,headers={'User-Agent':'Nanchong-content-preservation/1.0','Accept':'image/jpeg,image/png,image/webp'})
+                with opener.open(req,timeout=20) as r:
+                  data=r.read(8000001);mime=r.headers.get('content-type','').split(';')[0]
+                  if len(data)>8000000:raise ValueError('image exceeds 8MB')
+                  if mime not in ['image/jpeg','image/png','image/webp']:raise ValueError('not a supported image: '+mime)
+                digest=hashlib.sha256(data).hexdigest();ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[mime]
+                name=digest+'.'+ext;(root/'media'/name).write_bytes(data)
+                item.update(status='retrieved',sha256=digest,mime=mime,bytes=len(data),file='media/'+name)
+              except Exception as e:item.update(status='failed',error=str(e)[:400])
+              report['images'].append(item)
+          report['finishedAt']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          (root/'backup-manifest.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: original-public-records-and-media
+          path: public-backup/
+          retention-days: 30

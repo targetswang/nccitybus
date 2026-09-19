@@ -1,0 +1,49 @@
+name: Read actual API baseline
+on:
+  push:
+    branches: ['delivery/integrated-system-20260920']
+    paths: ['.github/workflows/read-api-baseline.yml']
+  workflow_dispatch:
+permissions: { contents: read }
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Read verified API gateway, no mutation or retry
+        run: |
+          mkdir -p api-baseline
+          python3 - <<'PY'
+          import urllib.request, json, pathlib, hashlib, datetime
+          root=pathlib.Path('api-baseline')
+          paths={'h5-content':('app-3hu1sz','content'),'legacy-source':('app-3hu1sz','legacy-source'),'preserved-content':('app-3hu1sz','preserved-content'),'admin-content':('app-sz13s5','content'),'admin-health':('app-sz13s5','health')}
+          results=[]
+          for name,(app,path) in paths.items():
+            url='https://api-v2.appdeploy.ai/app/'+app+'/api/v1/'+path
+            item={'name':name,'url':url,'readOnly':True}
+            try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json'}),timeout=25) as r:
+                data=r.read(2000001);item.update(status=r.status,contentType=r.headers.get('content-type',''))
+              if len(data)>2000000:raise ValueError('size exceeds safe limit')
+              obj=json.loads(data)
+              item.update(sha256=hashlib.sha256(data).hexdigest(),bytes=len(data),jsonValid=True,keys=list(obj))
+              (root/(name+'.json')).write_bytes(data)
+            except Exception as e:
+              item['error']=str(e)[:600]
+              if hasattr(e,'code'):
+                item['status']=e.code
+                try:(root/(name+'-error.json')).write_bytes(e.read(20000))
+                except Exception:pass
+                if e.code==429:
+                  results.append(item)
+                  break
+            results.append(item)
+          report={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'apiBaseProvenance':'SDK api base embedded in the downloaded application bundle','privateUserTablesRead':False,'results':results}
+          (root/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: verified-api-baseline
+          path: api-baseline/
+          retention-days: 30

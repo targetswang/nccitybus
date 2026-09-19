@@ -1,0 +1,28 @@
+name: Prepare portable dependencies
+on:
+  push:
+    branches: ['delivery/integrated-system-20260920']
+    paths: ['.github/workflows/prepare-portable-dependencies.yml']
+  workflow_dispatch:
+permissions: { contents: read }
+jobs:
+  dependencies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Create explicit dependency boundary and lock
+        run: |
+          mkdir -p portable-deps
+          cd portable-deps
+          printf '%s\n' '{"name":"nanchong-runtime-dependencies","version":"1.0.0","private":true,"engines":{"node":">=22.16.0 <23"}}' > package.json
+          npm install --save-exact pg@8.16.3 mqtt@5.10.4 sharp@0.34.1
+          npm audit --json > dependency-audit.json || true
+          npm ls --all --json > dependency-tree.json
+          node -e "console.log(JSON.stringify({node:process.version,sharp:require('sharp').versions},null,2))" > runtime.json
+          tar -czf node_modules.tar.gz node_modules
+          rm -rf node_modules
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: portable-runtime-dependencies
+          path: portable-deps/
+          retention-days: 30

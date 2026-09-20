@@ -1,0 +1,34 @@
+name: Verify WeChat official toolchain
+on:
+  push:
+    branches:
+      - 'delivery/full-system-20260920'
+    paths:
+      - 'deploy/wechat-ci/**'
+      - '.github/workflows/wechat-toolchain.yml'
+  workflow_dispatch:
+jobs:
+  lock-and-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+      - name: Resolve pinned official compiler toolchain
+        working-directory: deploy/wechat-ci
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm ci --ignore-scripts --no-audit --no-fund
+          node -e "console.log(JSON.stringify({node:process.version,miniprogramCi:require('miniprogram-ci/package.json').version}))" | tee toolchain-versions.json
+          npm audit --json > dependency-audit.json || true
+      - name: Assert pinned compiler version
+        working-directory: deploy/wechat-ci
+        run: node -e "if(require('miniprogram-ci/package.json').version!=='2.1.31')process.exit(2)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wechat-official-toolchain
+          path: |
+            deploy/wechat-ci/package-lock.json
+            deploy/wechat-ci/toolchain-versions.json
+            deploy/wechat-ci/dependency-audit.json

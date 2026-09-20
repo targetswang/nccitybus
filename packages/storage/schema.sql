@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS schema_migrations (version TEXT PRIMARY KEY, applied_at BIGINT NOT NULL);
+CREATE TABLE IF NOT EXISTS content_releases (version TEXT PRIMARY KEY, payload TEXT NOT NULL, created_at BIGINT NOT NULL);
+CREATE TABLE IF NOT EXISTS content_active (singleton INTEGER PRIMARY KEY CHECK (singleton=1), version TEXT NOT NULL REFERENCES content_releases(version));
+CREATE TABLE IF NOT EXISTS route_versions (version TEXT PRIMARY KEY, route_id TEXT NOT NULL, payload TEXT NOT NULL, created_at BIGINT NOT NULL);
+CREATE TABLE IF NOT EXISTS route_active (route_id TEXT PRIMARY KEY, version TEXT NOT NULL REFERENCES route_versions(version));
+CREATE TABLE IF NOT EXISTS latest_events (operator_id TEXT NOT NULL, vehicle_key TEXT NOT NULL, stream TEXT NOT NULL, event_time BIGINT NOT NULL, digest TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(operator_id,vehicle_key,stream));
+CREATE TABLE IF NOT EXISTS event_receipts (digest TEXT PRIMARY KEY, received_at BIGINT NOT NULL, result TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS integration_state (key TEXT PRIMARY KEY, payload TEXT NOT NULL, updated_at BIGINT NOT NULL);
+CREATE TABLE IF NOT EXISTS worker_leases (key TEXT PRIMARY KEY, owner TEXT NOT NULL, expires_at BIGINT NOT NULL);
+CREATE TABLE IF NOT EXISTS accounts (id TEXT PRIMARY KEY, provider_key TEXT UNIQUE NOT NULL, created_at BIGINT NOT NULL);
+CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES accounts(id), expires_at BIGINT NOT NULL);
+CREATE TABLE IF NOT EXISTS favorites (user_id TEXT NOT NULL REFERENCES accounts(id), poi_id TEXT NOT NULL, created_at BIGINT NOT NULL, PRIMARY KEY(user_id,poi_id));
+CREATE TABLE IF NOT EXISTS audit_events (id TEXT PRIMARY KEY, kind TEXT NOT NULL, code TEXT NOT NULL, at BIGINT NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_receipts_time ON event_receipts(received_at);
+CREATE INDEX IF NOT EXISTS idx_session_expiry ON sessions(expires_at);

@@ -26,7 +26,7 @@ npm ci --ignore-scripts --no-audit --no-fund
 ## 3. 构建
 
 ```bash
-npm ci --offline --ignore-scripts --no-audit --no-fund
+npm ci --ignore-scripts --no-audit --no-fund
 npm run build
 npm run check
 npm test

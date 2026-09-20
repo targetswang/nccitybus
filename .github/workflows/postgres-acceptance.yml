@@ -3,10 +3,11 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'delivery/full-system-20260920'
+      - 'release/v4.4.0-rc1'
     paths:
       - 'packages/storage/**'
       - 'packages/core/**'
+      - 'apps/api/**'
       - 'scripts/postgres-acceptance.mjs'
       - 'deploy/integrations/**'
       - '.github/workflows/postgres-acceptance.yml'
@@ -17,9 +18,12 @@ on:
       - 'apps/api/**'
       - 'scripts/postgres-acceptance.mjs'
       - 'deploy/integrations/**'
+permissions:
+  contents: read
 jobs:
   postgres:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16-alpine
@@ -38,9 +42,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.16.0
-      - name: Resolve pinned PostgreSQL runtime driver
-        run: npm install --prefix deploy/integrations --ignore-scripts --no-fund --no-audit
+          node-version: '22.16.0'
+      - name: Install locked PostgreSQL runtime driver
+        run: npm ci --prefix deploy/integrations --ignore-scripts --no-audit --no-fund
       - name: Run PostgreSQL migration and publication acceptance
         env:
           POSTGRES_ACCEPTANCE_URL: postgresql://nanchong:acceptance-only@127.0.0.1:5432/nanchong_acceptance
@@ -50,6 +54,5 @@ jobs:
         if: always()
         with:
           name: postgres-acceptance
-          path: |
-            audit/postgres/result.json
-            deploy/integrations/package-lock.json
+          path: audit/postgres/result.json
+          retention-days: 30

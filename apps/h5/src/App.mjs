@@ -187,10 +187,14 @@ export default function App() {
     }), h('main', {
         ref: scroller,
         className: 'app-scroll'
-    }, route.page!=='live'&&h('button',{className:'text-button',onClick:content.retry,disabled:content.loading},'刷新内容'), content.error && catalog && h('p', {
+    }, content.error && catalog && h('div', {
         className: 'inline-note',
         role: 'alert'
-    }, '内容刷新失败，当前仍显示此前读取的版本。'), page), h(BottomNav, {
+    }, h('button', {
+        className: 'text-button',
+        onClick: content.retry,
+        disabled: content.loading
+    }, '刷新内容'), h('p', null, '内容刷新失败，当前仍显示此前读取的版本。')), page), h(BottomNav, {
         route
     }));
 }

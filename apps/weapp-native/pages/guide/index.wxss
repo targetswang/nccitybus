@@ -1,0 +1,1 @@
+.q{display:flex;gap:20rpx;background:#fff;border:1rpx solid #e2e8dc;border-radius:22rpx;padding:24rpx;margin-bottom:16rpx}.no{color:#b48745;font-size:28rpx;font-weight:700}.title{font-size:30rpx;font-weight:700}.q .muted{font-size:23rpx;line-height:1.6;margin-top:8rpx}

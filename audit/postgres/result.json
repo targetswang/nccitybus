@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "driver": "postgres",
+  "counts": {
+    "routes": 1,
+    "nodes": 5,
+    "pois": 21,
+    "media": 0,
+    "walks": 4,
+    "steps": 9
+  },
+  "draftPublishIsolation": true,
+  "durationMs": 339,
+  "verifiedAt": "2026-09-20T07:54:09.560Z"
+}

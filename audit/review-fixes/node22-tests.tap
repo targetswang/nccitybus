@@ -1,0 +1,558 @@
+TAP version 13
+# (node:834) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: H5 shared route model includes unified account, member, event, message and support pages
+ok 1 - H5 shared route model includes unified account, member, event, message and support pages
+  ---
+  duration_ms: 1.29687
+  type: 'test'
+  ...
+# Subtest: admin service exposes user profile, replies ticket into inbox, and manages RBAC without leaking internal note
+ok 2 - admin service exposes user profile, replies ticket into inbox, and manages RBAC without leaking internal note
+  ---
+  duration_ms: 28.84247
+  type: 'test'
+  ...
+# Subtest: HTTP admin console assets and user-service lifecycle share one real database
+ok 3 - HTTP admin console assets and user-service lifecycle share one real database
+  ---
+  duration_ms: 84.76192
+  type: 'test'
+  ...
+# (node:835) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: API without credentials exposes no synthetic vehicles and correct independent capabilities
+ok 4 - API without credentials exposes no synthetic vehicles and correct independent capabilities
+  ---
+  duration_ms: 50.595933
+  type: 'test'
+  ...
+# {"at":"2026-09-20T10:29:09.162Z","event":"request-failed","code":"CONTENT_UNAVAILABLE","requestId":"10e37fd0-a559-470a-9d4b-e4c22998e700","durationMs":0}
+# {"at":"2026-09-20T10:29:09.167Z","event":"request-failed","code":"ROUTE_NOT_FOUND","requestId":"7e8ec7c9-c4ad-4c54-98ce-352c363e1195","durationMs":0}
+# Subtest: content failure does not blank transit; bad IDs produce 404 rather than first item
+ok 5 - content failure does not blank transit; bad IDs produce 404 rather than first item
+  ---
+  duration_ms: 21.555195
+  type: 'test'
+  ...
+# {"at":"2026-09-20T10:29:09.183Z","event":"request-failed","code":"NOT_FOUND","requestId":"7a891886-e66c-4656-bcac-1d17488f6b2a","durationMs":1}
+# {"at":"2026-09-20T10:29:09.193Z","event":"request-failed","code":"CURSOR_EXPIRED","requestId":"7972e5f2-2132-4a8c-b1fe-960f21f30cdd","durationMs":1}
+# {"at":"2026-09-20T10:29:09.197Z","event":"request-failed","code":"INVALID_PAYLOAD","requestId":"8f33c303-8fef-4c9c-8f7a-cdaabf1054f0","durationMs":1}
+# Subtest: full content and paginated POIs share immutable version, no provenance or secret leakage
+ok 6 - full content and paginated POIs share immutable version, no provenance or secret leakage
+  ---
+  duration_ms: 34.711313
+  type: 'test'
+  ...
+# {"at":"2026-09-20T10:29:09.213Z","event":"request-failed","code":"CONTENT_NOT_APPROVED","requestId":"7e2c9798-989e-40a0-a069-efb78d7e149b","durationMs":1}
+# Subtest: reference content is never auto-approved for production
+ok 7 - reference content is never auto-approved for production
+  ---
+  duration_ms: 13.973276
+  type: 'test'
+  ...
+# {"at":"2026-09-20T10:29:09.234Z","event":"request-failed","code":"UNAUTHORIZED","requestId":"95b7b554-5c4c-42ee-b13c-bd288bc17a0c","durationMs":1}
+# {"at":"2026-09-20T10:29:09.268Z","event":"request-failed","code":"UNKNOWN_POI","requestId":"f0770da2-31e2-40e0-9d40-0f084848f024","durationMs":1}
+# {"at":"2026-09-20T10:29:09.274Z","event":"request-failed","code":"UNAUTHORIZED","requestId":"b45ff13b-bdcc-48c2-9da7-92cf2865fa3f","durationMs":0}
+# Subtest: authentication and account favorites: unauthorized denial, ownership, persistence and logout
+ok 8 - authentication and account favorites: unauthorized denial, ownership, persistence and logout
+  ---
+  duration_ms: 57.913113
+  type: 'test'
+  ...
+# {"at":"2026-09-20T10:29:09.289Z","event":"request-failed","code":"WECHAT_LOGIN_FAILED","requestId":"62c0cb21-a0f9-4cf6-bfb4-dce77d96d7b6","durationMs":1}
+# Subtest: invalid login code never creates a pretend user or session
+ok 9 - invalid login code never creates a pretend user or session
+  ---
+  duration_ms: 16.980717
+  type: 'test'
+  ...
+# {"at":"2026-09-20T10:29:09.303Z","event":"request-failed","code":"UNAUTHORIZED","requestId":"d0eec676-bec7-4515-850e-9fe500285bdc","durationMs":0}
+# {"at":"2026-09-20T10:29:09.308Z","event":"request-failed","code":"ORIGIN_DENIED","requestId":"7e4b4cd1-e29f-4bd3-8595-cd2ae9b2a990","durationMs":0}
+# {"at":"2026-09-20T10:29:09.311Z","event":"request-failed","code":"BAD_JSON","requestId":"959b29ee-760d-41cf-b438-9aabd57d88a6","durationMs":1}
+# {"at":"2026-09-20T10:29:09.314Z","event":"request-failed","code":"BODY_TOO_LARGE","requestId":"4fcd0d62-1a02-4344-9f02-a0e6f7c5e6b9","durationMs":1}
+# {"at":"2026-09-20T10:29:09.316Z","event":"request-failed","code":"NOT_FOUND","requestId":"3180c407-1791-4742-867d-5e8ad73db572","durationMs":1}
+# {"at":"2026-09-20T10:29:09.317Z","event":"request-failed","code":"BAD_PATH","requestId":"d4f1b70b-51a8-446b-a7fa-8c73d73eb4e7","durationMs":0}
+# Subtest: admin separation, origin restriction, malformed bodies and path guards
+ok 10 - admin separation, origin restriction, malformed bodies and path guards
+  ---
+  duration_ms: 25.092703
+  type: 'test'
+  ...
+# {"at":"2026-09-20T10:29:09.342Z","event":"request-failed","code":"BAD_SIGNATURE","requestId":"8182707f-bd80-4b32-a653-f045a326b7f5","durationMs":0}
+# Subtest: real protocol hello response is encrypted success; invalid signature is denied
+ok 11 - real protocol hello response is encrypted success; invalid signature is denied
+  ---
+  duration_ms: 24.985091
+  type: 'test'
+  ...
+# Subtest: schedule webhook persists a sync request before acknowledging
+ok 12 - schedule webhook persists a sync request before acknowledging
+  ---
+  duration_ms: 11.87381
+  type: 'test'
+  ...
+# (node:841) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: AI assistant is fail-closed when no provider is configured
+ok 13 - AI assistant is fail-closed when no provider is configured
+  ---
+  duration_ms: 22.461798
+  type: 'test'
+  ...
+# Subtest: AI assistant queries real records, persists proposal, requires confirmation and never auto-publishes
+ok 14 - AI assistant queries real records, persists proposal, requires confirmation and never auto-publishes
+  ---
+  duration_ms: 50.901873
+  type: 'test'
+  ...
+# Subtest: ESM shared logic and generated mini-program CJS expose identical behavior
+ok 15 - ESM shared logic and generated mini-program CJS expose identical behavior
+  ---
+  duration_ms: 7.84939
+  type: 'test'
+  ...
+# Subtest: invalid routes/IDs never resolve to a different content object
+ok 16 - invalid routes/IDs never resolve to a different content object
+  ---
+  duration_ms: 4.74247
+  type: 'test'
+  ...
+# Subtest: all category and node filters run against one canonical catalog, including former missing references
+ok 17 - all category and node filters run against one canonical catalog, including former missing references
+  ---
+  duration_ms: 6.284012
+  type: 'test'
+  ...
+# Subtest: layer switch changes actual marker sets, not only a highlighted label
+ok 18 - layer switch changes actual marker sets, not only a highlighted label
+  ---
+  duration_ms: 1.894278
+  type: 'test'
+  ...
+# Subtest: map hides expired coordinates while keeping last-known list record
+ok 19 - map hides expired coordinates while keeping last-known list record
+  ---
+  duration_ms: 0.369125
+  type: 'test'
+  ...
+# Subtest: navigation only targets validated POI coordinates, never another station/first item
+ok 20 - navigation only targets validated POI coordinates, never another station/first item
+  ---
+  duration_ms: 0.234903
+  type: 'test'
+  ...
+# Subtest: legacy favorites preserved, invalid entries removed, no global cache clearing
+ok 21 - legacy favorites preserved, invalid entries removed, no global cache clearing
+  ---
+  duration_ms: 0.53233
+  type: 'test'
+  ...
+# Subtest: native request failure rejects; no demo content fallback exists
+ok 22 - native request failure rejects; no demo content fallback exists
+  ---
+  duration_ms: 6.351828
+  type: 'test'
+  ...
+# Subtest: native top-level navigation uses switchTab instead of destroying page stack with reLaunch
+ok 23 - native top-level navigation uses switchTab instead of destroying page stack with reLaunch
+  ---
+  duration_ms: 2.282331
+  type: 'test'
+  ...
+# Subtest: native narration separates real audio playback and reading; text is not announced as playing
+ok 24 - native narration separates real audio playback and reading; text is not announced as playing
+  ---
+  duration_ms: 1.924844
+  type: 'test'
+  ...
+# Subtest: shared design token compilation changes real mini-program styles, not a dead configuration file
+ok 25 - shared design token compilation changes real mini-program styles, not a dead configuration file
+  ---
+  duration_ms: 8.932263
+  type: 'test'
+  ...
+# Subtest: worker lease identities differ even when two containers have the same instance label
+ok 26 - worker lease identities differ even when two containers have the same instance label
+  ---
+  duration_ms: 2.147589
+  type: 'test'
+  ...
+# Subtest: HTTP synchronization can run before MQTT configuration is complete
+ok 27 - HTTP synchronization can run before MQTT configuration is complete
+  ---
+  duration_ms: 2.320719
+  type: 'test'
+  ...
+# Subtest: production rejects local database, insecure transport and cross-environment consumer groups
+ok 28 - production rejects local database, insecure transport and cross-environment consumer groups
+  ---
+  duration_ms: 9.935556
+  type: 'test'
+  ...
+# Subtest: IVY signature sorts VALUES and signs exact UTF-8 body, not parsed object
+ok 29 - IVY signature sorts VALUES and signs exact UTF-8 body, not parsed object
+  ---
+  duration_ms: 2.701811
+  type: 'test'
+  ...
+# Subtest: AES32 UTF-8 envelope round-trip: ""
+ok 30 - AES32 UTF-8 envelope round-trip: ""
+  ---
+  duration_ms: 2.098845
+  type: 'test'
+  ...
+# Subtest: AES32 UTF-8 envelope round-trip: "a"
+ok 31 - AES32 UTF-8 envelope round-trip: "a"
+  ---
+  duration_ms: 0.452891
+  type: 'test'
+  ...
+# Subtest: AES32 UTF-8 envelope round-trip: "xxxxxxxxxxxx"
+ok 32 - AES32 UTF-8 envelope round-trip: "xxxxxxxxxxxx"
+  ---
+  duration_ms: 0.462616
+  type: 'test'
+  ...
+# Subtest: AES32 UTF-8 envelope round-trip: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+ok 33 - AES32 UTF-8 envelope round-trip: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  ---
+  duration_ms: 0.400402
+  type: 'test'
+  ...
+# Subtest: AES32 UTF-8 envelope round-trip: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+ok 34 - AES32 UTF-8 envelope round-trip: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  ---
+  duration_ms: 0.285849
+  type: 'test'
+  ...
+# Subtest: AES32 UTF-8 envelope round-trip: "南充\\n清晖阁😊"
+ok 35 - AES32 UTF-8 envelope round-trip: "南充\\n清晖阁😊"
+  ---
+  duration_ms: 0.310036
+  type: 'test'
+  ...
+# Subtest: signed envelope rejects tampering, expiration, wrong nonce and foreign app
+ok 36 - signed envelope rejects tampering, expiration, wrong nonce and foreign app
+  ---
+  duration_ms: 1.079202
+  type: 'test'
+  ...
+# Subtest: malformed cipher and truncated blocks fail closed
+ok 37 - malformed cipher and truncated blocks fail closed
+  ---
+  duration_ms: 0.619461
+  type: 'test'
+  ...
+# Subtest: Node implementation matches independent Python cryptography golden vector
+ok 38 - Node implementation matches independent Python cryptography golden vector
+  ---
+  duration_ms: 10.896471
+  type: 'test'
+  ...
+# Subtest: HTTP client performs actual signed encrypted POST against isolated test server
+ok 39 - HTTP client performs actual signed encrypted POST against isolated test server
+  ---
+  duration_ms: 43.590732
+  type: 'test'
+  ...
+# Subtest: business rejection, malformed response and signature mismatch do not return seed data
+ok 40 - business rejection, malformed response and signature mismatch do not return seed data
+  ---
+  duration_ms: 3.52566
+  type: 'test'
+  ...
+# Subtest: cursor pagination collects completely; repeated cursor aborts
+ok 41 - cursor pagination collects completely; repeated cursor aborts
+  ---
+  duration_ms: 0.481574
+  type: 'test'
+  ...
+# Subtest: line/branch/stop synchronization only publishes complete data; failure preserves last version
+ok 42 - line/branch/stop synchronization only publishes complete data; failure preserves last version
+  ---
+  duration_ms: 12.122735
+  type: 'test'
+  ...
+# Subtest: missing conversion key retains raw WGS84 and returns no invented GCJ02 coordinates
+ok 43 - missing conversion key retains raw WGS84 and returns no invented GCJ02 coordinates
+  ---
+  duration_ms: 1.533315
+  type: 'test'
+  ...
+# Subtest: event scope, event type, ACC, future device time and stop action are validated
+ok 44 - event scope, event type, ACC, future device time and stop action are validated
+  ---
+  duration_ms: 3.333071
+  type: 'test'
+  ...
+# (node:861) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# {"at":"2026-09-20T10:29:09.141Z","event":"mqtt-event","code":"accepted"}
+# {"at":"2026-09-20T10:29:09.142Z","event":"mqtt-rejected","code":"TOPIC_TYPE_MISMATCH"}
+# {"at":"2026-09-20T10:29:09.144Z","event":"mqtt-storage-error","code":"PERSISTENCE_FAILED"}
+# Subtest: MQTT processing ACK follows durable commit; invalid topic/type is quarantined
+ok 45 - MQTT processing ACK follows durable commit; invalid topic/type is quarantined
+  ---
+  duration_ms: 12.304738
+  type: 'test'
+  ...
+# Subtest: storage failure returns a failed MQTT acknowledgement, not false success
+ok 46 - storage failure returns a failed MQTT acknowledgement, not false success
+  ---
+  duration_ms: 1.313254
+  type: 'test'
+  ...
+# (node:911) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: media must be rights-confirmed, place-matched and locally owned before it can become a POI cover
+ok 47 - media must be rights-confirmed, place-matched and locally owned before it can become a POI cover
+  ---
+  duration_ms: 34.581918
+  type: 'test'
+  ...
+# Subtest: AMap discovery enters a candidate pool and requires human approval before import/publish
+ok 48 - AMap discovery enters a candidate pool and requires human approval before import/publish
+  ---
+  duration_ms: 29.008579
+  type: 'test'
+  ...
+# Subtest: live integration verification records only redacted outcomes for AI, WeChat and two-step SMS delivery
+ok 49 - live integration verification records only redacted outcomes for AI, WeChat and two-step SMS delivery
+  ---
+  duration_ms: 18.303717
+  type: 'test'
+  ...
+# Subtest: production phone OTP uses configured SMS gateway and never returns or stores plaintext OTP
+ok 50 - production phone OTP uses configured SMS gateway and never returns or stores plaintext OTP
+  ---
+  duration_ms: 7.785995
+  type: 'test'
+  ...
+# Subtest: HTTP admin routes expose media review and POI discovery without bypassing draft publication
+ok 51 - HTTP admin routes expose media review and POI discovery without bypassing draft publication
+  ---
+  duration_ms: 66.54566
+  type: 'test'
+  ...
+# {"at":"2026-09-20T10:29:09.359Z","event":"request-failed","code":"UNAUTHORIZED","requestId":"03818278-f0fb-42e0-801b-2019830af56c","durationMs":0}
+# Subtest: HTTP live-verification endpoints are admin-only and persist redacted pass records
+ok 52 - HTTP live-verification endpoints are admin-only and persist redacted pass records
+  ---
+  duration_ms: 42.49927
+  type: 'test'
+  ...
+# Subtest: portable admin source contains visual media, candidate review and live integration controls
+ok 53 - portable admin source contains visual media, candidate review and live integration controls
+  ---
+  duration_ms: 1.563611
+  type: 'test'
+  ...
+# Subtest: physical-device acceptance gate requires both iOS and Android evidence and accepts a complete synthetic evidence record
+ok 54 - physical-device acceptance gate requires both iOS and Android evidence and accepts a complete synthetic evidence record
+  ---
+  duration_ms: 79.480475
+  type: 'test'
+  ...
+# (node:912) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: R6 H5 actual hook sends token for profile/action/logout, rejects malformed cached sessions
+ok 55 - R6 H5 actual hook sends token for profile/action/logout, rejects malformed cached sessions
+  ---
+  duration_ms: 58.236779
+  type: 'test'
+  ...
+# Subtest: R6 formal mini-program source uses token and revokes on logout through real HTTP API
+ok 56 - R6 formal mini-program source uses token and revokes on logout through real HTTP API
+  ---
+  duration_ms: 136.631146
+  type: 'test'
+  ...
+# (node:918) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: R1: failed OTP attempts commit, parallel failures stop at five, consumed codes cannot replay
+ok 57 - R1: failed OTP attempts commit, parallel failures stop at five, consumed codes cannot replay
+  ---
+  duration_ms: 16.42319
+  type: 'test'
+  ...
+# Subtest: R2: downgrade and disable apply to existing admin tokens; bootstrap cannot reactivate staff
+ok 58 - R2: downgrade and disable apply to existing admin tokens; bootstrap cannot reactivate staff
+  ---
+  duration_ms: 6.969077
+  type: 'test'
+  ...
+# {"at":"2026-09-20T10:29:09.252Z","event":"request-failed","code":"CONTENT_NOT_APPROVED","requestId":"7d5e888d-4150-4e0a-bfbe-51ef9adb3abc","durationMs":5}
+# {"at":"2026-09-20T10:29:09.293Z","event":"request-failed","code":"CONTENT_NOT_APPROVED","requestId":"69305cec-8b4d-483b-9a99-9ec06b6d7b8a","durationMs":1}
+# {"at":"2026-09-20T10:29:09.300Z","event":"request-failed","code":"REVISION_CONFLICT","requestId":"49250db8-acc0-4b7e-9ae0-5184acc1ac36","durationMs":2}
+# Subtest: R3: production publication requires exact reviewed draft; failures retain the readable approved release
+ok 59 - R3: production publication requires exact reviewed draft; failures retain the readable approved release
+  ---
+  duration_ms: 173.620168
+  type: 'test'
+  ...
+# Subtest: R4: offline persists across edits and publication; dangling references preserve prior release
+ok 60 - R4: offline persists across edits and publication; dangling references preserve prior release
+  ---
+  duration_ms: 30.932777
+  type: 'test'
+  ...
+# Subtest: R5: node revision persists and rejects a concurrent stale editor
+ok 61 - R5: node revision persists and rejects a concurrent stale editor
+  ---
+  duration_ms: 15.694805
+  type: 'test'
+  ...
+# Subtest: R5: migration 005 upgrades populated 004 database without rewriting old migration
+ok 62 - R5: migration 005 upgrades populated 004 database without rewriting old migration
+  ---
+  duration_ms: 13.732444
+  type: 'test'
+  ...
+# (node:944) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: catalog has 21 POIs, 4 complete walks, all step references and tips
+ok 63 - catalog has 21 POIs, 4 complete walks, all step references and tips
+  ---
+  duration_ms: 36.082754
+  type: 'test'
+  ...
+# Subtest: immutable content version prevents silent mutation; explicit rollback restores previous release
+ok 64 - immutable content version prevents silent mutation; explicit rollback restores previous release
+  ---
+  duration_ms: 17.232967
+  type: 'test'
+  ...
+# Subtest: freshness uses device time; expiry keeps last-known position
+ok 65 - freshness uses device time; expiry keeps last-known position
+  ---
+  duration_ms: 10.711052
+  type: 'test'
+  ...
+# Subtest: duplicate, out-of-order, equal-time conflicting events are rejected independently per stream
+ok 66 - duplicate, out-of-order, equal-time conflicting events are rejected independently per stream
+  ---
+  duration_ms: 19.950883
+  type: 'test'
+  ...
+# Subtest: arrivals require fresh real stop evidence and a healthy ingestion process, never synthesize minutes
+ok 67 - arrivals require fresh real stop evidence and a healthy ingestion process, never synthesize minutes
+  ---
+  duration_ms: 10.176489
+  type: 'test'
+  ...
+# Subtest: stop occurrence supports circular terminal duplicate, reverse order and sixth stop without UI edits
+ok 68 - stop occurrence supports circular terminal duplicate, reverse order and sixth stop without UI edits
+  ---
+  duration_ms: 0.456887
+  type: 'test'
+  ...
+# Subtest: two processes/connections share persistence; leases survive until expiry and prevent duplicate owner
+ok 69 - two processes/connections share persistence; leases survive until expiry and prevent duplicate owner
+  ---
+  duration_ms: 21.288133
+  type: 'test'
+  ...
+# Subtest: invalid route cannot replace the last complete published version
+ok 70 - invalid route cannot replace the last complete published version
+  ---
+  duration_ms: 5.397294
+  type: 'test'
+  ...
+# Subtest: null, stale, future and unavailable states stay distinct
+ok 71 - null, stale, future and unavailable states stay distinct
+  ---
+  duration_ms: 0.534704
+  type: 'test'
+  ...
+# Subtest: sync acknowledgement is compare-and-swap; a new request cannot be lost mid-sync
+ok 72 - sync acknowledgement is compare-and-swap; a new request cannot be lost mid-sync
+  ---
+  duration_ms: 5.675553
+  type: 'test'
+  ...
+# Subtest: expired or replaced worker lease cannot commit a real-time event
+ok 73 - expired or replaced worker lease cannot commit a real-time event
+  ---
+  duration_ms: 6.826292
+  type: 'test'
+  ...
+# Subtest: changing only the publication label cannot approve inherited content or foreign media
+ok 74 - changing only the publication label cannot approve inherited content or foreign media
+  ---
+  duration_ms: 13.262037
+  type: 'test'
+  ...
+# Subtest: slow synchronization cannot publish a new route after its worker loses the lease
+ok 75 - slow synchronization cannot publish a new route after its worker loses the lease
+  ---
+  duration_ms: 8.78044
+  type: 'test'
+  ...
+# (node:955) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: migrations install unified auth, RBAC, content and AI operations tables
+ok 76 - migrations install unified auth, RBAC, content and AI operations tables
+  ---
+  duration_ms: 17.655783
+  type: 'test'
+  ...
+# Subtest: phone challenge creates one user, separates user/admin audiences and checks admin authorization server-side
+ok 77 - phone challenge creates one user, separates user/admin audiences and checks admin authorization server-side
+  ---
+  duration_ms: 15.289215
+  type: 'test'
+  ...
+# Subtest: test OTP is single-use, rate-limited and production fails closed without an SMS provider
+ok 78 - test OTP is single-use, rate-limited and production fails closed without an SMS provider
+  ---
+  duration_ms: 10.544181
+  type: 'test'
+  ...
+# Subtest: wechat phone login verifies both WeChat credentials server-side and links to one phone user
+ok 79 - wechat phone login verifies both WeChat credentials server-side and links to one phone user
+  ---
+  duration_ms: 18.865692
+  type: 'test'
+  ...
+# Subtest: reference catalog migrates losslessly into normalized tables and rebuilds 1/5/21/4/9 content model
+ok 80 - reference catalog migrates losslessly into normalized tables and rebuilds 1/5/21/4/9 content model
+  ---
+  duration_ms: 34.442218
+  type: 'test'
+  ...
+# Subtest: normalized content edit is optimistic, auditable and only reaches clients after explicit publish
+ok 81 - normalized content edit is optimistic, auditable and only reaches clients after explicit publish
+  ---
+  duration_ms: 32.704677
+  type: 'test'
+  ...
+# Subtest: user favorites use the same published catalog and persist through unified user tables
+ok 82 - user favorites use the same published catalog and persist through unified user tables
+  ---
+  duration_ms: 19.888534
+  type: 'test'
+  ...
+# Subtest: HTTP API exposes phone login, unified me endpoint and normalized admin content using one database
+ok 83 - HTTP API exposes phone login, unified me endpoint and normalized admin content using one database
+  ---
+  duration_ms: 74.193933
+  type: 'test'
+  ...
+# (node:966) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: real worker process starts unconfigured without phantom data, rejects a second lease owner and shuts down
+ok 84 - real worker process starts unconfigured without phantom data, rejects a second lease owner and shuts down
+  ---
+  duration_ms: 163.134365
+  type: 'test'
+  ...
+1..84
+# tests 84
+# suites 0
+# pass 84
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 888.711607

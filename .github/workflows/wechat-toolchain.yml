@@ -1,0 +1,40 @@
+name: Verify WeChat official toolchain
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'release/v4.4.0-rc1'
+    paths:
+      - 'deploy/wechat-ci/**'
+      - '.github/workflows/wechat-toolchain.yml'
+  pull_request:
+    paths:
+      - 'deploy/wechat-ci/**'
+permissions:
+  contents: read
+jobs:
+  toolchain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install exact locked official compiler toolchain
+        working-directory: deploy/wechat-ci
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify pinned compiler and retain raw audit
+        working-directory: deploy/wechat-ci
+        run: |
+          node -e "const v=require('miniprogram-ci/package.json').version;if(v!=='2.1.31')process.exit(2);console.log(JSON.stringify({node:process.version,miniprogramCi:v}))" | tee toolchain-versions.json
+          npm audit --json > dependency-audit.json || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wechat-official-toolchain-evidence
+          path: |
+            deploy/wechat-ci/package-lock.json
+            deploy/wechat-ci/toolchain-versions.json
+            deploy/wechat-ci/dependency-audit.json
+          retention-days: 30

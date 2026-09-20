@@ -1,0 +1,45 @@
+name: WeChat official preview gate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+          cache: npm
+      - name: Install root development toolchain
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install official WeChat compiler toolchain
+        run: npm ci --prefix deploy/wechat-ci --ignore-scripts --no-audit --no-fund
+      - name: Build native mini-program source
+        env:
+          WECHAT_MINIPROGRAM_APP_ID: ${{ secrets.WECHAT_MINIPROGRAM_APP_ID }}
+          WECHAT_API_BASE_URL: ${{ secrets.WECHAT_API_BASE_URL }}
+        run: npm run build
+      - name: Write upload private key to runner temp
+        env:
+          WECHAT_UPLOAD_PRIVATE_KEY: ${{ secrets.WECHAT_UPLOAD_PRIVATE_KEY }}
+        run: |
+          test -n "$WECHAT_UPLOAD_PRIVATE_KEY"
+          printf '%s' "$WECHAT_UPLOAD_PRIVATE_KEY" > "$RUNNER_TEMP/wechat-upload.key"
+          chmod 600 "$RUNNER_TEMP/wechat-upload.key"
+      - name: Official preview compile and QR
+        env:
+          WECHAT_MINIPROGRAM_APP_ID: ${{ secrets.WECHAT_MINIPROGRAM_APP_ID }}
+          WECHAT_UPLOAD_PRIVATE_KEY_FILE: ${{ runner.temp }}/wechat-upload.key
+          WECHAT_CI_ROBOT: '1'
+        run: node scripts/wechat-preview.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wechat-preview-evidence
+          path: |
+            audit/wechat/preview-result.json
+            audit/wechat/preview.jpg
+          retention-days: 30

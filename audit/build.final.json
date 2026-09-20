@@ -1,0 +1,5 @@
+
+> nanchong-city-tour@2.0.0 build
+> node scripts/build.mjs
+
+{"build":"passed","version":"2.0.0","contentVersion":"2026-09-19.reference.2","sharedSha256":"f08714622902d725dee8c1c37e54a70a5cadb6c330d4631445489057c7a9fc77","tokensSha256":"45c126a703786677011b3ec58d0eac0ebc5edd8785e1f159c26f595180225556","clients":["h5","weapp"],"production":false}

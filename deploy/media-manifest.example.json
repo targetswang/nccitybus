@@ -1,0 +1,17 @@
+{
+  "allowedHosts": [],
+  "items": [
+    {
+      "poiId": "qinghui-pavilion",
+      "sourceUrl": "https://your-authorized-source.example/photo.jpg",
+      "rightsConfirmed": false,
+      "rightsEvidence": "",
+      "placeMatchConfirmed": false,
+      "caption": "清晖阁实景",
+      "focus": [
+        0.5,
+        0.5
+      ]
+    }
+  ]
+}

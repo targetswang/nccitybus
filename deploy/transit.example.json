@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "operatorId": "nanchong",
+  "environment": "development",
+  "routes": [
+    {
+      "id": "jialing-loop",
+      "name": "嘉陵江城市漫游环线",
+      "lineCode": null,
+      "branchCode": null,
+      "directions": [
+        "upward"
+      ],
+      "tourismLinks": {},
+      "vehicleAllowlist": []
+    }
+  ],
+  "notes": "tourismLinks maps stationCode to a stable tourism node ID; do not map by array order."
+}

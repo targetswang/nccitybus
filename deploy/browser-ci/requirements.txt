@@ -1,0 +1,2 @@
+# Isolated CI browser driver; never installed in the application runtime.
+playwright==1.51.0

@@ -1,0 +1,7 @@
+{
+  "kind": "limited packaging-secret-and-retired-artifact-scan",
+  "privateKeyBlocks": [],
+  "nestedSourceZipDependencies": [],
+  "status": "passed",
+  "limitation": "Not a comprehensive credential or dependency vulnerability scan. Test fixtures contain explicitly fictional test-only keys."
+}

@@ -1,0 +1,7 @@
+{
+  "appid": "touristappid",
+  "apiBaseUrl": "",
+  "environment": "development",
+  "transitMiniProgramAppId": "",
+  "transitMiniProgramPath": ""
+}

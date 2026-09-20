@@ -1,0 +1,129 @@
+{
+  "version": "2.0.0-engineering-baseline",
+  "auditDate": "2026-09-19T02:12:39.401519+00:00",
+  "auditType": "developer self-audit; not independent certification",
+  "conclusion": "local_engineering_checks_passed__production_release_blocked",
+  "upstreamBasis": {
+    "appId": "app-3hu1sz",
+    "unchangedSnapshot": "1789775010896",
+    "supplierSpec": "IVY Bus V1.2.5 supplied PDF"
+  },
+  "environment": {
+    "node": "v22.16.0",
+    "npm": "10.9.2",
+    "python": "3.13.5"
+  },
+  "checks": {
+    "node": {
+      "passed": 55,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "node-tests.final.tap"
+    },
+    "h5Dom": {
+      "passed": 15,
+      "failed": 0,
+      "mode": "offline-real-react-dom-with-local-api-binding",
+      "storageMode": "controlled in-memory Storage for offline DOM tests; physical persistence not tested",
+      "evidence": "browser/results.json"
+    },
+    "media": {
+      "passed": 5,
+      "failed": 0,
+      "mode": "synthetic local image pipeline test",
+      "evidence": "media-tests.json"
+    },
+    "static": {
+      "status": "passed",
+      "evidence": "static-check.json",
+      "counts": {
+        "jsSourceAndGeneratedFiles": 94,
+        "content": {
+          "nodes": 5,
+          "pois": 21,
+          "walks": 4,
+          "steps": 9
+        },
+        "nativePages": 14
+      }
+    },
+    "declarationTypecheck": {
+      "status": "passed",
+      "scope": "API declarations only, not strict typing of every JS file",
+      "command": "tsc --strict --noEmit --target ES2020 packages/contracts/index.d.ts"
+    },
+    "productionGate": {
+      "status": "blocked",
+      "checks": [
+        {
+          "name": "production integration lock",
+          "status": "blocked",
+          "reason": "A real npm-resolved and reviewed integration lock is required; none is fabricated"
+        },
+        {
+          "name": "pg runtime",
+          "status": "blocked",
+          "reason": "pg is not installed: run the production integration install/lock gate"
+        },
+        {
+          "name": "mqtt runtime",
+          "status": "blocked",
+          "reason": "mqtt is not installed: run the production integration install/lock gate"
+        },
+        {
+          "name": "production configuration",
+          "status": "blocked",
+          "reason": "NODE_ENV is not production"
+        }
+      ],
+      "mustBeRunAfterCredentials": [
+        "supplier HTTP/MQTT replay",
+        "production PostgreSQL integration",
+        "WeChat developer-tool and physical-device tests",
+        "on-route field acceptance"
+      ]
+    },
+    "cleanroom": {
+      "status": "passed",
+      "method": "extract candidate ZIP into a new directory; no copied var/node_modules",
+      "commands": [
+        "npm ci --offline --ignore-scripts --no-audit --no-fund",
+        "npm run audit:local"
+      ],
+      "sameBuildManifest": true,
+      "thirdPartyProductionDriversTested": false,
+      "differentTeamTested": false
+    },
+    "independentPythonCrypto": {
+      "status": "passed",
+      "evidence": "python-crypto-vector.log",
+      "fixtureOnly": true
+    }
+  },
+  "notRun": [
+    "production PostgreSQL",
+    "real MQTT broker and TLS/QoS recovery",
+    "supplier credentials and real vehicle stream",
+    "official WeChat WXML compile",
+    "iOS/Android physical devices",
+    "public HTTPS/CSP/CORS/browser-native storage integration",
+    "production dependency vulnerability scan",
+    "field acceptance",
+    "remote GitHub CI"
+  ],
+  "deployment": {
+    "oldAppDeployModified": false,
+    "githubPushed": false,
+    "newPublicBackendDeployed": false
+  },
+  "content": {
+    "referenceNodes": 5,
+    "referencePois": 21,
+    "referenceWalks": 4,
+    "walkSteps": 9,
+    "allReferencesResolved": true,
+    "photosApprovedOrFetchedThisTurn": 0,
+    "audioPublishedThisTurn": 0,
+    "remaining": "operator editorial/media approval and live SDK integration"
+  }
+}

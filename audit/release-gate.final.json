@@ -1,0 +1,31 @@
+{
+  "status": "blocked",
+  "checks": [
+    {
+      "name": "production integration lock",
+      "status": "blocked",
+      "reason": "A real npm-resolved and reviewed integration lock is required; none is fabricated"
+    },
+    {
+      "name": "pg runtime",
+      "status": "blocked",
+      "reason": "pg is not installed: run the production integration install/lock gate"
+    },
+    {
+      "name": "mqtt runtime",
+      "status": "blocked",
+      "reason": "mqtt is not installed: run the production integration install/lock gate"
+    },
+    {
+      "name": "production configuration",
+      "status": "blocked",
+      "reason": "NODE_ENV is not production"
+    }
+  ],
+  "mustBeRunAfterCredentials": [
+    "supplier HTTP/MQTT replay",
+    "production PostgreSQL integration",
+    "WeChat developer-tool and physical-device tests",
+    "on-route field acceptance"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "postgresql16": {
+    "workflowRunId": 35498086820,
+    "headSha": "c6c1e79d82630f0538f0c1e5f10fd01d494f4e46",
+    "status": "success",
+    "artifactId": 10601507631,
+    "artifactDigest": "sha256:78fa0b56552278e30b36b727e92ebfdb8dddd89c44fc3ec1f0cf840eeb077865",
+    "checks": ["migrations", "1/5/21/4/9 import", "draft isolation", "publish readback"]
+  },
+  "productionRuntimeLock": {
+    "workflowRunId": 35498086799,
+    "headSha": "c6c1e79d82630f0538f0c1e5f10fd01d494f4e46",
+    "status": "success",
+    "artifactId": 10600947306,
+    "artifactDigest": "sha256:6c5bfe9cfffecd5341648ed81e9d430fce0f2c5239fbaa760bfbd7a09d8bae4a",
+    "pg": "8.16.3",
+    "mqtt": "5.10.4",
+    "audit": {"low":0,"moderate":0,"high":0,"critical":0,"total":0}
+  },
+  "wechatOfficialToolchain": {
+    "workflowRunId": 35498654599,
+    "headSha": "fd695cf4f0f3afce91b41fbf672ec3718f4bd355",
+    "status": "success",
+    "artifactId": 10601288937,
+    "artifactDigest": "sha256:5940c5c201678c81e75930e43147b09a7e495ba33e1882e7a9cfc75e4e7cc795",
+    "miniprogramCi": "2.1.31",
+    "audit": {"low":1,"moderate":18,"high":16,"critical":41,"total":76},
+    "scope": "isolated build tool only; not production runtime"
+  }
+}

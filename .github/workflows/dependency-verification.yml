@@ -1,0 +1,40 @@
+name: Verify production runtime dependencies
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'release/v4.4.0-rc1'
+    paths:
+      - 'deploy/integrations/**'
+      - '.github/workflows/dependency-verification.yml'
+  pull_request:
+    paths:
+      - 'deploy/integrations/**'
+permissions:
+  contents: read
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install exact locked runtime dependencies
+        working-directory: deploy/integrations
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify driver versions and capture dependency audit
+        working-directory: deploy/integrations
+        run: |
+          node -e "const pg=require('pg/package.json').version,mqtt=require('mqtt/package.json').version;if(pg!=='8.16.3'||mqtt!=='5.10.4')process.exit(2);console.log(JSON.stringify({node:process.version,pg,mqtt}))" | tee runtime-versions.json
+          npm audit --json > dependency-audit.json || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-runtime-dependency-evidence
+          path: |
+            deploy/integrations/package-lock.json
+            deploy/integrations/runtime-versions.json
+            deploy/integrations/dependency-audit.json
+          retention-days: 30

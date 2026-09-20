@@ -1,0 +1,17 @@
+{
+  "description": "南充嘉陵江城市漫游原生微信小程序",
+  "packOptions": {
+    "ignore": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "nanchong-city-tour",
+  "miniprogramRoot": "./"
+}

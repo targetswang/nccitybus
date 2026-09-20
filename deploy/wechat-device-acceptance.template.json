@@ -1,0 +1,23 @@
+{
+  "appid": "wx0000000000000000",
+  "version": "4.4.0-rc.1",
+  "verifiedAt": "",
+  "devices": {
+    "ios": {
+      "status": "blocked",
+      "deviceModel": "",
+      "osVersion": "",
+      "wechatVersion": "",
+      "checks": {"launch":false,"wechatLogin":false,"phoneAuthorization":false,"contentRead":false,"favoriteRoundTrip":false,"supportRoundTrip":false,"navigation":false,"networkRetry":false},
+      "evidence": []
+    },
+    "android": {
+      "status": "blocked",
+      "deviceModel": "",
+      "osVersion": "",
+      "wechatVersion": "",
+      "checks": {"launch":false,"wechatLogin":false,"phoneAuthorization":false,"contentRead":false,"favoriteRoundTrip":false,"supportRoundTrip":false,"navigation":false,"networkRetry":false},
+      "evidence": []
+    }
+  }
+}

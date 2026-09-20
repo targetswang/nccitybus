@@ -1,0 +1,31 @@
+name: Browser page parity acceptance
+on:
+  pull_request:
+  push:
+    branches: ['release/v4.4.0-rc1']
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install -r deploy/browser-ci/requirements.txt
+      - run: python -m playwright install --with-deps chromium
+      - run: python tests/browser/parity.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-page-parity
+          path: audit/local/browser/
+          retention-days: 30

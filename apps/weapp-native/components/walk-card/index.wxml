@@ -1,5 +1,5 @@
 <view class="card" bindtap="open">
-  <view class="cover">
+  <image wx:if="{{cover&&!failed}}" class="cover" src="{{cover}}" mode="aspectFill" binderror="imageError"/><view wx:else class="cover">
     <view class="cover-title">CITY WALK</view>
     <view class="cover-sub">{{walk.duration}} · {{walk.bestTime}}</view>
   </view>

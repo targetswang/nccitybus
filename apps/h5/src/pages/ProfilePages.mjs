@@ -90,6 +90,6 @@ export function PrivacyPage({ catalog }) {
         className: 'panel'
     }, h('h2', null, '浏览与收藏'), h('p', null, catalog.privacy)), h('div', {
         className: 'panel'
-    }, h('h2', null, '内容与图片'), h('p', null, '路线文字是游览建议，并非实时营业、发车或门票信息。未核实的营业时间和消费金额不作为事实展示。')));
+    }, h('h2',null,'定位与公交'),h('p',null,'定位仅在相关功能实际启用并授权后使用。公交实时信息与用户身份不自动关联。'),h('h2', null, '内容与图片'), h('p', null, '路线文字是游览建议，并非实时营业、发车或门票信息。未核实的营业时间和消费金额不作为事实展示。')));
 }
 

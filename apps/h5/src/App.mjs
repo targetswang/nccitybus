@@ -36,7 +36,7 @@ const TITLES = {
 export default function App() {
     const [route, setRoute] = React.useState(() => parseRoute(location.hash)), [mode, setMode] = React.useState('walks'), [category, setCategory] = React.useState('全部'), [nodeId, setNodeId] = React.useState('all'), [layer, setLayer] = React.useState('vehicles'), [liveRouteId, setLiveRouteId] = React.useState('jialing-loop');
     const content = useResource('/content', {
-        pollMs: 300000
+        pollMs: ['member','events','event','rights','benefit'].includes(route.page)?30000:300000
     }), caps = useResource('/capabilities'), visitor = useVisitor(), favorites = useFavorites(visitor), catalog = content.data;
     const scroller = React.useRef(null), positions = React.useRef({}), previous = React.useRef(route.page);
     React.useEffect(() => {
@@ -59,6 +59,7 @@ export default function App() {
         route.page,
         route.id
     ]);
+    React.useEffect(()=>{content.retry();if(visitor.session)void visitor.refresh();},[route.page,route.id]);
     let page;
     if (route.page === 'live')
         page = h(LivePage, {
@@ -186,7 +187,7 @@ export default function App() {
     }), h('main', {
         ref: scroller,
         className: 'app-scroll'
-    }, content.error && catalog && h('p', {
+    }, route.page!=='live'&&h('button',{className:'text-button',onClick:content.retry,disabled:content.loading},'刷新内容'), content.error && catalog && h('p', {
         className: 'inline-note',
         role: 'alert'
     }, '内容刷新失败，当前仍显示此前读取的版本。'), page), h(BottomNav, {

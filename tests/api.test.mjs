@@ -26,7 +26,7 @@ test('full content and paginated POIs share immutable version, no provenance or 
  const two=await req('/content/pois?limit=2&cursor='+encodeURIComponent(one.data.nextCursor));assert.ok(two.data.items.every(x=>!one.data.items.some(y=>x.id===y.id)));
  assert.equal((await req('/content/pois?limit=2&category=other&cursor='+encodeURIComponent(one.data.nextCursor))).status,409);
  assert.equal((await req('/content/pois?limit=abc')).status,400);
- assert.equal((await req('/content',{headers:{'If-None-Match':all.headers.get('etag')}})).status,304);
+ assert.equal(all.headers.get('cache-control'),'no-store');assert.equal((await req('/content',{headers:{'If-None-Match':'old-content-version'}})).status,200);
 });
 test('reference content is never auto-approved for production',async t=>{
  const {req}=await setup(t,{production:true});assert.equal((await req('/content')).status,503);assert.equal((await req('/health')).status,200);

@@ -3,5 +3,6 @@
     "top-header": "/components/top-header/index",
     "bottom-nav": "/components/bottom-nav/index",
     "walk-card": "/components/walk-card/index"
-  }
+  },
+  "enablePullDownRefresh": true
 }

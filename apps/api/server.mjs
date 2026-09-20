@@ -365,13 +365,8 @@ export function createApi({ config, repository, transport = fetch }) {
                 invariant(!config.production || c.publication === 'approved', 'CONTENT_NOT_APPROVED', '内容尚未完成发布审核', 503);
                 const etag = `"${c.version}"`;
                 if (pathname === '/api/v1/content') {
-                    if (req.headers['if-none-match'] === etag)
-                        return send(res, 304, null, {
-                            'ETag': etag
-                        });
-                    return send(res, 200, publicCatalog(c, config.publicBaseUrl), {
-                        'ETag': etag
-                    });
+                    // Availability changes with time and capacity even when the content version is unchanged.
+                    return send(res, 200, publicCatalog(await users.publicStatus(c), config.publicBaseUrl), {'Cache-Control':'no-store'});
                 }
                 if (pathname === '/api/v1/content/pois') {
                     const limit = positive(url.searchParams, 'limit', 20, 50), category = url.searchParams.get('category'), nodeId = url.searchParams.get('nodeId');

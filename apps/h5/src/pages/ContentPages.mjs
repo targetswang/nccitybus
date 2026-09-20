@@ -110,7 +110,7 @@ export function WalkPage({ catalog, id }) {
             className: 'step-no'
         }, String(i + 1).padStart(2, '0')), h('h2', null, s.title), h('p', {
             className: 'meta'
-        }, s.stay), h('p', null, s.intro), h('aside', {
+        }, s.stay, s.walkHint?' · '+s.walkHint:''), h('p', null, s.intro), h('aside', {
             className: 'local-tip'
         }, h('strong', null, '像当地人一点'), h('p', null, s.localTip)), p && h(NavigationButton, {
             poi: p

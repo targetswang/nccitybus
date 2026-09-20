@@ -150,4 +150,19 @@ export type ContentSnapshot = {
   "walks": Array<Walk>;
   "guides"?: Array<Record<string, unknown>>;
   "privacy"?: string;
+  "membershipPlans"?: Array<{
+  "id": string;
+  "availability": "active" | "cancelled" | "upcoming" | "expired" | "disabled" | "full";
+  "availabilityReason": string;
+}>;
+  "benefits"?: Array<{
+  "id": string;
+  "availability": "active" | "cancelled" | "upcoming" | "expired" | "disabled" | "full";
+  "availabilityReason": string;
+}>;
+  "events"?: Array<{
+  "id": string;
+  "availability": "active" | "cancelled" | "upcoming" | "expired" | "disabled" | "full";
+  "availabilityReason": string;
+}>;
 };

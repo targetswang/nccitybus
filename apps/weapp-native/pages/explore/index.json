@@ -4,5 +4,6 @@
     "bottom-nav": "/components/bottom-nav/index",
     "walk-card": "/components/walk-card/index",
     "poi-card": "/components/poi-card/index"
-  }
+  },
+  "enablePullDownRefresh": true
 }

@@ -5,3 +5,5 @@ export function transitMessage(snapshot: any, error?: boolean): string;
 export function stationMatches(snapshot: any, nodeId: string): any[];
 export function isMapPoint(point: any): boolean;
 export function navigationTarget(poi: any): any;
+export function displayTime(value: any): string;
+export function serviceDisabled(item: any): boolean;

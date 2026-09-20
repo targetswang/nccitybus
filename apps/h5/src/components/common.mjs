@@ -197,7 +197,7 @@ export function Narration({ item }) {
         className: 'narration',
         open,
         onToggle: e => setOpen(e.currentTarget.open)
-    }, h('summary', null, '阅读讲解'), h('p', null, item.narration || item.description));
+    }, h('summary', null, '阅读讲解'), h('p', null, item.narration || item.audio || item.description));
 }
 export function TransitCode({ capabilities }) {
     const [open, setOpen] = React.useState(false);

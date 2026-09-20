@@ -31,7 +31,7 @@ HTTP 错误统一为 `{"error":{"code":"...","message":"...","requestId":"..."}}
 
 ## 内容一致性
 
-`/content` 返回 ETag=version，可条件读取。分页游标绑定内容版本和筛选条件；条件变更返回409。当前规模21个地点，两个客户端读取完整内容快照确保 City Walk 的引用来自同一版本；分页接口可支持后续规模增长，不提前引入跨版本列表/详情不一致。
+`/content` 返回已发布内容及按请求时间、容量计算的 availability / availabilityReason，使用 Cache-Control: no-store，不再按内容 version 返回 304。version 只标识发布内容，不代表名额状态；最终资格仍在提交事务中校验。分页游标绑定内容版本和筛选条件；条件变更返回409。当前规模21个地点，两个客户端读取完整内容快照确保 City Walk 的引用来自同一版本；分页接口可支持后续规模增长，不提前引入跨版本列表/详情不一致。
 
 ## 身份
 
@@ -53,3 +53,7 @@ POST /api/v1/admin/content/publish 由 content.publish 权限调用。后台先 
 reviewedBy 取认证用户，reviewedAt 由服务端记录，不接受客户端冒用审核人。草稿变化返回 409 REVISION_CONFLICT；缺审核依据返回 APPROVAL_REQUIRED；正式环境禁止未审核发布，已 approved 当前版本也禁止被 reference 覆盖。独立媒体授权校验不放宽。失败保留旧版本。
 
 验证码响应和微信登录响应均为 {token,expiresAt,user}；游客请求体 _session 的值应取 token。后台会话每次请求检查当前 staff_roles，角色降级/禁用立即作用于旧 token。验证码失败次数会提交，5 次后当前挑战失效。
+
+## 反馈重试
+
+POST /me/action 的 ticket/privacy 支持 idempotencyKey（16～160 位字母、数字、下划线或横线）。同用户、动作、标识的相同内容只生成一条工单；不同内容复用标识返回 409 IDEMPOTENCY_CONFLICT。H5 与小程序在网络失败重试时复用标识，成功后释放。旧客户端不带标识仍兼容。无需新增数据库迁移。

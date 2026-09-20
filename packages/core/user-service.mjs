@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { DomainError, invariant } from '../contracts/index.mjs';
 const json = value => JSON.stringify(value ?? {});
 const parse = value => { try { return JSON.parse(value || '{}'); } catch { return {}; } };
@@ -7,6 +7,24 @@ const active = (item, now=Date.now()) => item && item.operationalStatus !== 'can
 function ensureId(value){invariant(typeof value==='string'&&/^[A-Za-z0-9_-]{1,160}$/.test(value),'INVALID_ID','业务ID无效');return value;}
 export class UserService {
   constructor(db){this.db=db;}
+  async publicStatus(catalog, now=Date.now()) {
+    const [grants, registrations]=await Promise.all([
+      this.db.query('SELECT benefit_id AS id, COUNT(*) AS count FROM benefit_grants GROUP BY benefit_id'),
+      this.db.query("SELECT event_id AS id, COUNT(*) AS count FROM event_registrations WHERE status='registered' GROUP BY event_id")
+    ]);
+    const counts={benefits:new Map(grants.map(r=>[r.id,Number(r.count)])),events:new Map(registrations.map(r=>[r.id,Number(r.count)]))};
+    const decorate=(kind,item)=>{
+      let availability='active',availabilityReason='';
+      if(item.operationalStatus==='cancelled'){availability='cancelled';availabilityReason=item.cancellationReason||'已取消';}
+      else if((item.startsAt&&!Number.isFinite(Date.parse(item.startsAt)))||(item.endsAt&&!Number.isFinite(Date.parse(item.endsAt)))){availability='disabled';availabilityReason='开放时间配置无效';}
+      else if(item.startsAt&&Date.parse(item.startsAt)>now){availability='upcoming';availabilityReason='尚未开放';}
+      else if(item.endsAt&&Date.parse(item.endsAt)<=now){availability='expired';availabilityReason='已结束';}
+      else if(kind==='events'&&item.registration!=='free'){availability='disabled';availabilityReason='未开放免费报名';}
+      else if(Number(item.capacity)>0&&(counts[kind]?.get(item.id)||0)>=Number(item.capacity)){availability='full';availabilityReason='名额已满';}
+      return {...item,availability,availabilityReason};
+    };
+    return {...catalog,...Object.fromEntries(['membershipPlans','benefits','events'].map(kind=>[kind,(catalog[kind]||[]).map(item=>decorate(kind,item))]))};
+  }
   async profile(userId){
     const user=(await this.db.query('SELECT id,phone_mask,nickname,avatar_url,status,created_at,updated_at FROM users WHERE id=$1',[userId]))[0];
     invariant(user&&user.status==='active','USER_UNAVAILABLE','账号不存在或不可用',403);
@@ -81,6 +99,17 @@ export class UserService {
     });
   }
   async cancelRegistration(userId,p,now){invariant(p.confirmed===true,'CONFIRMATION_REQUIRED','请确认取消报名');const id=ensureId(p.recordId);const row=(await this.db.query('SELECT * FROM event_registrations WHERE id=$1 AND user_id=$2',[id,userId]))[0];invariant(row,'NOT_FOUND','报名记录不存在',404);if(row.status==='cancelled')return {record:{id,status:'cancelled'},replayed:true};invariant(row.status==='registered','INVALID_STATE','当前状态不能取消报名',409);await this.db.query('UPDATE event_registrations SET status=$1,updated_at=$2 WHERE id=$3',['cancelled',now,id]);return {record:{id,status:'cancelled'},saved:true};}
-  async ticket(userId,kind,p,now){const category=text(p.category||'其他建议',80),description=text(p.description,3000),id=randomUUID();await this.db.query('INSERT INTO support_tickets(id,user_id,kind,category,description,status,public_reply,internal_note,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',[id,userId,kind,category,description,'open','','',now,now]);return {record:{id,kind,category,description,status:'open',createdAt:now},created:true};}
+  async ticket(userId,kind,p,now){
+    const category=text(p.category||'其他建议',80),description=text(p.description,3000);
+    const key=p.idempotencyKey;
+    invariant(key===undefined||(typeof key==='string'&&/^[A-Za-z0-9_-]{16,160}$/.test(key)),'INVALID_IDEMPOTENCY_KEY','提交标识无效');
+    const id=key?createHash('sha256').update(JSON.stringify([userId,kind,key])).digest('hex'):randomUUID();
+    return this.db.transaction('ticket:'+id,async tx=>{
+      const old=(await tx.query('SELECT id,kind,category,description,status,created_at FROM support_tickets WHERE id=$1 AND user_id=$2',[id,userId]))[0];
+      if(old){invariant(old.category===category&&old.description===description,'IDEMPOTENCY_CONFLICT','同一提交标识不能用于不同内容',409);return {record:{...old,createdAt:Number(old.created_at)},replayed:true};}
+      await tx.query('INSERT INTO support_tickets(id,user_id,kind,category,description,status,public_reply,internal_note,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',[id,userId,kind,category,description,'open','','',now,now]);
+      return {record:{id,kind,category,description,status:'open',createdAt:now},created:true};
+    });
+  }
   async readMessage(userId,p,now){const id=ensureId(p.recordId);const row=(await this.db.query('SELECT read_at FROM inbox_messages WHERE id=$1 AND user_id=$2',[id,userId]))[0];invariant(row,'NOT_FOUND','消息不存在',404);if(!row.read_at)await this.db.query('UPDATE inbox_messages SET read_at=$1 WHERE id=$2',[now,id]);return {record:{id,read:true,readAt:Number(row.read_at||now)},saved:true};}
 }

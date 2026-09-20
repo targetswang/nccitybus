@@ -290,3 +290,12 @@ export function contentTarget(type, id) {
     const page = pages[type];
     return page ? page + (page === 'guide' ? '' : '/' + encodeURIComponent(id || '')) : null;
 }
+
+export function displayTime(value) {
+    if (!value) return '长期有效';
+    const date=new Date(Number(value));
+    if (!Number.isFinite(date.getTime())) return '—';
+    const local=new Date(date.getTime()+8*3600000),pad=n=>String(n).padStart(2,'0');
+    return `${local.getUTCFullYear()}-${pad(local.getUTCMonth()+1)}-${pad(local.getUTCDate())} ${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())}`;
+}
+export function serviceDisabled(item) { return item?.availability !== 'active'; }

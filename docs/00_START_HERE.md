@@ -9,6 +9,7 @@
 | 内容发布、素材与采集 | [媒体与 POI 运营](OPERATIONS_MEDIA_POI.md) |
 | 公交接入 | [IVY 协议](IVY_PROTOCOL.md) |
 | 部署与运维 | [部署](DEPLOYMENT.md)、[运维](OPERATIONS.md)、[安全](SECURITY.md) |
+| 逐页功能一致性 | [页面功能验收表](PAGE_PARITY_ACCEPTANCE.md) |
 | 自动测试与上线验收 | [测试](TESTING.md)、[微信真机](WECHAT_DEVICE_ACCEPTANCE.md)、[已知限制](KNOWN_LIMITATIONS.md) |
 | 团队交接 | [交接清单](HANDOFF.md) |
 | 追溯 PR 审查 | [原始问题](CODE_REVIEW_2026-09-20.md)、[六项修复记录](REVIEW_FIXES_2026-09-20.md) |

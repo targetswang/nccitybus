@@ -1,6 +1,6 @@
 import { homeContent, contentTarget } from '../../shared/client-core.mjs';
 import { h } from '../runtime.mjs';
-import { Section, Switch, TransitCode, Icon, go } from '../components/common.mjs';
+import { Section, Switch, TransitCode, Icon, Picture, go } from '../components/common.mjs';
 import { PoiCard, WalkCard } from '../components/cards.mjs';
 export default function HomePage({ catalog, capabilities, mode, setMode }) {
     const home = homeContent(catalog);
@@ -74,7 +74,7 @@ export default function HomePage({ catalog, capabilities, mode, setMode }) {
     }, h(Icon, {
         name: 'info',
         size: 18
-    }), catalog.notice), ...home.banners.map(b => h('button', {className:'panel',key:b.id,onClick:()=>{const target=contentTarget(b.targetType,b.targetId);if(target)go(target);}}, h('strong',null,b.title),h('p',null,b.subtitle))), h(Section, {
+    }), catalog.notice), ...home.banners.map(b => h('button', {className:'panel',key:b.id,onClick:()=>{const target=contentTarget(b.targetType,b.targetId);if(target)go(target);}}, b.cover&&h(Picture,{src:b.cover,alt:b.title}),h('strong',null,b.title),h('p',null,b.subtitle))), h(Section, {
         title: '一条线，慢游南充',
         more: '线路总览',
         onMore: () => go('route')

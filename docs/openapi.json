@@ -171,11 +171,9 @@
                 }
               }
             }
-          },
-          "304": {
-            "description": "ETag版本未变"
           }
-        }
+        },
+        "description": "返回已发布内容及实时计算的业务可用状态；Cache-Control: no-store。version 标识发布内容，不标识剩余名额。"
       }
     },
     "/api/v1/content/pois": {
@@ -934,7 +932,8 @@
           "200": {
             "description": "OK"
           }
-        }
+        },
+        "description": "ticket/privacy 支持 idempotencyKey（16～160 位字母、数字、下划线或横线）。同一用户、动作、标识和内容重试返回同一记录；标识复用于不同内容返回 409 IDEMPOTENCY_CONFLICT。旧客户端未提供标识仍兼容。"
       }
     },
     "/api/v1/analytics/event": {
@@ -1801,6 +1800,96 @@
           },
           "privacy": {
             "type": "string"
+          },
+          "membershipPlans": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "availability": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "cancelled",
+                    "upcoming",
+                    "expired",
+                    "disabled",
+                    "full"
+                  ]
+                },
+                "availabilityReason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "availability",
+                "availabilityReason"
+              ]
+            }
+          },
+          "benefits": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "availability": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "cancelled",
+                    "upcoming",
+                    "expired",
+                    "disabled",
+                    "full"
+                  ]
+                },
+                "availabilityReason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "availability",
+                "availabilityReason"
+              ]
+            }
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "availability": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "cancelled",
+                    "upcoming",
+                    "expired",
+                    "disabled",
+                    "full"
+                  ]
+                },
+                "availabilityReason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "availability",
+                "availabilityReason"
+              ]
+            }
           }
         },
         "required": [

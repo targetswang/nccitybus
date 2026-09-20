@@ -1163,6 +1163,111 @@
           }
         }
       }
+    },
+    "/api/v1/admin/content/{kind}": {
+      "post": {
+        "summary": "Create operational draft; content.write required",
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "events",
+                "banners",
+                "announcements",
+                "membershipPlans",
+                "benefits"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created draft with generated ID and revision 1"
+          },
+          "400": {
+            "description": "Invalid fields or references"
+          },
+          "409": {
+            "description": "Unapproved media"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/media/upload": {
+      "post": {
+        "summary": "Upload bounded static raster image; media.manage required",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "base64"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "base64": {
+                    "type": "string",
+                    "maxLength": 4194304,
+                    "description": "JPEG/PNG/WebP, decoded maximum 3 MiB"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pending media and owned WebP URL"
+          },
+          "400": {
+            "description": "Invalid image"
+          },
+          "413": {
+            "description": "Request too large"
+          },
+          "503": {
+            "description": "Image processor unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/registrations": {
+      "get": {
+        "summary": "Latest 500 registrations with masked phones; user.read required",
+        "responses": {
+          "200": {
+            "description": "items and limited:true"
+          }
+        }
+      }
     }
   },
   "components": {

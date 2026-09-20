@@ -1,0 +1,48 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {database,referenceCatalog,tempDirectory} from './helpers.mjs';
+import {ContentService} from '../packages/core/content-service.mjs';
+import {UnifiedAuthService} from '../packages/core/auth-unified.mjs';
+import {createApi} from '../apps/api/server.mjs';
+
+test('operations HTTP workflow: upload, review, create, publish, register and inspect records',async t=>{
+ const ctx=await database(),tmp=await tempDirectory();
+ t.after(async()=>{await ctx.db.close();await fs.rm(tmp,{recursive:true,force:true});});
+ await fs.mkdir(path.join(tmp,'scripts'));await fs.copyFile('scripts/process-admin-image.py',path.join(tmp,'scripts/process-admin-image.py'));
+ ctx.config.root=tmp;ctx.config.publicBaseUrl='https://example.test';
+ ctx.config.initialAdminPhoneHash=createHash('sha256').update('phone:13900007001').digest('hex');
+ const content=new ContentService(ctx.db,ctx.repo);await content.importCatalog(await referenceCatalog(),{publish:true});
+ const auth=new UnifiedAuthService(ctx.db,ctx.config);
+ const login=async(phone,audience)=>{const c=await auth.requestChallenge(phone,audience);return auth.verifyChallenge({...c,code:'246810'});};
+ const admin=await login('13900007001','admin'),visitor=await login('13900007002','user');
+ const server=createApi({config:ctx.config,repository:ctx.repo});await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>server.close(r)));
+ const call=async(p,data,token=admin.token)=>{const r=await fetch(`http://127.0.0.1:${server.address().port}/api/v1${p}`,{method:data===undefined?'GET':'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:data===undefined?undefined:JSON.stringify(data)});return {status:r.status,data:await r.json()};};
+ assert.equal((await call('/admin/content/events',{data:{title:'禁止'}},visitor.token)).status,401);
+ assert.equal((await call('/admin/content/events',{data:{title:'无效日期',startsAt:'tomorrow'}})).status,400);
+ assert.equal((await call('/admin/media/upload',{name:'bad.svg',base64:Buffer.from('<svg/>').toString('base64')})).status,400);
+ const fixture=path.join(tmp,'fixture.png');execFileSync('python3',['-c',"from PIL import Image; import sys; Image.new('RGB',(12,12),'green').save(sys.argv[1])",fixture]);
+ const uploaded=await call('/admin/media/upload',{name:'验收测试图片.png',base64:(await fs.readFile(fixture)).toString('base64')});assert.equal(uploaded.status,201,JSON.stringify(uploaded));
+ const mediaId=uploaded.data.id;
+ assert.equal((await call('/admin/content/events',{data:{title:'测试活动',coverMediaId:mediaId}})).status,409);
+ assert.equal((await call('/admin/media/'+mediaId+'/review',{rightsStatus:'confirmed',matchStatus:'confirmed',rightsEvidence:'自动生成的测试图片，仅用于验收',matchEvidence:'测试内容匹配'})).status,200);
+ const created=await call('/admin/content/events',{data:{title:'后台闭环验收活动',rules:'测试报名规则',capacity:1,coverMediaId:mediaId}});assert.equal(created.status,201,JSON.stringify(created));const event=created.data;
+ assert.equal((await call('/content')).data.events.length,0);
+ const banner=await call('/admin/content/banners',{data:{title:'活动入口',targetType:'event',targetId:event.id,coverMediaId:mediaId}});assert.equal(banner.status,201,JSON.stringify(banner));
+ assert.equal((await call('/admin/content/banners',{data:{title:'坏目标',targetType:'event',targetId:'missing'}})).status,400);
+ assert.equal((await call('/admin/content/events/'+event.id,{expectedRevision:0,data:{title:'stale'}})).status,409);
+ const preview=(await call('/admin/content/preview')).data;
+ const published=await call('/admin/content/publish',{approved:true,expectedDraftVersion:preview.version,approval:{evidence:'自动化测试验收，不代表生产内容审核'}});assert.equal(published.status,200,JSON.stringify(published));
+ const publicContent=(await call('/content')).data;assert.equal(publicContent.events[0].cover,'https://example.test'+uploaded.data.url);assert.equal(publicContent.events[0].mediaApproval,undefined);
+ const registration=await call('/me/action',{action:'register',id:event.id,accepted:true},visitor.token);assert.equal(registration.status,200,JSON.stringify(registration));
+ const records=await call('/admin/registrations');assert.equal(records.status,200);assert.equal(records.data.items[0].event_id,event.id);assert.equal(records.data.items[0].phone_mask,'139****7002');
+ assert.equal((await call('/admin/registrations',undefined,visitor.token)).status,401);
+ const media=(await call('/admin/media')).data.items.find(x=>x.id===mediaId);assert.equal(media.usage.length,2);
+ // Revocation blocks the next release and retains the last immutable published version.
+ await call('/admin/media/'+mediaId+'/review',{rightsStatus:'rejected',matchStatus:'confirmed',matchEvidence:'测试核对'});
+ assert.equal((await call('/admin/content/publish',{approved:true,expectedDraftVersion:(await call('/admin/content/preview')).data.version,approval:{evidence:'拒绝素材不能发布'}})).status,409);
+ assert.equal((await call('/content')).data.version,publicContent.version);
+});

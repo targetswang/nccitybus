@@ -1,3 +1,4 @@
+import { OPERATIONAL_KINDS, validateOperational } from './operational-content.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { invariant, validateCatalog } from '../contracts/index.mjs';
 const encode = value => JSON.stringify(value ?? {});
@@ -35,13 +36,27 @@ export class ContentService {
   async list(kind){const table=KINDS[kind];invariant(table,'CONTENT_KIND','内容类型无效',404);const order=kind==='nodes'?'sequence':kind==='pois'||kind==='walks'?'sort_order':'updated_at';const rows=await this.db.query(`SELECT * FROM ${table} ORDER BY ${order}, id`);return rows.map(r=>({id:r.id,status:r.status||'active',revision:Number(r.revision||1),data:decode(r.payload_json)}));}
   async get(kind,id){const table=KINDS[kind];invariant(table,'CONTENT_KIND','内容类型无效',404);const rows=await this.db.query(`SELECT * FROM ${table} WHERE id=$1`,[key(id)]);return rows[0]?{id:rows[0].id,status:rows[0].status||'active',revision:Number(rows[0].revision||1),data:decode(rows[0].payload_json)}:null;}
   async home(){const r=(await this.db.query('SELECT payload_json,revision FROM home_config WHERE singleton=1'))[0];return r?{id:'home',status:'active',revision:Number(r.revision),data:decode(r.payload_json)}:null;}
+  async create(kind,patch,{actorUserId=null,now=Date.now()}={}){
+    invariant(OPERATIONAL_KINDS.includes(kind),'CONTENT_KIND','当前新建支持活动、Banner、公告、会员和权益');
+    const id=kind+'-'+randomUUID(),table=KINDS[kind];
+    return this.db.transaction('content:create:'+id,async tx=>{
+      const data=await validateOperational(tx,kind,{...(kind==='events'?{registration:'free',capacity:0}:{}),...(kind==='banners'?{placement:'home'}:{}),...merge({},patch),id});
+      const status=pickStatus(patch.status||'active');
+      if(kind==='banners')await tx.query('INSERT INTO banners(id,placement,target_type,target_id,status,sort_order,payload_json,revision,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[id,data.placement,data.targetType,data.targetId||null,status,0,encode(data),1,now]);
+      else await tx.query(`INSERT INTO ${table}(id,status,payload_json,revision,updated_at) VALUES($1,$2,$3,$4,$5)`,[id,status,encode(data),1,now]);
+      await tx.query('INSERT INTO content_edit_history(id,kind,business_id,before_json,after_json,revision,actor_user_id,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[randomUUID(),kind,id,null,encode(data),1,actorUserId,now]);
+      return {id,status,revision:1,data};
+    });
+  }
   async save(kind,id,patch,{expectedRevision,actorUserId=null,now=Date.now()}={}){
     if(kind==='home')return this.saveHome(patch,{expectedRevision,actorUserId,now});
     const table=KINDS[kind];invariant(table,'CONTENT_KIND','内容类型无效',404);id=key(id);return this.db.transaction(`content:${kind}:${id}`,async tx=>{
       const rows=await tx.query(`SELECT * FROM ${table} WHERE id=$1`,[id]);const row=rows[0];invariant(row,'NOT_FOUND','内容不存在',404);const revision=Number(row.revision||1);invariant(expectedRevision===revision,'REVISION_CONFLICT','内容已被其他人修改，请刷新',409);const before=decode(row.payload_json),after=merge(before,patch),next=revision+1,status=pickStatus(patch.status===undefined?(row.status||'active'):patch.status);
+      after.id=id;await validateOperational(tx,kind,after);
       if(kind==='pois')await tx.query('UPDATE pois SET node_id=$1,name=$2,category=$3,subcategory=$4,address=$5,description=$6,cover_media_id=$7,status=$8,payload_json=$9,revision=$10,updated_at=$11 WHERE id=$12',[key(after.nodeId),after.name,after.category,after.subcategory||'',after.address||'',after.description||'',after.coverMediaId||row.cover_media_id||null,status,encode(after),next,now,id]);
       else if(kind==='walks'){await tx.query('UPDATE city_walks SET title=$1,subtitle=$2,cover_poi_id=$3,status=$4,payload_json=$5,revision=$6,updated_at=$7 WHERE id=$8',[after.title,after.subtitle||'',key(after.coverPoiId),status,encode({...after,steps:undefined}),next,now,id]);if(Array.isArray(after.steps)){await tx.query('DELETE FROM city_walk_steps WHERE walk_id=$1',[id]);for(const [i,s] of after.steps.entries())await tx.query('INSERT INTO city_walk_steps(walk_id,sequence,poi_id,title,payload_json) VALUES($1,$2,$3,$4,$5)',[id,i+1,key(s.poiId),s.title,encode(s)]);}}
       else if(kind==='nodes'){invariant(patch.status===undefined||patch.status==='active','INVALID_STATUS','站点下架需先调整关联内容');await tx.query('UPDATE tourism_nodes SET name=$1,persona=$2,payload_json=$3,updated_at=$4,revision=$5 WHERE id=$6',[after.name,after.persona||'',encode(after),now,next,id]);}
+      else if(kind==='banners')await tx.query('UPDATE banners SET placement=$1,target_type=$2,target_id=$3,status=$4,payload_json=$5,revision=$6,updated_at=$7 WHERE id=$8',[after.placement,after.targetType,after.targetId||null,status,encode(after),next,now,id]);
       else await tx.query(`UPDATE ${table} SET status=$1,payload_json=$2,revision=$3,updated_at=$4 WHERE id=$5`,[status,encode(after),next,now,id]);
       await tx.query('INSERT INTO content_edit_history(id,kind,business_id,before_json,after_json,revision,actor_user_id,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[randomUUID(),kind,id,encode(before),encode(after),next,actorUserId,now]);return {id,status,revision:next,data:after};
     });
@@ -57,6 +72,7 @@ export class ContentService {
   async publish({actorUserId=null,now=Date.now(),approved=false,approval=null,expectedDraftVersion=null,requireApproved=false}={}){
     invariant(!requireApproved||approved===true,'CONTENT_NOT_APPROVED','正式环境需要审核确认后发布',409);
     const catalog=await this.buildCatalog();
+    for(const kind of OPERATIONAL_KINDS)for(const item of catalog[kind]||[])await validateOperational(this.db,kind,item);
     let release={...catalog,publication:'reference'};
     if(approved===true){
       invariant(actorUserId&&typeof approval?.evidence==='string'&&approval.evidence.trim().length>0&&approval.evidence.length<=4000,'APPROVAL_REQUIRED','请填写内容事实核验与发布审核依据');

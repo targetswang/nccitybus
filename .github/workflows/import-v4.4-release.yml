@@ -4,7 +4,7 @@ on:
     branches:
       - 'release/v4.4.0-rc1'
     paths:
-      - '.release/**'
+      - '.release/READY'
 permissions:
   contents: write
 jobs:
@@ -20,8 +20,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .release/part-* > /tmp/v4.4.0-rc1.tar.gz
-          echo "64ef3520d84a27ac1e5aa7437e4a73d42eccebe019a0f442a8dcba344ce0d811  /tmp/v4.4.0-rc1.tar.gz" | sha256sum -c -
+          cat .release/part-*.b64 | base64 -d > /tmp/v4.4.0-rc1.tar.gz
+          echo "118f3cf92c85126f43b36ff4a42c69e72a37166d684b969eea074dc4dd140433  /tmp/v4.4.0-rc1.tar.gz" | sha256sum -c -
       - name: Replace release tree with canonical source
         shell: bash
         run: |

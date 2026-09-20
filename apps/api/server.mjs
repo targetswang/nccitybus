@@ -202,6 +202,8 @@ export function createApi({ config, repository, transport = fetch }) {
                         poiDiscovery: operations.discoveryStatus()
                     });
                 }
+                if (pathname === '/api/v1/admin/content/comparison' && method === 'GET') { requirePermission('content.read'); return send(res,200,await content.comparison()); }
+                if (pathname === '/api/v1/admin/content/reconcile' && method === 'POST') { requirePermission('content.write'); const payload=await body(req); invariant(typeof payload.expectedVersion==='string','VERSION_REQUIRED','请先核对线上版本'); return send(res,200,await content.reconcilePublished({actorUserId:actor.userId,expectedVersion:payload.expectedVersion})); }
                 if (pathname === '/api/v1/admin/content/counts' && method === 'GET') { requirePermission('content.read'); return send(res, 200, await content.counts()); }
                 if (pathname === '/api/v1/admin/content/home' && method === 'GET') { requirePermission('content.read'); return send(res, 200, await content.home()); }
                 if (pathname === '/api/v1/admin/content/home' && method === 'POST') {

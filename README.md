@@ -1,10 +1,15 @@
 # 南充嘉陵江城市漫游 · 完整工程候选 v4.4.0-rc.1
 
+## 修复更新（2026-09-20）
+
+R1～R6 已完成代码修复并新增回归测试，详见 [修复验收记录](docs/REVIEW_FIXES_2026-09-20.md)。先前审查结论保留为缺陷基线，不再代表当前代码仍未修复。真实微信双端、供应商接口、正式短信和目标生产部署验收仍需现场完成。
+
+
 ## 研发先看这里
 
 - [研发接手与登录联调指南](docs/DEVELOPER_GUIDE.md)：手机号、验证码、后台授权、启动、首次导入、三端联调与排障。
-- [PR #1 审查与修复清单](docs/CODE_REVIEW_2026-09-20.md)：4 个 P1、2 个 P2，附复现、影响、修复建议及验收标准，当前全部待修复。
-- 本次文档基于 `f932e6c`，未修复业务代码或部署在线预览。既有 CI 通过不等于上述缺陷已关闭。
+- [PR #1 审查与修复清单](docs/CODE_REVIEW_2026-09-20.md)：4 个 P1、2 个 P2，附复现、影响、修复建议及验收标准，已完成代码修复，回归证据见修复验收记录。
+- 本次文档基于 `f932e6c`，已修复 R1～R6；未部署在线预览。既有 CI 通过不等于上述缺陷已关闭。
 
 本仓库是当前统一候选工程：**游客 H5 + 便携式运营后台 + 微信原生小程序 + 统一 `/api/v1` 后端 + PostgreSQL/SQLite 数据层 + Transit Worker + AI 运营助手 + 媒体/POI 运营能力 + 验收门禁**。三个前端共用同一套业务 API 和数据模型。
 
@@ -135,7 +140,7 @@ node scripts/release-gate.mjs
 - 真实微信 preview 二维码/结果存在；
 - iOS + Android 双端真机验收通过；
 - 生产配置完整；
-- 目标 PostgreSQL 可连接且 migration 004 已应用；
+- 目标 PostgreSQL 可连接且 migration 005 已应用；
 - 最近存在真实 AI、微信、短信送达通过记录。
 
 当前候选包的 release gate **预期为 blocked**，原因是没有真实微信 preview/真机/生产凭据。这是正确行为，不是测试失败。
@@ -147,3 +152,4 @@ node scripts/release-gate.mjs
 ## 阅读顺序
 
 `docs/DELIVERY_MANIFEST.md` → `docs/ARCHITECTURE.md` → `docs/API.md` → `docs/DATABASE.md` → `docs/CLIENT_PARITY.md` → `docs/OPERATIONS_MEDIA_POI.md` → `docs/IVY_PROTOCOL.md` → `docs/DEPLOYMENT.md` → `docs/SECURITY.md` → `docs/TESTING.md` → `docs/OPERATIONS.md` → `docs/HANDOFF.md` → `docs/KNOWN_LIMITATIONS.md` → `docs/PHASE_4_4_STATUS.md`。
+

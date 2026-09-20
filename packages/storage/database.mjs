@@ -110,6 +110,7 @@ export async function migrate(db) {
         ['002', fileURLToPath(new URL('./migrations/002_unified_platform.sql', import.meta.url))],
         ['003', fileURLToPath(new URL('./migrations/003_ai_operations.sql', import.meta.url))],
         ['004', fileURLToPath(new URL('./migrations/004_operations_media_discovery.sql', import.meta.url))],
+        ['005', fileURLToPath(new URL('./migrations/005_node_revision.sql', import.meta.url))],
     ];
     for (const [version, file] of migrations) {
         if (!existsSync(file)) continue;
@@ -117,9 +118,13 @@ export async function migrate(db) {
         if (applied.length) continue;
         const sql = readFileSync(file, 'utf8');
         await db.transaction('schema-migration:' + version, async (tx) => {
+            // Recheck under the migration lock: another process may have applied it.
+            const done = version === '001' ? [] : await tx.query('SELECT version FROM schema_migrations WHERE version=$1', [version]);
+            if (done.length) return;
             await tx.exec(sql);
             await tx.query('INSERT INTO schema_migrations(version,applied_at) VALUES($1,$2) ON CONFLICT(version) DO NOTHING', [version, Date.now()]);
         });
     }
 }
+
 

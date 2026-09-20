@@ -1,8 +1,13 @@
 # 00 · 先读这里（项目负责人 / 新研发团队）
 
+## 修复更新（2026-09-20）
+
+R1～R6 已完成代码修复并新增回归测试，详见 [修复验收记录](REVIEW_FIXES_2026-09-20.md)。先前审查结论保留为缺陷基线，不再代表当前代码仍未修复。真实微信双端、供应商接口、正式短信和目标生产部署验收仍需现场完成。
+
+
 ## 2026-09-20 审查与研发接手更新
 
-请先阅读 [研发接手与登录联调指南](DEVELOPER_GUIDE.md) 和 [PR #1 审查修复清单](CODE_REVIEW_2026-09-20.md)。审查基线为 `f932e6c`，现有 CI 通过仍发现 **4 个 P1、2 个 P2**，全部待修复。本次仅更新文档，不代表业务修复、线上账号配置或生产验收完成。
+请先阅读 [研发接手与登录联调指南](DEVELOPER_GUIDE.md) 和 [PR #1 审查修复清单](CODE_REVIEW_2026-09-20.md)。审查基线为 `f932e6c`，现有 CI 通过仍发现 **4 个 P1、2 个 P2**，已完成代码修复。随后已完成 R1～R6 修复；线上账号配置和生产验收仍未完成。
 
 联调手机号、固定测试验证码、后台初始授权、首次数据导入、预览地址核验和验收清单统一在研发指南维护。
 
@@ -18,7 +23,7 @@
 | 统一 API | `apps/api/` | 三端统一 `/api/v1` 服务 |
 | 公交常驻 Worker | `apps/transit-worker/` | IVY HTTP/MQTT 同步与实时数据处理 |
 | 业务核心 | `packages/core/` | 用户、内容、发布、AI、运营、公交业务规则 |
-| 数据库 | `packages/storage/` | PostgreSQL/SQLite 适配、Repository、001～004 migration |
+| 数据库 | `packages/storage/` | PostgreSQL/SQLite 适配、Repository、001～005 migration |
 | API 契约 | `packages/contracts/` | 三端共享的接口契约与类型 |
 | 内容基线 | `packages/content/` | 已迁移的参考内容模型 |
 | IVY 协议 | `packages/ivy/` | 签名、AES、事件、MQTT、同步 |
@@ -83,3 +88,4 @@
 - 实时公交采集：`apps/transit-worker/` + `packages/ivy/`。
 
 旧 `apps/weapp/` 仅是历史兼容基线，不属于本 release 分支的正式交付入口；新团队不要在它上面继续开发。
+

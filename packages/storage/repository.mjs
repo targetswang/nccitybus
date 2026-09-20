@@ -9,6 +9,8 @@ export class Repository {
         validateCatalog(catalog);
         const payload = JSON.stringify(catalog);
         return this.db.transaction('content-publish', async (tx) => {
+            const active = await tx.query('SELECT c.payload FROM content_releases c JOIN content_active a ON a.version=c.version WHERE a.singleton=1');
+            invariant(!active.length || JSON.parse(active[0].payload).publication !== 'approved' || catalog.publication === 'approved', 'CONTENT_NOT_APPROVED', '不能用未审核内容替换已审核线上版本', 409);
             const existing = await tx.query('SELECT payload FROM content_releases WHERE version=$1', [
                 catalog.version
             ]);
@@ -195,4 +197,5 @@ export class Repository {
         ]);
     }
 }
+
 

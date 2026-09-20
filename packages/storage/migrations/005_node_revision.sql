@@ -1,0 +1,1 @@
+ALTER TABLE tourism_nodes ADD COLUMN revision INTEGER NOT NULL DEFAULT 1;

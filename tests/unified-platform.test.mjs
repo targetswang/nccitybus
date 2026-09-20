@@ -13,7 +13,7 @@ test('migrations install unified auth, RBAC, content and AI operations tables', 
   for (const table of ['users','user_identities','user_sessions','auth_challenges','staff_roles','user_favorites','tourism_routes','tourism_nodes','media_assets','pois','city_walks','city_walk_steps','home_config','membership_plans','benefits','events','support_tickets','inbox_messages','analytics_events','ai_tasks','ai_proposals','poi_discovery_candidates','media_audit_log','integration_verifications','sms_delivery_challenges']) {
     const rows=await db.query("SELECT name FROM sqlite_master WHERE type='table' AND name=$1",[table]);assert.equal(rows[0]?.name,table);
   }
-  const migrations=await db.query('SELECT version FROM schema_migrations ORDER BY version');assert.deepEqual(migrations.map(x=>x.version),['001','002','003','004']);
+  const migrations=await db.query('SELECT version FROM schema_migrations ORDER BY version');assert.deepEqual(migrations.map(x=>x.version),['001','002','003','004','005']);
 });
 
 test('phone challenge creates one user, separates user/admin audiences and checks admin authorization server-side', async t => {
@@ -81,3 +81,4 @@ test('HTTP API exposes phone login, unified me endpoint and normalized admin con
   const auth={Authorization:'Bearer '+login.data.token};const counts=await call('/admin/content/counts',{headers:auth});assert.equal(counts.data.pois,21);const poi=await call('/admin/content/pois/qinghui-pavilion',{headers:auth});assert.equal(poi.data.data.name,'南门坝生态公园-清晖阁');
   c=await call('/auth/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:'13900001008',audience:'user'})});login=await call('/auth/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...c.data,code:'246810'})});const body=JSON.stringify({_session:login.data.token,action:'favorite',operation:'add',id:'golden-park'});assert.equal((await call('/me/action',{method:'POST',headers:{'Content-Type':'application/json'},body})).status,200);const profile=await call('/me/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_session:login.data.token})});assert.deepEqual(profile.data.favorites,['golden-park']);
 });
+

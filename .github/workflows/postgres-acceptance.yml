@@ -9,6 +9,7 @@ on:
       - 'packages/core/**'
       - 'apps/api/**'
       - 'scripts/postgres-acceptance.mjs'
+      - 'tests/review-regressions.test.mjs'
       - 'deploy/integrations/**'
       - '.github/workflows/postgres-acceptance.yml'
   pull_request:
@@ -17,6 +18,7 @@ on:
       - 'packages/core/**'
       - 'apps/api/**'
       - 'scripts/postgres-acceptance.mjs'
+      - 'tests/review-regressions.test.mjs'
       - 'deploy/integrations/**'
 permissions:
   contents: read
@@ -50,9 +52,15 @@ jobs:
           POSTGRES_ACCEPTANCE_URL: postgresql://nanchong:acceptance-only@127.0.0.1:5432/nanchong_acceptance
           POSTGRES_ACCEPTANCE_CONFIRM: I_UNDERSTAND_THIS_DATABASE_IS_FOR_TESTING
         run: node scripts/postgres-acceptance.mjs
+      - name: Run review regressions on real PostgreSQL
+        env:
+          REVIEW_POSTGRES_URL: postgresql://nanchong:acceptance-only@127.0.0.1:5432/nanchong_acceptance
+          POSTGRES_ACCEPTANCE_CONFIRM: I_UNDERSTAND_THIS_DATABASE_IS_FOR_TESTING
+        run: node --test tests/review-regressions.test.mjs | tee audit/postgres/review-tests.tap
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: postgres-acceptance
-          path: audit/postgres/result.json
+          path: audit/postgres/
           retention-days: 30
+

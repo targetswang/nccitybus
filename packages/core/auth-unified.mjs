@@ -72,10 +72,10 @@ export class UnifiedAuthService {
   }
   async verifyChallenge({challengeId,phoneHash,code,clientType='h5'},now=Date.now()){
     text(challengeId,'challengeId',160);text(phoneHash,'phoneHash',128);text(code,'code',16);
-    return this.db.transaction(`challenge:${challengeId}`,async tx=>{
+    const result = await this.db.transaction(`challenge:${challengeId}`,async tx=>{
       const rows=await tx.query('SELECT * FROM auth_challenges WHERE id=$1 AND phone_hash=$2',[challengeId,phoneHash]);const c=rows[0];
       invariant(c&&!c.consumed_at&&Number(c.expires_at)>now&&Number(c.attempts)<5,'OTP_EXPIRED','验证码已失效，请重新获取',401);
-      if(!constantEqual(c.code_hash,sha(`otp:${challengeId}:${code}`))){await tx.query('UPDATE auth_challenges SET attempts=attempts+1 WHERE id=$1',[challengeId]);throw new DomainError('OTP_INVALID','验证码错误',401);}
+      if(!constantEqual(c.code_hash,sha(`otp:${challengeId}:${code}`))){await tx.query('UPDATE auth_challenges SET attempts=attempts+1 WHERE id=$1',[challengeId]);return {invalidCode:true};}
       await tx.query('UPDATE auth_challenges SET consumed_at=$1 WHERE id=$2',[now,challengeId]);
       let users=await tx.query('SELECT id,status,phone_mask FROM users WHERE phone_hash=$1',[phoneHash]),user=users[0];
       if(!user){const id=randomUUID();await tx.query('INSERT INTO users(id,phone_hash,phone_mask,status,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6)',[id,phoneHash,c.phone_mask,'active',now,now]);await tx.query('INSERT INTO user_identities(id,user_id,kind,provider_key,verified_at,created_at) VALUES($1,$2,$3,$4,$5,$6)',[randomUUID(),id,'phone',phoneHash,now,now]);user={id,status:'active',phone_mask:c.phone_mask};}
@@ -84,11 +84,14 @@ export class UnifiedAuthService {
       if(c.audience==='admin'){
         const rows=await tx.query('SELECT role,enabled FROM staff_roles WHERE user_id=$1',[user.id]);
         if(rows[0]?.enabled)role=rows[0].role;
-        else if(this.config.initialAdminPhoneHash&&constantEqual(this.config.initialAdminPhoneHash,phoneHash)){role='admin';await tx.query('INSERT INTO staff_roles(user_id,role,enabled,updated_at) VALUES($1,$2,$3,$4) ON CONFLICT(user_id) DO UPDATE SET role=excluded.role,enabled=excluded.enabled,updated_at=excluded.updated_at',[user.id,'admin',1,now]);}
+        else if(!rows.length&&this.config.initialAdminPhoneHash&&constantEqual(this.config.initialAdminPhoneHash,phoneHash)){role='admin';await tx.query('INSERT INTO staff_roles(user_id,role,enabled,updated_at) VALUES($1,$2,$3,$4) ON CONFLICT(user_id) DO UPDATE SET role=excluded.role,enabled=excluded.enabled,updated_at=excluded.updated_at',[user.id,'admin',1,now]);}
         else throw new DomainError('ADMIN_NOT_ALLOWED','该手机号未开通后台权限',403);
       }
       return this.issueSession(tx,{userId:user.id,audience:c.audience,role,clientType,authMethod:'phone_otp',phoneMasked:user.phone_mask},now);
     });
+    // Commit failed attempts before returning an authentication error.
+    if(result.invalidCode)throw new DomainError('OTP_INVALID','验证码错误',401);
+    return result;
   }
   async issueSession(tx,{userId,audience='user',role='user',clientType='unknown',authMethod,phoneMasked=null},now=Date.now()){
     const token=randomBytes(32).toString('base64url'),id=randomUUID(),expiresAt=now+(audience==='admin'?8*3600000:7*86400000);
@@ -99,7 +102,7 @@ export class UnifiedAuthService {
     const token=String(headerOrToken||'').replace(/^Bearer\s+/i,'');invariant(token.length>=20,'UNAUTHORIZED','请先登录',401);
     const rows=await this.db.query('SELECT s.*,u.status,u.phone_mask FROM user_sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>$2',[sha(token),now]);const s=rows[0];
     invariant(s&&s.status==='active','UNAUTHORIZED','登录已过期',401);if(audience)invariant(s.audience===audience,'WRONG_AUDIENCE','会话用途不匹配',403);
-    if(s.audience==='admin'&&s.role!=='admin'){const role=await this.db.query('SELECT role,enabled FROM staff_roles WHERE user_id=$1',[s.user_id]);invariant(role[0]?.enabled,'STAFF_DISABLED','工作人员权限已撤销',403);s.role=role[0].role;}
+    if(s.audience==='admin'){const role=await this.db.query('SELECT role,enabled FROM staff_roles WHERE user_id=$1',[s.user_id]);invariant(role[0]?.enabled,'STAFF_DISABLED','工作人员权限已撤销',403);s.role=role[0].role;}
     return {token,userId:s.user_id,audience:s.audience,role:s.role,phoneMasked:s.phone_mask,permissions:rolePermissions(s.role),sessionId:s.id,expiresAt:Number(s.expires_at)};
   }
   async logout(headerOrToken,now=Date.now()){
@@ -129,3 +132,4 @@ export class UnifiedAuthService {
     const r=await this.transport(u,{signal:AbortSignal.timeout(8000),redirect:'error'});invariant(r.ok,'WECHAT_UNAVAILABLE','微信服务暂不可用',502);const data=await r.json();invariant(data.access_token&&!data.errcode,'WECHAT_UNAVAILABLE','微信服务暂不可用',502);this.accessToken={value:data.access_token,expiresAt:now+Math.max(300,Number(data.expires_in||7200)-120)*1000};return this.accessToken.value;
   }
 }
+

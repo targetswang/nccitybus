@@ -211,7 +211,7 @@ export function createApi({ config, repository, transport = fetch }) {
                 if (itemMatch && method === 'GET') { requirePermission('content.read'); const item = await content.get(itemMatch[1], itemMatch[2]); invariant(item, 'NOT_FOUND', '内容不存在', 404); return send(res, 200, item); }
                 if (itemMatch && method === 'POST') { requirePermission('content.write'); const payload = await body(req); return send(res, 200, await content.save(itemMatch[1], itemMatch[2], payload.data||{}, { expectedRevision: payload.expectedRevision, actorUserId: actor.userId })); }
                 if (pathname === '/api/v1/admin/content/preview' && method === 'GET') { requirePermission('content.read'); return send(res, 200, await content.buildCatalog()); }
-                if (pathname === '/api/v1/admin/content/publish' && method === 'POST') { requirePermission('content.publish'); return send(res, 200, await content.publish({ actorUserId: actor.userId })); }
+                if (pathname === '/api/v1/admin/content/publish' && method === 'POST') { requirePermission('content.publish'); const payload=await body(req); return send(res, 200, await content.publish({ actorUserId: actor.userId, approved: payload.approved===true, approval: payload.approval, expectedDraftVersion: payload.expectedDraftVersion, requireApproved: config.production })); }
                 if (pathname === '/api/v1/admin/users' && method === 'GET') { requirePermission('user.read'); return send(res, 200, await admin.listUsers()); }
                 const userMatch = pathname.match(/^\/api\/v1\/admin\/users\/([^/]+)$/);
                 if (userMatch && method === 'GET') { requirePermission('user.read'); return send(res, 200, await admin.userDetail(userMatch[1])); }
@@ -455,4 +455,5 @@ export function createApi({ config, repository, transport = fetch }) {
     server.headersTimeout = 10000;
     return server;
 }
+
 

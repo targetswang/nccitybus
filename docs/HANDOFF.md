@@ -1,8 +1,13 @@
 # 新团队接手清单与验收口径
 
+## 修复更新（2026-09-20）
+
+R1～R6 已完成代码修复并新增回归测试，详见 [修复验收记录](REVIEW_FIXES_2026-09-20.md)。先前审查结论保留为缺陷基线，不再代表当前代码仍未修复。真实微信双端、供应商接口、正式短信和目标生产部署验收仍需现场完成。
+
+
 ## 2026-09-20 审查与研发接手更新
 
-请先阅读 [研发接手与登录联调指南](DEVELOPER_GUIDE.md) 和 [PR #1 审查修复清单](CODE_REVIEW_2026-09-20.md)。审查基线为 `f932e6c`，现有 CI 通过仍发现 **4 个 P1、2 个 P2**，全部待修复。本次仅更新文档，不代表业务修复、线上账号配置或生产验收完成。
+请先阅读 [研发接手与登录联调指南](DEVELOPER_GUIDE.md) 和 [PR #1 审查修复清单](CODE_REVIEW_2026-09-20.md)。审查基线为 `f932e6c`，现有 CI 通过仍发现 **4 个 P1、2 个 P2**，已完成代码修复。随后已完成 R1～R6 修复；线上账号配置和生产验收仍未完成。
 
 联调手机号、固定测试验证码、后台初始授权、首次数据导入、预览地址核验和验收清单统一在研发指南维护。
 
@@ -18,7 +23,7 @@ DEVELOPER_GUIDE → CODE_REVIEW_2026-09-20 → README → ARCHITECTURE → API/O
 
 - H5、运营后台、19 页微信原生小程序源码；
 - 统一 API、用户/认证/RBAC、内容、媒体、POI 候选、AI 提案、用户服务；
-- PostgreSQL/SQLite 持久层与 001～004 migration；
+- PostgreSQL/SQLite 持久层与 001～005 migration；
 - IVY HTTP/MQTT Worker 与协议实现；
 - `pg 8.16.3`、`mqtt 5.10.4` 生产 lock；
 - `miniprogram-ci 2.1.31` 官方微信构建工具 lock；
@@ -101,3 +106,4 @@ release gate 返回 blocked 时必须看具体原因，不能通过删除检查�
 ## GitHub 当前工程事实
 
 隔离分支 `delivery/full-system-20260920` 已真实执行 PostgreSQL 16 acceptance、pg/mqtt lock 验证、微信官方 toolchain 安装/锁定验证。正式发布前仍需把最终候选 commit 与本交接包完全对齐，并由接手团队在目标环境重跑门禁。
+

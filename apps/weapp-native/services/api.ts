@@ -37,3 +37,6 @@ export const getMe = (session: string) => request('/me/query', { method: 'POST',
 export const meAction = (session: string, action: string, data: any = {}) => request('/me/action', { method: 'POST', data: { ...data, action, _session: session } });
 export const wechatPhoneLogin = (code: string, loginCode: string) => request('/auth/wechat-phone', { method: 'POST', data: { code, loginCode } });
 export const track = (event: string, data: any = {}) => request('/analytics/event', { method: 'POST', data: { event, eventId: `${Date.now()}-${Math.random().toString(36).slice(2)}`, client: 'weapp', page: data.page || '', objectType: data.objectType || '', objectId: data.objectId || '', channelCode: data.channelCode || '', contentVersion: data.contentVersion || '', properties: data.properties || {} } }).catch(() => null);
+
+
+export const logout = (token: string) => request('/auth/logout', { method: 'POST', data: { _session: token } });

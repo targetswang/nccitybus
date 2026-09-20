@@ -40,3 +40,16 @@ Bearer token 为我方随机 opaque token，数据库只保存 hash；不同账�
 ## 坐标与到站
 
 路线保留 rawPoint(WGS84) 及 mapPoint(GCJ02|null)，不转换成功不画地图。POI 的参考中心位置不能代替站牌。remainingStops 只使用同线路/跑法/方向且新鲜的进离站事件；起点、重复末站、刚离站跨圈均有测试。分钟预测未实现。
+
+
+## 审查修复后的发布契约
+
+POST /api/v1/admin/content/publish 由 content.publish 权限调用。后台先 GET /api/v1/admin/content/preview，再提交：
+
+```json
+{"approved":true,"expectedDraftVersion":"预览返回的 version","approval":{"evidence":"本批内容事实核验及发布审核记录"}}
+```
+
+reviewedBy 取认证用户，reviewedAt 由服务端记录，不接受客户端冒用审核人。草稿变化返回 409 REVISION_CONFLICT；缺审核依据返回 APPROVAL_REQUIRED；正式环境禁止未审核发布，已 approved 当前版本也禁止被 reference 覆盖。独立媒体授权校验不放宽。失败保留旧版本。
+
+验证码响应和微信登录响应均为 {token,expiresAt,user}；游客请求体 _session 的值应取 token。后台会话每次请求检查当前 staff_roles，角色降级/禁用立即作用于旧 token。验证码失败次数会提交，5 次后当前挑战失效。

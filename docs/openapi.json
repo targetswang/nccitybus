@@ -779,6 +779,45 @@
           "200": {
             "description": "OK"
           }
+        },
+        "description": "生产发布必须显式审核当前预览版本；审核、媒体或版本校验失败时保留原线上快照。参考版本不能覆盖已审核版本。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "approved": {
+                    "type": "boolean",
+                    "description": "正式发布必须为 true"
+                  },
+                  "expectedDraftVersion": {
+                    "type": "string",
+                    "description": "/admin/content/preview 返回的 version"
+                  },
+                  "approval": {
+                    "type": "object",
+                    "required": [
+                      "evidence"
+                    ],
+                    "properties": {
+                      "evidence": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 4000
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "approved",
+                  "expectedDraftVersion",
+                  "approval"
+                ]
+              }
+            }
+          }
         }
       }
     },

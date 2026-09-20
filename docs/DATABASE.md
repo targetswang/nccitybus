@@ -37,3 +37,8 @@ PostgreSQL 16 CI 已验证：
 - 内容编辑使用 revision 乐观锁。
 - 公交事件使用 digest、防重、乱序处理和 lease。
 - PostgreSQL 使用事务和 advisory lock；SQLite 仅用于本地/测试。
+
+
+## 审查修复 migration 005
+
+005_node_revision.sql 为已有 tourism_nodes 增加 revision INTEGER NOT NULL DEFAULT 1。编辑及重新导入节点会递增 revision，旧版本编辑返回 409。升级先备份再执行 npm run db:migrate，不修改已应用的 002。

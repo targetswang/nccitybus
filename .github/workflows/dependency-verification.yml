@@ -1,14 +1,19 @@
-name: Verify external runtime dependencies
+name: Verify production runtime dependencies
 on:
+  workflow_dispatch:
   push:
-    branches: [delivery/full-system-20260920]
+    branches:
+      - 'release/v4.4.0-rc1'
     paths:
-      - deploy/integrations/package.json
-      - .github/workflows/dependency-verification.yml
+      - 'deploy/integrations/**'
+      - '.github/workflows/dependency-verification.yml'
+  pull_request:
+    paths:
+      - 'deploy/integrations/**'
 permissions:
   contents: read
 jobs:
-  dependency-lock:
+  runtime:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -16,46 +21,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.16.0'
-      - name: Resolve an actual npm lockfile
+      - name: Install exact locked runtime dependencies
         working-directory: deploy/integrations
-        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-      - name: Verify clean reproducible installation
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify driver versions and capture dependency audit
         working-directory: deploy/integrations
         run: |
-          npm ci --ignore-scripts --no-audit --no-fund
-          node -e "console.log(JSON.stringify({node:process.version,pg:require('pg/package.json').version,mqtt:require('mqtt/package.json').version}))" | tee runtime-versions.json
+          node -e "const pg=require('pg/package.json').version,mqtt=require('mqtt/package.json').version;if(pg!=='8.16.3'||mqtt!=='5.10.4')process.exit(2);console.log(JSON.stringify({node:process.version,pg,mqtt}))" | tee runtime-versions.json
           npm audit --json > dependency-audit.json || true
-      - name: Package verified runtime
-        working-directory: deploy/integrations
-        run: tar -czf verified-runtime.tgz package.json package-lock.json runtime-versions.json dependency-audit.json node_modules
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: nanchong-verified-runtime
-          path: deploy/integrations/verified-runtime.tgz
-          retention-days: 7
-  database-test-tools:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - name: Capture distribution PostgreSQL for isolated acceptance tests
-        shell: bash
-        run: |
-          set -euo pipefail
-          BIN=$(pg_config --bindir)
-          SHARE=$(pg_config --sharedir)
-          mkdir -p pg-tools/bin pg-tools/lib
-          cp "$BIN/postgres" "$BIN/initdb" "$BIN/pg_ctl" "$BIN/psql" "$BIN/createdb" pg-tools/bin/
-          cp -r "$SHARE" pg-tools/share
-          for exe in postgres initdb pg_ctl psql createdb; do
-            ldd "$BIN/$exe" | awk '/=> \/.* \(/ {print $3}' | while read -r lib; do
-              case "$lib" in */libc.so.*|*/libm.so.*|*/libpthread.so.*|*/libdl.so.*|*/librt.so.*) continue;; esac
-              cp -L "$lib" pg-tools/lib/
-            done
-          done
-          pg_config --version > pg-tools/SOURCE_VERSION.txt
-          tar -czf pg-tools.tgz pg-tools
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nanchong-database-test-tools
-          path: pg-tools.tgz
-          retention-days: 7
+          name: production-runtime-dependency-evidence
+          path: |
+            deploy/integrations/package-lock.json
+            deploy/integrations/runtime-versions.json
+            deploy/integrations/dependency-audit.json
+          retention-days: 30

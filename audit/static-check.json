@@ -2,20 +2,20 @@
   "kind": "static-and-build-integrity",
   "status": "passed",
   "counts": {
-    "jsSourceAndGeneratedFiles": 118,
+    "jsSourceAndGeneratedFiles": 122,
     "content": {
       "nodes": 5,
       "pois": 21,
       "walks": 4,
       "steps": 9
     },
-    "nativePages": 19
+    "nativePages": 21
   },
   "checks": [
     {
       "name": "JavaScript syntax for source and generated mini-program",
       "status": "passed",
-      "detail": 118
+      "detail": 122
     },
     {
       "name": "Actual shared logic build hash",
@@ -45,7 +45,7 @@
       "name": "Native page registration, four files and component targets",
       "status": "passed",
       "detail": {
-        "pages": 19,
+        "pages": 21,
         "tabPages": 4
       }
     },

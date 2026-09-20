@@ -26,7 +26,11 @@
 <button wx:if="{{session}}" class="button secondary full" bindtap="logout">退出登录（保留本机收藏）</button>
 <view class="panel menu">
 <button data-page="favorites" bindtap="open">我的收藏</button>
+<button data-page="member" bindtap="open">会员服务</button>
 <button data-page="rights" bindtap="open">我的权益</button>
+<button data-page="events" bindtap="open">城市活动</button>
+<button data-page="messages" bindtap="open">我的消息</button>
+<button data-page="support" bindtap="open">客服与反馈</button>
 <button data-page="guide" bindtap="open">乘车指南</button>
 <button data-page="privacy" bindtap="open">数据与隐私</button>
 </view>

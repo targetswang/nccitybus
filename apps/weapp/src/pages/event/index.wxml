@@ -1,0 +1,38 @@
+<view class="screen">
+<view wx:if="{{error}}" class="error-box">
+<text>{{error}}</text>
+<button bindtap="retry">重新加载</button>
+</view>
+<view wx:if="{{loading}}" class="loading">正在读取…</view>
+<view class="content" wx:if="{{catalog}}">
+<view wx:if="{{note}}" class="note">{{note}}</view>
+<view wx:if="{{!event}}" class="panel">
+<view class="h2">活动不存在或已下线</view>
+<view class="copy secondary">该活动可能尚未发布或已经结束。</view>
+<button class="button secondary full" data-page="events" bindtap="open">返回城市活动</button>
+</view>
+<block wx:else>
+<nc-picture src="{{event.cover}}" alt="{{event.title}}"/>
+<view class="h1">{{event.title}}</view>
+<view class="copy">{{event.description}}</view>
+<view class="copy secondary">{{event.organizer}}{{event.address ? ' · ' + event.address : ''}}</view>
+<view class="tag">{{event.availability}}</view>
+<view wx:if="{{event.operationalStatus==='cancelled'}}" class="note">活动已取消：{{event.cancellationReason}}</view>
+<view wx:if="{{event.rules}}" class="panel">
+<view class="h2">参与规则</view>
+<view class="copy">{{event.rules}}</view>
+</view>
+<view wx:if="{{!session}}" class="panel">
+<view class="copy">浏览无需登录，报名需要账户。</view>
+<button class="button primary full" bindtap="login">手机号登录</button>
+</view>
+<button wx:if="{{session && event.registration==='free' && !registration}}" class="button primary full" bindtap="register" disabled="{{event.availability!=='active'}}">免费活动报名</button>
+<view wx:if="{{registration}}" class="panel">
+<view class="h2">我的报名</view>
+<view class="copy secondary">状态：{{registration.status}}</view>
+<button wx:if="{{registration.status==='registered'}}" class="button secondary full" bindtap="cancel">取消报名</button>
+</view>
+</block>
+</view>
+<bottom-nav active="{{active || 'me'}}"/>
+</view>

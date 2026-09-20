@@ -17,6 +17,8 @@
     "pages/login/index",
     "pages/member/index",
     "pages/events/index",
+    "pages/event/index",
+    "pages/benefit/index",
     "pages/messages/index",
     "pages/support/index"
   ],

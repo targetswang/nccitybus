@@ -10,18 +10,19 @@ function confirmDialog(content) {
         fail: () => resolve(false)
     }));
 }
-Page(common('rights', {
+Page(common('benefit', {
     data: {
         active: 'me',
+        benefit: null,
         session: null,
-        benefits: [],
         profile: null,
-        opened: null,
+        grant: null,
+        fulfillment: null,
         note: ''
     },
     populate(c) {
         this.setData({
-            benefits: (c && c.benefits) || []
+            benefit: core.findItem(c, 'benefits', this.data.id)
         });
     },
     afterShow() {
@@ -45,8 +46,10 @@ Page(common('rights', {
                 return;
             try {
                 const profile = await storage.readProfile();
+                const grant = (profile.grants || []).find(g => g.benefitId === this.data.id) || null;
                 this.setData({
-                    profile
+                    profile,
+                    grant
                 });
             }
             catch (e) {
@@ -55,24 +58,26 @@ Page(common('rights', {
                 });
             }
         },
-        async claim(e) {
+        async claim() {
             const session = storage.getSession();
             if (!session) {
                 this.login();
                 return;
             }
-            const id = e.currentTarget.dataset.id;
+            const benefit = this.data.benefit;
+            if (!benefit)
+                return;
             if (!await confirmDialog('确认领取此权益？'))
                 return;
             try {
                 await api.meAction(session.token, 'claim', {
-                    id,
+                    id: benefit.id,
                     accepted: true
                 });
                 api.track('benefit_claim', {
-                    page: 'rights',
+                    page: 'benefit',
                     objectType: 'benefit',
-                    objectId: id
+                    objectId: benefit.id
                 });
                 this.setData({
                     note: '领取记录已保存；领取不等于已使用'
@@ -85,19 +90,17 @@ Page(common('rights', {
                 });
             }
         },
-        async openGrant(e) {
+        async open() {
             const session = storage.getSession();
-            if (!session)
+            const grant = this.data.grant;
+            if (!session || !grant)
                 return;
             try {
                 const result = await api.meAction(session.token, 'openBenefit', {
-                    recordId: e.currentTarget.dataset.id
+                    recordId: grant.id
                 });
                 this.setData({
-                    opened: {
-                        title: e.currentTarget.dataset.title,
-                        ...result.fulfillment
-                    },
+                    fulfillment: result.fulfillment,
                     note: '使用说明已读取；不代表已经核销'
                 });
             }

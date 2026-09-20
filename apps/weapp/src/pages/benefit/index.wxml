@@ -1,0 +1,40 @@
+<view class="screen">
+<view wx:if="{{error}}" class="error-box">
+<text>{{error}}</text>
+<button bindtap="retry">重新加载</button>
+</view>
+<view wx:if="{{loading}}" class="loading">正在读取…</view>
+<view class="content" wx:if="{{catalog}}">
+<view wx:if="{{note}}" class="note">{{note}}</view>
+<view wx:if="{{!benefit}}" class="panel">
+<view class="h2">权益不存在或已下线</view>
+<view class="copy secondary">该权益可能尚未发布或已经结束。</view>
+<button class="button secondary full" data-page="rights" bindtap="open">返回我的权益</button>
+</view>
+<block wx:else>
+<view class="h1">{{benefit.name || benefit.title}}</view>
+<view class="copy">{{benefit.description}}</view>
+<view class="copy secondary">履约方：{{benefit.provider || '平台'}}</view>
+<view wx:if="{{benefit.rules || benefit.terms}}" class="panel">
+<view class="h2">使用规则</view>
+<view class="copy">{{benefit.rules || benefit.terms}}</view>
+</view>
+<view wx:if="{{!session}}" class="panel">
+<view class="copy">登录后可领取权益并查看使用说明。</view>
+<button class="button primary full" bindtap="login">手机号登录</button>
+</view>
+<button wx:if="{{session && !grant}}" class="button primary full" bindtap="claim">确认规则并领取</button>
+<view wx:if="{{grant}}" class="panel">
+<view class="h2">我已领取</view>
+<view class="copy secondary">状态：{{grant.status}}</view>
+<button class="button secondary full" bindtap="open">查看使用说明</button>
+</view>
+<view wx:if="{{fulfillment}}" class="panel">
+<view class="h2">{{fulfillment.provider || '使用说明'}}</view>
+<view class="copy">{{fulfillment.content}}</view>
+<view wx:if="{{fulfillment.externalUrl}}" class="copy secondary">{{fulfillment.externalUrl}}</view>
+</view>
+</block>
+</view>
+<bottom-nav active="{{active || 'me'}}"/>
+</view>

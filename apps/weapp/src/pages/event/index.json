@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "活动详情",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index",
+    "nc-picture": "/components/picture/index"
+  },
+  "enablePullDownRefresh": true
+}

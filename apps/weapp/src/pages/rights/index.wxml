@@ -4,12 +4,34 @@
 <button bindtap="retry">重新加载</button>
 </view>
 <view wx:if="{{loading}}" class="loading">正在读取…</view>
-<view class="content">
+<view class="content" wx:if="{{catalog}}">
 <view class="h1">我的权益</view>
-<view class="panel">
-<view class="h2">暂无已发布活动</view>
-<view class="copy">这里仅显示已开放的游客活动，不影响日常乘车与漫游服务。</view>
+<view wx:if="{{note}}" class="note">{{note}}</view>
+<view wx:if="{{!session}}" class="panel">
+<view class="copy">登录后可领取权益并查看使用说明。</view>
+<button class="button primary full" bindtap="login">手机号登录</button>
+</view>
+<view wx:for="{{benefits}}" wx:key="id" class="panel">
+<view class="h2">{{item.name || item.title}}</view>
+<view class="copy">{{item.description}}</view>
+<view class="copy secondary">履约方：{{item.provider || '平台'}}</view>
+<button class="button secondary full" data-page="benefit" data-id="{{item.id}}" bindtap="open">查看权益详情</button>
+<button wx:if="{{session}}" class="button primary full" data-id="{{item.id}}" bindtap="claim">确认规则并领取</button>
+</view>
+<view wx:if="{{profile}}" class="panel">
+<view class="h2">已领取权益</view>
+<view wx:if="{{!profile.grants.length}}" class="copy secondary">尚未领取权益。</view>
+<view wx:for="{{profile.grants}}" wx:key="id" class="record">
+<view>{{item.title}} · {{item.status}}</view>
+<button wx:if="{{item.status==='available'}}" class="button secondary full" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="openGrant">查看使用说明</button>
 </view>
 </view>
-<bottom-nav active="{{active || 'home'}}"/>
+<view wx:if="{{opened}}" class="panel">
+<view class="h2">{{opened.title || '使用说明'}}</view>
+<view class="copy">{{opened.content}}</view>
+<view wx:if="{{opened.externalUrl}}" class="copy secondary">{{opened.externalUrl}}</view>
+</view>
+<view wx:if="{{!benefits.length&&!loading}}" class="note">暂无已发布权益，不影响日常乘车与漫游服务。</view>
+</view>
+<bottom-nav active="{{active || 'me'}}"/>
 </view>

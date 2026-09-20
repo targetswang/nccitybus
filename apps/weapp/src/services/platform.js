@@ -62,6 +62,8 @@ function openPage(page, id, from) {
         'login',
         'member',
         'events',
+        'event',
+        'benefit',
         'messages',
         'support'
     ];

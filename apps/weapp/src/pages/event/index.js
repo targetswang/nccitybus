@@ -10,18 +10,18 @@ function confirmDialog(content) {
         fail: () => resolve(false)
     }));
 }
-Page(common('rights', {
+Page(common('event', {
     data: {
         active: 'me',
+        event: null,
         session: null,
-        benefits: [],
         profile: null,
-        opened: null,
+        registration: null,
         note: ''
     },
     populate(c) {
         this.setData({
-            benefits: (c && c.benefits) || []
+            event: core.findItem(c, 'events', this.data.id)
         });
     },
     afterShow() {
@@ -45,8 +45,10 @@ Page(common('rights', {
                 return;
             try {
                 const profile = await storage.readProfile();
+                const registration = (profile.registrations || []).find(r => r.eventId === this.data.id) || null;
                 this.setData({
-                    profile
+                    profile,
+                    registration
                 });
             }
             catch (e) {
@@ -55,27 +57,29 @@ Page(common('rights', {
                 });
             }
         },
-        async claim(e) {
+        async register() {
             const session = storage.getSession();
             if (!session) {
                 this.login();
                 return;
             }
-            const id = e.currentTarget.dataset.id;
-            if (!await confirmDialog('确认领取此权益？'))
+            const event = this.data.event;
+            if (!event)
+                return;
+            if (!await confirmDialog('确认报名此免费活动？这不是公交预约。'))
                 return;
             try {
-                await api.meAction(session.token, 'claim', {
-                    id,
+                await api.meAction(session.token, 'register', {
+                    id: event.id,
                     accepted: true
                 });
-                api.track('benefit_claim', {
-                    page: 'rights',
-                    objectType: 'benefit',
-                    objectId: id
+                api.track('event_register', {
+                    page: 'event',
+                    objectType: 'event',
+                    objectId: event.id
                 });
                 this.setData({
-                    note: '领取记录已保存；领取不等于已使用'
+                    note: '活动报名已保存'
                 });
                 await this.refreshProfile();
             }
@@ -85,21 +89,22 @@ Page(common('rights', {
                 });
             }
         },
-        async openGrant(e) {
+        async cancel() {
             const session = storage.getSession();
-            if (!session)
+            const registration = this.data.registration;
+            if (!session || !registration)
+                return;
+            if (!await confirmDialog('确认取消报名？'))
                 return;
             try {
-                const result = await api.meAction(session.token, 'openBenefit', {
-                    recordId: e.currentTarget.dataset.id
+                await api.meAction(session.token, 'cancelRegistration', {
+                    recordId: registration.id,
+                    confirmed: true
                 });
                 this.setData({
-                    opened: {
-                        title: e.currentTarget.dataset.title,
-                        ...result.fulfillment
-                    },
-                    note: '使用说明已读取；不代表已经核销'
+                    note: '取消记录已保存'
                 });
+                await this.refreshProfile();
             }
             catch (error) {
                 this.setData({

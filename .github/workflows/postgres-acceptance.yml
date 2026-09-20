@@ -1,0 +1,55 @@
+name: Production PostgreSQL compatibility acceptance
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'delivery/full-system-20260920'
+    paths:
+      - 'packages/storage/**'
+      - 'packages/core/**'
+      - 'scripts/postgres-acceptance.mjs'
+      - 'deploy/integrations/**'
+      - '.github/workflows/postgres-acceptance.yml'
+  pull_request:
+    paths:
+      - 'packages/storage/**'
+      - 'packages/core/**'
+      - 'apps/api/**'
+      - 'scripts/postgres-acceptance.mjs'
+      - 'deploy/integrations/**'
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: nanchong
+          POSTGRES_PASSWORD: acceptance-only
+          POSTGRES_DB: nanchong_acceptance
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U nanchong -d nanchong_acceptance"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+      - name: Resolve pinned PostgreSQL runtime driver
+        run: npm install --prefix deploy/integrations --ignore-scripts --no-fund --no-audit
+      - name: Run PostgreSQL migration and publication acceptance
+        env:
+          POSTGRES_ACCEPTANCE_URL: postgresql://nanchong:acceptance-only@127.0.0.1:5432/nanchong_acceptance
+          POSTGRES_ACCEPTANCE_CONFIRM: I_UNDERSTAND_THIS_DATABASE_IS_FOR_TESTING
+        run: node scripts/postgres-acceptance.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: postgres-acceptance
+          path: |
+            audit/postgres/result.json
+            deploy/integrations/package-lock.json

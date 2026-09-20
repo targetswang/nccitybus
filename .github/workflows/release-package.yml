@@ -1,0 +1,35 @@
+name: Package release source
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'release/v4.4.0-rc1'
+    paths:
+      - '.github/workflows/release-package.yml'
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Create exact Git source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(cat VERSION)"
+          NAME="nanchong-city-tour-v${VERSION}"
+          git archive --format=zip --prefix="${NAME}/" --output="${NAME}.zip" HEAD
+          sha256sum "${NAME}.zip" > "${NAME}.zip.sha256"
+          printf '{"version":"%s","commit":"%s","archive":"%s.zip"}\n' "$VERSION" "$(git rev-parse HEAD)" "$NAME" > release-source-manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v4.4.0-rc1-source
+          path: |
+            nanchong-city-tour-v4.4.0-rc.1.zip
+            nanchong-city-tour-v4.4.0-rc.1.zip.sha256
+            release-source-manifest.json
+          retention-days: 90

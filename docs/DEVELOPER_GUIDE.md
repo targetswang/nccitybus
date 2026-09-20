@@ -81,7 +81,7 @@ npm start
 1. POST /api/v1/auth/challenge，JSON 为 `{"phone":"18861822117","audience":"user"}`；后台改为 admin。
 2. 保留响应的 challengeId 和 phoneHash。
 3. POST /api/v1/auth/verify，提交 challengeId、phoneHash、code（246810）和 clientType（h5 / admin / weapp）。
-4. 响应是 `{token, expiresAt, user}`。后续使用 `Authorization: Bearer <token>`，或游客接口支持的请求体 `{"_session":"<token>"}`。
+4. 响应是 `{token, expiresAt, user}`。后续一律使用 `Authorization: Bearer <token>` 请求头；游客接口不再接受请求体 `{"_session":"<token>"}`。
 5. POST /api/v1/me/query 读取账户；后台令牌用于 /api/v1/admin/content/counts。不要混用 audience。
 6. POST /api/v1/auth/logout 注销当前 token，随后受保护请求应返回 401。
 

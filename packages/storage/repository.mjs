@@ -14,7 +14,7 @@ export class Repository {
             const existing = await tx.query('SELECT payload FROM content_releases WHERE version=$1', [
                 catalog.version
             ]);
-            invariant(!existing.length || existing[0].payload === payload, 'IMMUTABLE_VERSION', 'Change version before changing published content', 409);
+            invariant(!existing.length || existing[0].payload === payload, 'IMMUTABLE_VERSION', '该内容版本已发布且不可修改：请更换版本号后重试，或先用 --rollback 回滚到此版本之前再变更内容', 409);
             await tx.query('INSERT INTO content_releases(version,payload,created_at) VALUES($1,$2,$3) ON CONFLICT(version) DO NOTHING', [
                 catalog.version,
                 payload,
@@ -161,6 +161,16 @@ export class Repository {
             owner
         ]);
     }
+    // Shared per-IP rate-limit windows so every API replica enforces one combined
+    // limit; each instance fronts this with a short-lived local delta cache.
+    async flushRateWindow(ip, windowStart, delta) {
+        const rows = await this.db.query('INSERT INTO rate_limit_windows(ip,window_start,count) VALUES($1,$2,$3) ON CONFLICT(ip,window_start) DO UPDATE SET count=rate_limit_windows.count+excluded.count RETURNING count', [
+            ip,
+            windowStart,
+            delta
+        ]);
+        return Number(rows[0].count);
+    }
     async acknowledgeSync(key, observed, now = Date.now()) {
         const { updatedAt, ...payload } = observed;
         const replacement = {
@@ -185,7 +195,8 @@ export class Repository {
         ]);
     }
     async housekeeping(now = Date.now()) {
-        // Retain last-known positions; only transient receipts and expired sessions are purged.
+        // Retain last-known positions; only transient receipts, expired sessions, stale rate-limit
+        // windows and analytics beyond the retention window are purged.
         await this.db.query('DELETE FROM event_receipts WHERE received_at<$1', [
             now - 7 * 86400000
         ]);
@@ -194,6 +205,12 @@ export class Repository {
         ]);
         await this.db.query('DELETE FROM audit_events WHERE at<$1', [
             now - 30 * 86400000
+        ]);
+        await this.db.query('DELETE FROM analytics_events WHERE created_at<$1', [
+            now - 90 * 86400000
+        ]);
+        await this.db.query('DELETE FROM rate_limit_windows WHERE window_start<$1', [
+            now - 600000
         ]);
     }
 }

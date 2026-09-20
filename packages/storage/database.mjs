@@ -111,6 +111,7 @@ export async function migrate(db) {
         ['003', fileURLToPath(new URL('./migrations/003_ai_operations.sql', import.meta.url))],
         ['004', fileURLToPath(new URL('./migrations/004_operations_media_discovery.sql', import.meta.url))],
         ['005', fileURLToPath(new URL('./migrations/005_node_revision.sql', import.meta.url))],
+        ['006', fileURLToPath(new URL('./migrations/006_rate_limit_windows.sql', import.meta.url))],
     ];
     for (const [version, file] of migrations) {
         if (!existsSync(file)) continue;

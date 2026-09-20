@@ -28,10 +28,10 @@ test('native membership/event handlers and H5 actions share state; native feedba
  const c=await setup(t),catalog=await c.repo.catalog();catalog.version='parity-fixture';catalog.membershipPlans=[{id:'free',name:'免费会员',terms:'规则',joinMode:'free'}];catalog.events=[{id:'event',title:'城市活动',registration:'free',rules:'规则'}];await c.repo.publishCatalog(catalog);
  const deps={'../../services/api':c.api,'../../services/session':c.session};
  const member=await native('pages/member/index',c.wx,deps);await member.onShow();await member.join(event('free'));assert.equal(member.data.error,'');
- const profile=()=>c.request('/me/query',{method:'POST',data:{_session:c.user.token}});
+ const profile=()=>c.request('/me/query',{method:'POST',data:{},token:c.user.token});
  let p=await profile();assert.equal(p.memberships[0].status,'active');await member.leave(event(p.memberships[0].id));assert.equal((await profile()).memberships[0].status,'withdrawn');
  const events=await native('pages/events/index',c.wx,deps);events.onLoad({id:'event'});await events.onShow();await events.register(event('event'));assert.equal(events.data.error,'');p=await profile();assert.equal(p.registrations[0].status,'registered');await events.cancel(event(p.registrations[0].id));assert.equal((await profile()).registrations[0].status,'cancelled');
- await c.request('/me/action',{method:'POST',data:{_session:c.user.token,action:'register',id:'event',accepted:true}});await events.onShow();assert.equal(events.data.profile.registrations[0].status,'registered');
+ await c.request('/me/action',{method:'POST',data:{action:'register',id:'event',accepted:true},token:c.user.token});await events.onShow();assert.equal(events.data.profile.registrations[0].status,'registered');
  events.onLoad({id:'missing'});await events.onShow();assert.equal(events.data.events.length,0);assert.match(events.data.error,/不存在/);
  const support=await native('pages/support/index',c.wx,deps);support.cat({detail:{value:'3'}});support.desc({detail:{value:'请核验活动信息'}});await support.submit();assert.equal(support.data.error,'');const tickets=await c.adminCall('/admin/tickets');assert.equal(tickets.items[0].category,'活动');await c.adminCall('/admin/tickets/'+tickets.items[0].id,{status:'resolved',publicReply:'已核验',internalNote:'后台专用'});
  await support.onShow();assert.equal(support.data.profile.tickets[0].reply,'已核验');assert.equal((await profile()).messages[0].body,'已核验');assert.ok(!JSON.stringify(await profile()).includes('后台专用'));

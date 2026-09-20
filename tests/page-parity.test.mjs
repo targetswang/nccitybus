@@ -20,9 +20,9 @@ test('published services without legacy availability are usable; capacity/time/c
 test('native feedback blocks double clicks; API replays retries and rejects reusing key for different text',async t=>{
  const c=await setup(t);let resolve;let calls=0;const deps={'../../services/api':{...c.api,meAction:async(...args)=>{calls++;await new Promise(r=>resolve=r);return c.api.meAction(...args);}},'../../services/session':c.session};
  const page=await native('pages/support/index',c.wx,deps);page.data.description='防止重复提交测试';const first=page.submit();assert.equal(page.data.busy,true);await page.submit();assert.equal(calls,1);resolve();await first;assert.equal(page.data.busy,false);assert.equal((await c.session.readProfile()).tickets.length,1);
- const payload={action:'ticket',category:'活动',description:'安全重试测试',idempotencyKey:'retry-key-123456789',_session:c.user.token};
- const [a,b]=await Promise.all([1,2].map(()=>c.request('/me/action',{method:'POST',data:payload})));assert.equal(a.record.id,b.record.id);assert.equal((await c.session.readProfile()).tickets.length,2);
- await assert.rejects(c.request('/me/action',{method:'POST',data:{...payload,description:'不同内容不能复用'}}),{code:'IDEMPOTENCY_CONFLICT'});
+ const payload={action:'ticket',category:'活动',description:'安全重试测试',idempotencyKey:'retry-key-123456789'};
+ const [a,b]=await Promise.all([1,2].map(()=>c.request('/me/action',{method:'POST',data:payload,token:c.user.token})));assert.equal(a.record.id,b.record.id);assert.equal((await c.session.readProfile()).tickets.length,2);
+ await assert.rejects(c.request('/me/action',{method:'POST',data:{...payload,description:'不同内容不能复用'},token:c.user.token}),{code:'IDEMPOTENCY_CONFLICT'});
 });
 
 test('native network retry retains same idempotency key until an acknowledged response',async()=>{

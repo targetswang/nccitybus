@@ -34,6 +34,10 @@ test('operations HTTP workflow: upload, review, create, publish, register and in
  const banner=await call('/admin/content/banners',{data:{title:'活动入口',targetType:'event',targetId:event.id,coverMediaId:mediaId}});assert.equal(banner.status,201,JSON.stringify(banner));
  assert.equal((await call('/admin/content/banners',{data:{title:'坏目标',targetType:'event',targetId:'missing'}})).status,400);
  assert.equal((await call('/admin/content/events/'+event.id,{expectedRevision:0,data:{title:'stale'}})).status,409);
+ const comparison=await call('/admin/content/comparison');assert.equal(comparison.status,200);assert.ok(comparison.data.differences.some(x=>x.id===event.id&&x.status==='added'));
+ assert.equal((await call('/admin/content/reconcile',{expectedVersion:'stale'})).status,409);
+ assert.equal((await call('/admin/content/reconcile',{expectedVersion:comparison.data.publishedVersion},visitor.token)).status,401);
+ const restored=await call('/admin/content/reconcile',{expectedVersion:comparison.data.publishedVersion});assert.equal(restored.status,200);assert.equal((await call('/admin/content/events/'+event.id)).data.data.title,event.data.title);
  const preview=(await call('/admin/content/preview')).data;
  const published=await call('/admin/content/publish',{approved:true,expectedDraftVersion:preview.version,approval:{evidence:'自动化测试验收，不代表生产内容审核'}});assert.equal(published.status,200,JSON.stringify(published));
  const publicContent=(await call('/content')).data;assert.equal(publicContent.events[0].cover,'https://example.test'+uploaded.data.url);assert.equal(publicContent.events[0].mediaApproval,undefined);

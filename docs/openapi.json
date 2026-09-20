@@ -1268,6 +1268,50 @@
           }
         }
       }
+    },
+    "/api/v1/admin/content/comparison": {
+      "get": {
+        "summary": "Read published/draft versions, counts and field differences; content.read required",
+        "responses": {
+          "200": {
+            "description": "publishedVersion, draftVersion, counts, differences, missingCount, hasChanges"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/reconcile": {
+      "post": {
+        "summary": "Insert missing records from current release, preserve all existing drafts; content.write required",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "expectedVersion"
+                ],
+                "properties": {
+                  "expectedVersion": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "version, inserted/preserved counts and mediaConflicts"
+          },
+          "409": {
+            "description": "Published version changed; refresh comparison"
+          },
+          "400": {
+            "description": "Expected published version required"
+          }
+        }
+      }
     }
   },
   "components": {

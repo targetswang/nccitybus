@@ -24,6 +24,13 @@ with tempfile.TemporaryDirectory(prefix='nc-admin-') as tmp:
     page.goto(BASE+'/admin/');page.locator('[name=phone]').fill('13900008001');page.get_by_role('button',name='获取验证码').click()
     expect(page.locator('#code-hint')).to_contain_text('246810');page.locator('[name=code]').fill('246810');page.get_by_role('button',name='进入后台').click()
     expect(page.locator('#publish')).to_be_visible()
+    page.locator('#open-comparison').click();expect(page.get_by_text('暂无业务内容差异')).to_be_visible()
+    page.locator('[data-nav=activities]').click();page.locator('[data-sub=events]').click()
+    page.locator('[data-edit=legacy-event]').click();page.locator('#operational-form [name=title]').fill('保留的活动草稿');page.get_by_role('button',name='保存草稿').click();expect(page.locator('#operational-form')).to_have_count(0)
+    page.locator('[data-nav=content]').first.click();page.locator('[data-sub=comparison]').click();expect(page.locator('summary').filter(has_text='保留的活动草稿')).to_be_visible()
+    page.locator('#reconcile-content').click();expect(page.get_by_role('status')).to_contain_text('补齐完成');expect(page.locator('summary').filter(has_text='保留的活动草稿')).to_be_visible()
+    page.screenshot(path=str(OUT/'admin-content-comparison.png'),full_page=True)
+
     page.locator('[data-nav=content]').first.click();page.locator('[data-sub=media]').click()
     page.locator('#upload-form input').set_input_files(str(fixture));page.get_by_role('button',name='上传到素材库').click()
     card=page.locator('.media-card').filter(has=page.locator('[data-media-review^="upload-"]'));expect(card).to_have_count(1)
@@ -39,7 +46,7 @@ with tempfile.TemporaryDirectory(prefix='nc-admin-') as tmp:
     expect(page.locator('#operational-form')).to_have_count(0);page.locator('[data-publish]').click()
     # Wait for the version to become visible to public clients before starting a new visitor.
     for _ in range(50):
-     if page.request.get(BASE+'/api/v1/content').json().get('events'):break
+     if any(e.get('title')=='浏览器新建活动' for e in page.request.get(BASE+'/api/v1/content').json().get('events',[])):break
      time.sleep(.1)
     visitor=browser.new_context();v=visitor.new_page();v.on('dialog',lambda d:d.accept());v.goto(BASE+'/#home')
     v.get_by_role('button').filter(has_text='浏览器活动入口').click();expect(v.get_by_role('heading',name='浏览器新建活动')).to_be_visible()
@@ -50,6 +57,6 @@ with tempfile.TemporaryDirectory(prefix='nc-admin-') as tmp:
     expect(v.get_by_role('heading',name='手机号登录 / 注册')).to_have_count(0);v.goto(BASE+'/'+event_hash);v.get_by_role('button',name='免费报名',exact=True).click();expect(v.get_by_text('活动报名已保存')).to_be_visible()
     page.locator('[data-nav=activities]').click();page.locator('[data-sub=registrations]').click();expect(page.get_by_text('139****8002')).to_be_visible();page.screenshot(path=str(OUT/'admin-registrations.png'),full_page=True)
     assert not errors, errors
-    (OUT/'admin-operations.json').write_text(json.dumps({'status':'passed','checks':['admin OTP login','image upload and review','event and Banner creation','explicit publication','H5 Banner navigation','visitor OTP and registration','admin masked registration list']},ensure_ascii=False,indent=2))
+    (OUT/'admin-operations.json').write_text(json.dumps({'status':'passed','checks':['legacy snapshot startup hydration','draft differences and non-overwriting reconcile','admin OTP login','image upload and review','event and Banner creation','explicit publication','H5 Banner navigation','visitor OTP and registration','admin masked registration list']},ensure_ascii=False,indent=2))
     browser.close()
   finally:server.terminate();server.wait(timeout=10)

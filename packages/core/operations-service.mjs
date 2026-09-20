@@ -28,10 +28,12 @@ export class OperationsService{
     if(matchStatus){args.push(matchStatus);where.push(`m.match_status=$${args.length}`);}
     let sql='SELECT m.* FROM media_assets m';if(where.length)sql+=' WHERE '+where.join(' AND ');sql+=' ORDER BY m.updated_at DESC,m.id';
     const rows=await this.db.query(sql,args),items=[];
+    const operationalUsage=[];for(const kind of ['events','banners','benefits','membershipPlans','announcements'])for(const item of await this.content.list(kind))if(item.data.coverMediaId)operationalUsage.push({mediaId:item.data.coverMediaId,id:item.id,name:item.data.title||item.data.name,kind});
     for(const row of rows){
       const used=await this.db.query('SELECT id,name FROM pois WHERE cover_media_id=$1 ORDER BY id',[row.id]);
+      used.push(...operationalUsage.filter(x=>x.mediaId===row.id).map(({mediaId,...item})=>item));
       const evidence=parse(row.evidence);
-      items.push({id:row.id,sourceUrl:row.source_url||null,storagePath:row.storage_path||null,url:row.storage_path?'/media/'+row.storage_path:(row.source_url||null),mimeType:row.mime_type||null,width:row.width===null?null:Number(row.width),height:row.height===null?null:Number(row.height),rightsStatus:row.rights_status,matchStatus:row.match_status,evidence,usage:used,updatedAt:Number(row.updated_at)});
+      items.push({id:row.id,name:parse(row.payload_json).name||row.id,sourceUrl:row.source_url||null,storagePath:row.storage_path||null,url:row.storage_path?'/media/'+row.storage_path:(row.source_url||null),mimeType:row.mime_type||null,width:row.width===null?null:Number(row.width),height:row.height===null?null:Number(row.height),rightsStatus:row.rights_status,matchStatus:row.match_status,evidence,usage:used,updatedAt:Number(row.updated_at)});
     }
     return{items};
   }

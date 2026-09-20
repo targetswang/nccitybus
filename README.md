@@ -4,6 +4,8 @@
 
 ## 研发入口
 
+- [运营后台闭环](docs/OPERATIONS-WORKFLOW.md)：新建活动、素材上传审核、Banner 发布、报名记录及接口映射。
+
 - [研发指南](docs/DEVELOPER_GUIDE.md)：启动、联调手机号 `18861822117`、开发验证码 `246810`、管理员授权、小程序配置。
 - [三端一致性](docs/CLIENT_PARITY.md)：后台发布到两端、用户服务往返、平台差异和验收边界。
 - [目录与责任边界](docs/REPOSITORY_STRUCTURE.md)：代码入口、共享逻辑、已删除旧代码。
@@ -18,6 +20,7 @@
 
 ```bash
 npm ci --ignore-scripts --no-audit --no-fund
+python3 -m pip install -r scripts/requirements-media.txt
 npm run build
 npm run db:migrate
 node scripts/import-content-model.mjs

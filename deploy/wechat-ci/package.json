@@ -1,0 +1,9 @@
+{
+  "name": "nanchong-wechat-official-ci",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Optional official WeChat miniprogram-ci gate. Credentials stay outside source.",
+  "dependencies": {
+    "miniprogram-ci": "2.1.31"
+  }
+}

@@ -1,0 +1,39 @@
+<view class="screen">
+<view wx:if="{{error}}" class="error-box">
+<text>{{error}}</text>
+</view>
+<view class="content">
+<view class="h1">客服与反馈</view>
+<view class="copy secondary">问题反馈 · 隐私申请</view>
+<view wx:if="{{!session}}" class="panel">
+<button class="button primary full" bindtap="login">登录后提交问题</button>
+</view>
+<view class="panel">
+<picker mode="selector" range="{{categories}}" bindchange="cat">
+<view class="field">问题类型：{{category}}</view>
+</picker>
+<textarea class="field textarea" maxlength="3000" placeholder="请说明具体问题，不要填写验证码、身份证号或银行卡号" value="{{description}}" bindinput="desc"/>
+<view class="switch-row">
+<switch checked="{{privacy}}" bindchange="privacyToggle"/>
+<text class="copy secondary">这是个人信息更正、查询或删除申请</text>
+</view>
+<view wx:if="{{note}}" class="note">{{note}}</view>
+<button class="button primary full" bindtap="submit" disabled="{{!session}}">提交问题</button>
+</view>
+<view wx:if="{{profile}}" class="panel">
+<view class="h2">我的服务记录</view>
+<view wx:for="{{profile.tickets}}" wx:key="id" class="record">
+<view>{{item.category}} · {{item.status}}</view>
+<view>{{item.description}}</view>
+<view wx:if="{{item.reply}}" class="reply">客服回复：{{item.reply}}</view>
+</view>
+<view wx:for="{{profile.privacyRequests}}" wx:key="id" class="record">
+<view>隐私申请 · {{item.status}}</view>
+<view>{{item.description}}</view>
+<view wx:if="{{item.reply}}" class="reply">客服回复：{{item.reply}}</view>
+</view>
+</view>
+<view class="note">隐私申请提交不等于数据已删除，以核验后的处理回复为准。</view>
+</view>
+<bottom-nav active="{{active || 'me'}}"/>
+</view>

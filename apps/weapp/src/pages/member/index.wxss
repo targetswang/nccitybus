@@ -1,0 +1,5 @@
+.record {
+  padding: 18rpx 0;
+  border-top: 1rpx solid __BORDER__;
+  font-size: __SECONDARY_RPX__
+}

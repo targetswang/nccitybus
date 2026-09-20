@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "客服与反馈",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index"
+  },
+  "enablePullDownRefresh": true
+}

@@ -6,4 +6,4 @@ export function readSession() {
 }
 export function saveSession(value: any) { wx.setStorageSync(KEY, value); }
 export function clearSession() { wx.removeStorageSync(KEY); }
-export async function readProfile() { const s = readSession(); return s ? getMe(s.session) : null; }
+export async function readProfile() { const s = readSession(); return s ? getMe(s.token) : null; }

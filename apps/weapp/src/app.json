@@ -13,7 +13,12 @@
     "pages/guide/index",
     "pages/favorites/index",
     "pages/rights/index",
-    "pages/privacy/index"
+    "pages/privacy/index",
+    "pages/login/index",
+    "pages/member/index",
+    "pages/events/index",
+    "pages/messages/index",
+    "pages/support/index"
   ],
   "window": {
     "navigationBarTitleText": "嘉陵江城市漫游",

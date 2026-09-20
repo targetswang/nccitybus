@@ -1,0 +1,20 @@
+<view class="screen">
+<view wx:if="{{error}}" class="error-box">
+<text>{{error}}</text>
+<button bindtap="retry">重新加载</button>
+</view>
+<view class="content">
+<view class="h1">我的消息</view>
+<view class="copy secondary">平台站内服务通知</view>
+<view wx:if="{{!session}}" class="panel">
+<button class="button primary full" bindtap="login">登录查看消息</button>
+</view>
+<view wx:for="{{profile.messages}}" wx:key="id" class="panel">
+<view class="h2">{{item.title}}</view>
+<view class="copy">{{item.body}}</view>
+<button wx:if="{{!item.read}}" class="button secondary full" data-id="{{item.id}}" bindtap="read">标记已读</button>
+</view>
+<view wx:if="{{session&&profile&&!profile.messages.length}}" class="note">暂无站内消息。</view>
+</view>
+<bottom-nav active="{{active || 'me'}}"/>
+</view>

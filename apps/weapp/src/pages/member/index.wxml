@@ -1,0 +1,28 @@
+<view class="screen">
+<view wx:if="{{error}}" class="error-box">
+<text>{{error}}</text>
+<button bindtap="retry">重新加载</button>
+</view>
+<view wx:if="{{loading}}" class="loading">正在读取…</view>
+<view class="content">
+<view class="h1">会员服务</view>
+<view class="copy secondary">当前为免费基础会员，不影响日常乘车与漫游。</view>
+<view wx:if="{{note}}" class="note">{{note}}</view>
+<view wx:if="{{!session}}" class="panel">
+<view class="copy">登录后加入会员并同步账户。</view>
+<button class="button primary full" bindtap="login">手机号登录</button>
+</view>
+<view wx:if="{{session&&profile&&profile.memberships.length}}" class="panel">
+<view class="h2">我的会员</view>
+<view wx:for="{{profile.memberships}}" wx:key="id" class="record">{{item.title}} · {{item.status}}</view>
+</view>
+<view wx:for="{{plans}}" wx:key="id" class="panel">
+<view class="h2">{{item.name || item.title}}</view>
+<view class="copy">{{item.description}}</view>
+<view class="copy secondary">{{item.terms}}</view>
+<button class="button primary full" data-id="{{item.id}}" bindtap="join" disabled="{{!session}}">阅读规则并加入</button>
+</view>
+<view wx:if="{{!plans.length&&!loading}}" class="note">暂无已发布会员方案，基础乘车与漫游不受影响。</view>
+</view>
+<bottom-nav active="{{active || 'me'}}"/>
+</view>

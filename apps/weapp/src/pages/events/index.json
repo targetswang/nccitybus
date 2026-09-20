@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "城市活动",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index"
+  },
+  "enablePullDownRefresh": true
+}

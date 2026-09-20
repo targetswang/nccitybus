@@ -1,0 +1,29 @@
+<view class="screen">
+<view class="content">
+<view class="h1">手机号登录</view>
+<view class="copy secondary">账号与收藏同步，登录不是营销授权。</view>
+<view class="panel">
+<view class="h2">微信一键手机号登录</view>
+<view class="copy secondary">正式版由用户点击授权后读取手机号，不会静默获取。</view>
+<button class="button primary full" open-type="getPhoneNumber" bindgetphonenumber="phoneLogin" disabled="{{busy}}">微信手机号一键登录</button>
+<view class="note">当前微信主体能力未配置时会明确提示不可用。</view>
+</view>
+<view class="panel">
+<view class="h2">联调测试登录</view>
+<view class="copy secondary">测试码不发送短信、不证明手机号所有权，只用于开发联调。</view>
+<input class="field" type="number" maxlength="11" placeholder="手机号" value="{{phone}}" bindinput="changePhone"/>
+<view class="code-row">
+<input class="field" type="number" maxlength="6" placeholder="测试验证码" value="{{code}}" bindinput="changeCode"/>
+<button class="button secondary code-btn" bindtap="getCode" disabled="{{busy}}">获取测试码</button>
+</view>
+<view wx:if="{{challenge}}" class="hint">测试码：{{challenge.debugCode}} · 5分钟有效</view>
+<checkbox-group bindchange="toggleAgree">
+<label class="agree">
+<checkbox value="yes"/>我已了解这是测试身份，不包含营销授权</label>
+</checkbox-group>
+<view wx:if="{{error}}" class="error-box">{{error}}</view>
+<button class="button primary full" bindtap="submit" disabled="{{busy || !challenge || !agreed}}">登录 / 注册</button>
+</view>
+</view>
+<bottom-nav active="{{'me'}}"/>
+</view>

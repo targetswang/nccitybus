@@ -2,20 +2,20 @@
   "kind": "static-and-build-integrity",
   "status": "passed",
   "counts": {
-    "jsSourceAndGeneratedFiles": 108,
+    "jsSourceAndGeneratedFiles": 118,
     "content": {
       "nodes": 5,
       "pois": 21,
       "walks": 4,
       "steps": 9
     },
-    "nativePages": 14
+    "nativePages": 19
   },
   "checks": [
     {
       "name": "JavaScript syntax for source and generated mini-program",
       "status": "passed",
-      "detail": 108
+      "detail": 118
     },
     {
       "name": "Actual shared logic build hash",
@@ -45,7 +45,7 @@
       "name": "Native page registration, four files and component targets",
       "status": "passed",
       "detail": {
-        "pages": 14,
+        "pages": 19,
         "tabPages": 4
       }
     },
@@ -68,8 +68,8 @@
       "name": "Self-contained repository entries and local documentation links",
       "status": "passed",
       "detail": {
-        "rootLock": "no external npm dependencies",
-        "productionDriverLock": "present: still requires review"
+        "rootLock": "TypeScript dev tool is integrity-locked in root package-lock.json",
+        "productionDriverLock": "present and isolated from root dev toolchain"
       }
     }
   ],

@@ -45,6 +45,30 @@ test('native narration separates real audio playback and reading; text is not an
  const p=await fs.readFile('apps/weapp/dist/components/narration/index.wxml','utf8');assert.ok(p.includes('阅读讲解'));assert.equal(core.narrationAction({narration:'text',audioUrl:null}),'text');assert.equal(core.narrationAction({audioUrl:'/media/a.mp3'}),'audio');
  const js=await fs.readFile('apps/weapp/dist/components/narration/index.js','utf8');assert.ok(js.includes('createInnerAudioContext'));assert.ok(js.includes('destroy'));
 });
+test('account session field is the auth token, never a nonexistent .session property',async()=>{
+ // 回归: /auth/verify 返回 { token, ... }。H5 与原生必须先存 token 再发送 _session:<token>。
+ const h5=await fs.readFile('apps/h5/src/services/visitor.mjs','utf8');
+ assert.ok(h5.includes('_session:session.token'),'H5 visitor must send _session:session.token');
+ assert.equal(/session\.session\b/.test(h5),false,'H5 must not read a nonexistent .session field');
+ const nativeSession=await fs.readFile('apps/weapp-native/services/session.ts','utf8');
+ assert.ok(nativeSession.includes('getMe(s.token)'),'native readProfile must use the token');
+ for(const file of ['events','member','messages','poi','rights','support']){
+   const src=await fs.readFile(`apps/weapp-native/pages/${file}/index.ts`,'utf8');
+   assert.equal(/meAction\([a-zA-Z]+\.session\b/.test(src),false,`native ${file} must not pass .session to meAction`);
+   assert.ok(/meAction\([a-zA-Z]+\.token\b/.test(src),`native ${file} must pass the token to meAction`);
+ }
+});
+test('legacy mainline registers the ported account pages with full four-file sets',async()=>{
+ const app=JSON.parse(await fs.readFile('apps/weapp/dist/app.json','utf8'));
+ for(const page of ['login','member','events','messages','support']){
+   const p=`pages/${page}/index`;assert.ok(app.pages.includes(p),`app.json must register ${p}`);
+   for(const ext of ['js','json','wxml','wxss']) await fs.access(`apps/weapp/dist/${p}.${ext}`);
+ }
+ const login=await fs.readFile('apps/weapp/dist/pages/login/index.js','utf8');
+ assert.equal(/wx\.reLaunch\s*\(/.test(login),false,'ported login must not reLaunch (destroys page stack)');
+ const loginWxml=await fs.readFile('apps/weapp/dist/pages/login/index.wxml','utf8');
+ assert.ok(loginWxml.includes('open-type="getPhoneNumber"'),'login keeps the explicit WeChat phone authorization entry');
+});
 test('shared design token compilation changes real mini-program styles, not a dead configuration file',async()=>{
  const {compileNativeStyle}=await import('../packages/design/render.mjs');const tokens=JSON.parse(await fs.readFile('packages/design/tokens.json','utf8'));const source=await fs.readFile('apps/weapp/src/app.wxss','utf8');const built=await fs.readFile('apps/weapp/dist/app.wxss','utf8');assert.equal(compileNativeStyle(source,tokens),built);assert.ok(compileNativeStyle(source,{...tokens,brand:'#123456'}).includes('#123456'));assert.equal(/__[A-Z_]+__/.test(built),false);
 });

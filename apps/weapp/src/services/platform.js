@@ -58,7 +58,12 @@ function openPage(page, id, from) {
         'guide',
         'favorites',
         'rights',
-        'privacy'
+        'privacy',
+        'login',
+        'member',
+        'events',
+        'messages',
+        'support'
     ];
     if (!allowed.includes(page))
         return;

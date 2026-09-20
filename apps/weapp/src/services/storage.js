@@ -55,6 +55,12 @@ async function toggleFavorite(id) {
         syncError: null
     };
 }
+async function readProfile() {
+    const session = getSession();
+    if (!session)
+        return null;
+    return api.meQuery(session.token);
+}
 async function syncFavorites(catalog) {
     const session = getSession();
     if (!session)
@@ -81,6 +87,7 @@ module.exports = {
     getSession,
     saveSession,
     clearSession,
+    readProfile,
     syncFavorites
 };
 

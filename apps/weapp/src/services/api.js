@@ -49,9 +49,73 @@ async function capabilities() {
     getApp().globalData.capabilities = value;
     return value;
 }
+function challenge(phone, audience = 'user') {
+    return request('/auth/challenge', {
+        method: 'POST',
+        data: {
+            phone,
+            audience
+        }
+    });
+}
+function verify(payload) {
+    return request('/auth/verify', {
+        method: 'POST',
+        data: payload
+    });
+}
+function wechatPhoneLogin(code, loginCode) {
+    return request('/auth/wechat-phone', {
+        method: 'POST',
+        data: {
+            code,
+            loginCode
+        }
+    });
+}
+function meQuery(session) {
+    return request('/me/query', {
+        method: 'POST',
+        data: {
+            _session: session
+        }
+    });
+}
+function meAction(session, action, data = {}) {
+    return request('/me/action', {
+        method: 'POST',
+        data: {
+            ...data,
+            action,
+            _session: session
+        }
+    });
+}
+function track(event, data = {}) {
+    return request('/analytics/event', {
+        method: 'POST',
+        data: {
+            event,
+            eventId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            client: 'weapp',
+            page: data.page || '',
+            objectType: data.objectType || '',
+            objectId: data.objectId || '',
+            channelCode: data.channelCode || '',
+            contentVersion: data.contentVersion || '',
+            properties: data.properties || {}
+        }
+    }).catch(() => null);
+}
 module.exports = {
     request,
     catalog,
-    capabilities
+    capabilities,
+    challenge,
+    verify,
+    wechatPhoneLogin,
+    meQuery,
+    meAction,
+    track
 };
 

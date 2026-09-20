@@ -1,0 +1,31 @@
+.field {
+  border: 1rpx solid __BORDER__;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 18rpx;
+  background: #fff;
+  box-sizing: border-box;
+  font-size: __BODY_RPX__
+}
+.textarea {
+  width: 100%;
+  min-height: 220rpx
+}
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 18rpx
+}
+.record {
+  padding: 20rpx 0;
+  border-top: 1rpx solid __BORDER__;
+  font-size: __SECONDARY_RPX__;
+  line-height: 1.7
+}
+.reply {
+  margin-top: 10rpx;
+  background: #edf5e9;
+  padding: 14rpx;
+  border-radius: 12rpx
+}

@@ -1,0 +1,35 @@
+.field {
+  min-height: 88rpx;
+  border: 1rpx solid __BORDER__;
+  border-radius: 18rpx;
+  padding: 0 22rpx;
+  margin-top: 18rpx;
+  background: #fff;
+  box-sizing: border-box
+}
+.code-row {
+  display: grid;
+  grid-template-columns: 1fr 220rpx;
+  gap: 14rpx;
+  align-items: center
+}
+.code-btn {
+  min-height: 88rpx;
+  margin-top: 18rpx
+}
+.hint {
+  background: #edf5e9;
+  color: #4f724e;
+  padding: 16rpx;
+  border-radius: 14rpx;
+  margin-top: 14rpx;
+  font-size: __SECONDARY_RPX__
+}
+.agree {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+  font-size: __SECONDARY_RPX__;
+  color: __MUTED__;
+  margin: 22rpx 0
+}

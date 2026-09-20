@@ -1,0 +1,11 @@
+.cover {
+  width: 100%;
+  height: 300rpx;
+  border-radius: 18rpx;
+  margin-bottom: 18rpx
+}
+.record {
+  padding: 18rpx 0;
+  border-top: 1rpx solid __BORDER__;
+  font-size: __SECONDARY_RPX__
+}

@@ -1,10 +1,16 @@
 # 新团队接手清单与验收口径
 
+## 2026-09-20 审查与研发接手更新
+
+请先阅读 [研发接手与登录联调指南](DEVELOPER_GUIDE.md) 和 [PR #1 审查修复清单](CODE_REVIEW_2026-09-20.md)。审查基线为 `f932e6c`，现有 CI 通过仍发现 **4 个 P1、2 个 P2**，全部待修复。本次仅更新文档，不代表业务修复、线上账号配置或生产验收完成。
+
+联调手机号、固定测试验证码、后台初始授权、首次数据导入、预览地址核验和验收清单统一在研发指南维护。
+
 > 当前候选：**v4.4.0-rc.1**。正式微信入口 `apps/weapp-native/`，H5 `/`，运营后台 `/admin/`，统一后端 `/api/v1`。
 
 ## 无需聊天记录的接手顺序
 
-README → ARCHITECTURE → API/OpenAPI → CLIENT_PARITY → OPERATIONS_MEDIA_POI → IVY_PROTOCOL → OPERATIONS → KNOWN_LIMITATIONS → PHASE_4_4_STATUS → audit。
+DEVELOPER_GUIDE → CODE_REVIEW_2026-09-20 → README → ARCHITECTURE → API/OpenAPI → CLIENT_PARITY → OPERATIONS_MEDIA_POI → IVY_PROTOCOL → OPERATIONS → KNOWN_LIMITATIONS → PHASE_4_4_STATUS → audit。
 
 ## 当前源码范围
 

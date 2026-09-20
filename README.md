@@ -1,12 +1,19 @@
 # 南充嘉陵江城市漫游 · 完整工程候选 v4.4.0-rc.1
 
+## 研发先看这里
+
+- [研发接手与登录联调指南](docs/DEVELOPER_GUIDE.md)：手机号、验证码、后台授权、启动、首次导入、三端联调与排障。
+- [PR #1 审查与修复清单](docs/CODE_REVIEW_2026-09-20.md)：4 个 P1、2 个 P2，附复现、影响、修复建议及验收标准，当前全部待修复。
+- 本次文档基于 `f932e6c`，未修复业务代码或部署在线预览。既有 CI 通过不等于上述缺陷已关闭。
+
 本仓库是当前统一候选工程：**游客 H5 + 便携式运营后台 + 微信原生小程序 + 统一 `/api/v1` 后端 + PostgreSQL/SQLite 数据层 + Transit Worker + AI 运营助手 + 媒体/POI 运营能力 + 验收门禁**。三个前端共用同一套业务 API 和数据模型。
 
 本版已经完成 4.1～4.4 的主体研发与自动回归，但**仍不是正式生产验收完成版本**。没有真实凭据、微信双端真机、IVY 现场数据的项目保持 blocked，不以模拟结果代替。
 
 ## 当前已验证
 
-- 根工程依赖已锁定：`TypeScript 5.8.3` 写入根 `package-lock.json`。\n- 根工程 `npm run build`：通过。
+- 根工程依赖已锁定：`TypeScript 5.8.3` 写入根 `package-lock.json`。
+- 根工程 `npm run build`：通过。
 - 根工程 `npm run check`：通过。
 - Node 自动测试：**76/76 通过**，证据 `audit/phase44/node-tests.tap`。
 - 媒体处理测试：**5/5 通过**，证据 `audit/phase44/media-tests.log`。
@@ -18,13 +25,13 @@
 
 ## 5 分钟本地启动
 
-已验证 Node.js 22.16.0 / npm 10.9.2。
+已验证 Node.js 22.16.0 / npm 10.9.2。完整环境变量与管理员初始化见 [研发指南](docs/DEVELOPER_GUIDE.md)。下列导入步骤仅供新建开发数据库首次初始化，会写入草稿和参考发布内容；不要对已有运营库重复执行。
 
 ```bash
 npm ci --ignore-scripts --no-audit --no-fund
 npm run build
 npm run db:migrate
-npm run content:publish
+node scripts/import-content-model.mjs
 npm start
 ```
 

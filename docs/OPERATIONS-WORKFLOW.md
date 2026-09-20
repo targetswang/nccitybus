@@ -18,10 +18,10 @@ npm run db:migrate
 开发环境设置 `TEST_LOGIN_CODE=246810`，并设置 `INITIAL_ADMIN_PHONE_HASH` 为 `sha256('phone:'+自己的11位手机号)`。例如计算哈希：
 
 ```sh
-node -e "console.log(require('node:crypto').createHash('sha256').update('phone:13900008001').digest('hex'))"
+node -e "console.log(require('node:crypto').createHash('sha256').update('phone:18861822117').digest('hex'))"
 ```
 
-把输出值设为 `INITIAL_ADMIN_PHONE_HASH` 后运行 `npm start`，访问 `http://localhost:3000/admin/`。输入对应手机号，先点击“获取验证码”，再输入 `246810`。`13900008001` 仅为自动验收手机号，不是已经开通的生产账号。生产使用真实短信，不支持固定验证码。已有管理员通过“设置 → 人员权限”授权其他账号。
+把输出值设为 `INITIAL_ADMIN_PHONE_HASH` 后运行 `npm start`，访问 `http://localhost:3000/admin/`。输入对应手机号，先点击“获取验证码”，再输入 `246810`。`18861822117` 沿用研发指南中的联调手机号，需按上述方式配置授权；它不是默认开通的生产账号。生产使用真实短信，不支持固定验证码。已有管理员通过“设置 → 人员权限”授权其他账号。
 
 ## 操作步骤
 

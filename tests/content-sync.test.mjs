@@ -37,6 +37,10 @@ test('legacy snapshot hydrates all business collections, IDs, covers, home, step
  assert.equal((await service.comparison()).hasChanges,false);
  const history=await db.query('SELECT id FROM content_edit_history');
  assert.deepEqual((await service.reconcilePublished()).inserted,{});assert.deepEqual(await db.query('SELECT id FROM content_edit_history'),history);
+ await db.query('UPDATE media_assets SET storage_path=$1,source_url=$2 WHERE id=$3',['b'.repeat(64)+'.webp','/media/'+'b'.repeat(64)+'.webp','original-media-id']);
+ assert.equal((await service.reconcilePublished()).mediaConflicts.length,1);
+ await assert.rejects(service.publish({actorUserId:'test',approved:true,expectedDraftVersion:(await service.buildCatalog()).version,approval:{evidence:'test review'}}),{code:'MEDIA_ASSOCIATION_CHANGED'});assert.deepEqual(await repo.catalog(),c);
+
 });
 test('reconciliation preserves edited drafts, offline states, revisions, steps and rejected media',async t=>{
  const {db,repo,service}=await setup(t),c=await fixture();await service.importCatalog(c);

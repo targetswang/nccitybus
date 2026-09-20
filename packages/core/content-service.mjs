@@ -77,7 +77,7 @@ export class ContentService {
   async publish({actorUserId=null,now=Date.now(),approved=false,approval=null,expectedDraftVersion=null,requireApproved=false}={}){
     invariant(!requireApproved||approved===true,'CONTENT_NOT_APPROVED','正式环境需要审核确认后发布',409);
     const catalog=await this.buildCatalog();
-    for(const kind of OPERATIONAL_KINDS)for(const item of catalog[kind]||[])await validateOperational(this.db,kind,item);
+    for(const kind of OPERATIONAL_KINDS)for(const item of catalog[kind]||[]){const cover=item.cover;await validateOperational(this.db,kind,item);invariant(item.cover===cover,'MEDIA_ASSOCIATION_CHANGED','素材关联与草稿封面不一致，请重新选择封面并保存后再审核发布',409);}
     let release={...catalog,publication:'reference'};
     if(approved===true){
       invariant(actorUserId&&typeof approval?.evidence==='string'&&approval.evidence.trim().length>0&&approval.evidence.length<=4000,'APPROVAL_REQUIRED','请填写内容事实核验与发布审核依据');

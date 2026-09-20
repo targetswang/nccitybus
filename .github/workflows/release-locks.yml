@@ -1,0 +1,38 @@
+name: Generate release lockfiles
+on:
+  push:
+    branches:
+      - 'release/v4.4.0-rc1'
+    paths:
+      - '.release-locks/GENERATE'
+permissions:
+  contents: write
+jobs:
+  locks:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release/v4.4.0-rc1
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Generate deterministic root lock
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          node -e "const p=require('./package-lock.json'); if(p.packages['node_modules/typescript']?.version!=='5.8.3') process.exit(2)"
+      - name: Generate deterministic WeChat toolchain lock
+        working-directory: deploy/wechat-ci
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          node -e "const p=require('./package-lock.json'); if(p.packages['node_modules/miniprogram-ci']?.version!=='2.1.31') process.exit(2)"
+      - name: Commit lockfiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json deploy/wechat-ci/package-lock.json
+          git rm .release-locks/GENERATE
+          git commit -m "chore: lock root and WeChat release toolchains"
+          git push origin HEAD:release/v4.4.0-rc1

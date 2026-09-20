@@ -6,7 +6,7 @@
 
 ## 当前已验证
 
-- 根工程 `npm run build`：通过。
+- 根工程依赖已锁定：`TypeScript 5.8.3` 写入根 `package-lock.json`。\n- 根工程 `npm run build`：通过。
 - 根工程 `npm run check`：通过。
 - Node 自动测试：**76/76 通过**，证据 `audit/phase44/node-tests.tap`。
 - 媒体处理测试：**5/5 通过**，证据 `audit/phase44/media-tests.log`。
@@ -21,7 +21,7 @@
 已验证 Node.js 22.16.0 / npm 10.9.2。
 
 ```bash
-npm ci --offline --ignore-scripts --no-audit --no-fund
+npm ci --ignore-scripts --no-audit --no-fund
 npm run build
 npm run db:migrate
 npm run content:publish

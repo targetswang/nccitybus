@@ -1,0 +1,24 @@
+name: Public browser baseline evidence
+on:
+  push:
+    branches: [delivery/full-system-20260920]
+    paths: [scripts/capture-browser-baseline.py, .github/workflows/browser-baseline.yml]
+permissions:
+  contents: read
+jobs:
+  read-only-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install playwright==1.55.0
+      - run: python -m playwright install --with-deps chromium
+      - run: python scripts/capture-browser-baseline.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nanchong-browser-baseline
+          path: browser-baseline
+          retention-days: 7

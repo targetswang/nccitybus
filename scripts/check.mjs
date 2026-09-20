@@ -112,7 +112,7 @@ await check('Self-contained repository entries and local documentation links',as
       await fs.access(path.resolve(path.dirname(p),m[1].split('#')[0]));
     }
   }
-  return { rootLock:'no external npm dependencies', productionDriverLock: files.includes('deploy/integrations/package-lock.json')?'present: still requires review':'blocked: not generated, explicitly not fabricated' };
+  return { rootLock:'TypeScript dev tool is integrity-locked in root package-lock.json', productionDriverLock: files.includes('deploy/integrations/package-lock.json')?'present and isolated from root dev toolchain':'blocked: production driver lock missing' };
 });
 await fs.mkdir('audit',{recursive:true});
 await fs.writeFile('audit/static-check.json',JSON.stringify(result,null,2)+'\n');

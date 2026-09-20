@@ -8,5 +8,9 @@ var/
 apps/weapp/project.private.config.json
 .DS_Store
 
+# Generated build output (produced by `npm run build`), never committed.
+dist/
+apps/weapp/dist/
+
 __pycache__/
 *.pyc

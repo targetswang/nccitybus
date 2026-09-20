@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { DomainError, invariant, integer, identifier } from '../../packages/contracts/index.mjs';
-import { validAdmin } from '../../packages/core/auth.mjs';
+import { validAdmin } from '../../packages/core/admin-token.mjs';
 import { UnifiedAuthService } from '../../packages/core/auth-unified.mjs';
 import { UserService } from '../../packages/core/user-service.mjs';
 import { ContentService } from '../../packages/core/content-service.mjs';

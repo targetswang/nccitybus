@@ -6,7 +6,7 @@
 
 ## 正式部署（必须通过门禁）
 
-1. 受控构建环境安装生产驱动：`node scripts/install-integrations.mjs`。首次实际生成锁文件，审查并提交；后续 npm ci。完成依赖扫描及许可审核。
+1. 受控构建环境安装生产驱动：`npm ci --prefix deploy/integrations --ignore-scripts --no-audit --no-fund`，使用已提交的锁文件。完成依赖扫描及许可审核。
 2. 提供生产 transit/client JSON、PostgreSQL、HTTPS API 域名、可信反向代理地址、私密挂载文件；`NODE_ENV=production`。
 3. 运行数据库迁移，审核并显式发布内容；不要启动时自动写 reference seed。
 4. 构建客户端。用同一 Git commit 和内容 version 部署 API 与 Worker。

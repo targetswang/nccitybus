@@ -43,7 +43,7 @@ test('authentication and account favorites: unauthorized denial, ownership, pers
  await req('/auth/logout',{method:'POST',headers:auth});assert.equal((await req('/me/favorites',{headers:auth})).status,401);
 });
 test('invalid login code never creates a pretend user or session',async t=>{
- const {req,db}=await setup(t);const r=await req('/auth/wechat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:'invalid'})});assert.equal(r.status,401);assert.equal((await db.query('SELECT id FROM accounts')).length,0);
+ const {req,db}=await setup(t);const r=await req('/auth/wechat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:'invalid'})});assert.equal(r.status,401);assert.equal((await db.query('SELECT id FROM users')).length,0);
 });
 test('admin separation, origin restriction, malformed bodies and path guards',async t=>{
  const {req,base,config}=await setup(t);assert.equal((await req('/admin/integrations')).status,401);

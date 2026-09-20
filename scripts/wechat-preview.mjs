@@ -1,3 +1,4 @@
+import vm from 'node:vm';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -11,6 +12,10 @@ const output=path.resolve(root,process.env.WECHAT_QR_OUTPUT||'audit/wechat/previ
 if(!/^wx[a-zA-Z0-9]{16}$/.test(appid))throw new Error('WECHAT_MINIPROGRAM_APP_ID missing or invalid');
 if(!privateKeyPath||!fs.existsSync(privateKeyPath))throw new Error('WECHAT_UPLOAD_PRIVATE_KEY_FILE missing');
 if(!fs.existsSync(path.join(projectPath,'project.config.json')))throw new Error('Built native mini-program project not found; run npm run build first');
+const builtProject=JSON.parse(fs.readFileSync(path.join(projectPath,'project.config.json'),'utf8'));
+if(builtProject.appid!==appid)throw new Error('Build AppID differs from preview AppID; rebuild with WECHAT_MINIPROGRAM_APP_ID');
+const builtConfig=vm.runInNewContext(fs.readFileSync(path.join(projectPath,'services/config.js'),'utf8')+';exports.CONFIG', {exports:{}});
+if(!/^https:\/\//.test(builtConfig.apiBaseUrl))throw new Error('Rebuild with WECHAT_API_BASE_URL before preview');
 if(!Number.isInteger(robot)||robot<1||robot>30)throw new Error('WECHAT_CI_ROBOT must be 1-30');
 fs.mkdirSync(path.dirname(output),{recursive:true});
 const require=createRequire(path.join(root,'deploy/wechat-ci/package.json'));

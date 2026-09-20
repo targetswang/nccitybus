@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto';
 import { DomainError, invariant } from '../contracts/index.mjs';
-const stamp = value => Number(value ?? Date.now());
 const json = value => JSON.stringify(value ?? {});
 const parse = value => { try { return JSON.parse(value || '{}'); } catch { return {}; } };
 const text = (value, max=3000) => { const s=String(value ?? '').trim(); invariant(s.length>0&&s.length<=max,'INVALID_TEXT','文本内容无效'); return s; };

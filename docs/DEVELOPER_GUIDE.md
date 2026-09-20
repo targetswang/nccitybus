@@ -2,7 +2,7 @@
 
 更新日期：2026-09-20。适用 PR #1，分支 `release/v4.4.0-rc1`；代码审查基线 `f932e6c4522a08159b929e7b147919db7b368b8a`。
 
-R1～R6 已完成代码修复，回归证据见 [修复验收记录](REVIEW_FIXES_2026-09-20.md)；未配置线上账号、未部署预览。先阅读本指南，再按 [审查问题清单](CODE_REVIEW_2026-09-20.md) 修复和验收。当前仍是候选工程。
+R1～R6 已完成代码修复，回归证据见 [修复验收记录](REVIEW_FIXES_2026-09-20.md)；未配置线上账号、未部署预览。先阅读本指南，再按 [三端一致性](CLIENT_PARITY.md) 联调验收。当前仍是候选工程。
 
 ## 1. 登录手机号与验证码
 
@@ -89,11 +89,19 @@ phoneHash 是挑战标识的一部分，不是登录令牌；不要将测试过�
 
 ### 微信原生小程序
 
-正式源目录是 apps/weapp-native，构建复制到 dist/weapp-native。旧 apps/weapp 不作为正式入口。
+正式源目录是 `apps/weapp-native`，构建编译到 `dist/weapp-native`。旧小程序已删除。不要直接导入未经构建的源码目录。
 
-当前正式客户端在 apps/weapp-native/services/config.ts 中读取 apiBaseUrl，并强制 HTTPS；构建脚本不会用 deploy/client.example.json 自动覆盖这个正式客户端配置。切换环境时先修改正式客户端 config.ts，再构建并核对产物配置，避免继续请求旧服务。
+复制 `deploy/client.example.json` 为已忽略的 `deploy/client.local.json`，填写可访问的 HTTPS API 根地址（不含 `/api/v1`）、AppID、环境和乘车码目标参数，然后执行：
 
-源码中现有地址为 https://app-3hu1sz.v2.appdeploy.ai 。这是**待核验的历史配置地址**，本次未能验证其可访问性及部署版本，不能直接认定为本 PR 的在线预览。接手人员需记录目标地址、实际部署 commit 和健康检查结果。
+```bash
+CLIENT_CONFIG=deploy/client.local.json npm run build
+```
+
+微信开发者工具导入 `dist/weapp-native`。核对生成的 `services/config.js` 和 `project.config.json`；默认配置故意不携带历史服务地址。正式配置 environment=production 时，构建必须提供实际 AppID 和 HTTPS 地址。
+
+CI 可通过 `WECHAT_MINIPROGRAM_APP_ID`、`WECHAT_API_BASE_URL` 覆盖构建配置；官方 preview 工作流需要同名 Secrets 以及上传私钥。API 域名还须配置为微信合法 request 域名，图片/音频及乘车码按实际业务配置。凭据保留在服务端或 Secret 管理设施。
+
+构建成功不等于已部署。当前没有经过核验的在线 H5 地址；研发须记录实际部署 URL、commit、内容 version 及健康检查结果。
 
 ## 4. 常见问题定位
 
@@ -107,7 +115,7 @@ phoneHash 是挑战标识的一部分，不是登录令牌；不要将测试过�
 | H5 有内容但后台为空 | 是否只发布快照，未首次导入规范化表 |
 | 后台发布后生产内容 503 | 先核对是否部署 R3 修复；现要求审核依据和精确草稿版本 |
 | 内容下架无效 | 先核对是否部署 R4 修复；状态应在文本编辑后继续保留 |
-| 小程序服务地址错误 | 正式 config.ts 和 dist/weapp-native，不是仅改 legacy CLIENT_CONFIG |
+| 小程序服务地址错误 | CLIENT_CONFIG / CI 环境变量及 dist/weapp-native/services/config.js |
 | 实时车辆为空 | IVY 配置、Worker 心跳、线路映射、设备时间；未接入时无数据是正确结果 |
 
 ## 5. 接手验收与证据
@@ -116,7 +124,7 @@ phoneHash 是挑战标识的一部分，不是登录令牌；不要将测试过�
 
 | 验收项 | 必须保留的证据 | 当前状态 |
 |---|---|---|
-| 本地启动与首批内容 | commit、Node 版本、启动日志、后台计数 | 步骤已按脚本核对；本轮未重跑完整构建 |
+| 本地启动与首批内容 | commit、Node 版本、启动日志、后台计数 | 以当前提交 CI 及 STATUS 为准 |
 | 六项审查问题 | 修复 commit、回归用例、运行结果 | 代码修复及本地自动回归已完成，见修复验收记录 |
 | 三端用户闭环 | 登录→账户→收藏/反馈→后台回复→用户回读 | R6 自动 HTTP 往返通过；浏览器与真机现场验收待完成 |
 | 正式内容发布 | 草稿隔离、审核、发布、双端版本、回滚 | R3/R4/R5 自动回归通过；目标生产发布待验收 |

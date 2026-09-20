@@ -38,7 +38,7 @@ jobs:
         with:
           name: core-engineering-evidence
           path: |
-            audit/static-check.json
+            audit/local/static-check.json
             audit/media-tests.json
             dist/build-manifest.json
           retention-days: 30

@@ -1,6 +1,0 @@
-<view class="bottom-nav">
-<button wx:for="{{tabs}}" wx:key="page" class="nav-item {{active===item.page?'selected':''}}" data-page="{{item.page}}" bindtap="go">
-<image src="/assets/{{item.icon}}.png"/>
-<text>{{item.label}}</text>
-</button>
-</view>

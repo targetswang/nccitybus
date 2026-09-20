@@ -1,4 +1,4 @@
-/** Pure, platform-free presentation rules. The mini-program CJS copy is generated, never hand edited. */
+/** Pure, platform-free presentation rules. The formal native CJS copy is generated during build, never hand edited. */
 export const ROOTS = [
     'home',
     'live',
@@ -270,3 +270,23 @@ export function stationMatches(snapshot, nodeId) {
     return matches;
 }
 
+
+export function homeContent(catalog) {
+    const home = catalog.home || {};
+    const walks = catalog.walks || [];
+    const ids = home.featuredWalkIds || [];
+    return {
+        heroTitle: home.heroTitle || '把南充，坐成一段风景。',
+        heroSubtitle: home.heroSubtitle || '沿着嘉陵江，慢慢看这座城。',
+        walks: (ids.length ? ids.map(id => walks.find(w => w.id === id)).filter(Boolean) : walks).slice(0, 4),
+        pois: (catalog.pois || []).slice(0, 5),
+        banners: (catalog.banners || []).filter(b => b.placement === 'home').slice(0, home.maxBanners ?? 5),
+        announcements: catalog.announcements || [],
+        routePath: (catalog.nodes || []).map(n => n.name).join(' → ')
+    };
+}
+export function contentTarget(type, id) {
+    const pages = { event: 'event', benefit: 'benefit', walk: 'walk', poi: 'poi', station: 'station', guide: 'guide' };
+    const page = pages[type];
+    return page ? page + (page === 'guide' ? '' : '/' + encodeURIComponent(id || '')) : null;
+}

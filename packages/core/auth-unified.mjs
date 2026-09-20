@@ -16,16 +16,6 @@ function rolePermissions(role){
 }
 export class UnifiedAuthService {
   constructor(db, config, transport=fetch){this.db=db;this.config=config;this.transport=transport;this.accessToken=null;}
-  async ensureUserByPhone(phone, now=Date.now()){
-    phone=normalizePhone(phone);const phoneHash=sha(`phone:${phone}`);
-    return this.db.transaction(`phone:${phoneHash}`,async tx=>{
-      let rows=await tx.query('SELECT id,phone_mask,status FROM users WHERE phone_hash=$1',[phoneHash]);
-      let id=rows[0]?.id;
-      if(!id){id=randomUUID();await tx.query('INSERT INTO users(id,phone_hash,phone_mask,status,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6)',[id,phoneHash,maskPhone(phone),'active',now,now]);await tx.query('INSERT INTO user_identities(id,user_id,kind,provider_key,verified_at,created_at) VALUES($1,$2,$3,$4,$5,$6)',[randomUUID(),id,'phone',phoneHash,now,now]);}
-      else invariant(rows[0].status==='active','USER_DISABLED','账号不可用',403);
-      return {id,phoneHash,phoneMasked:maskPhone(phone)};
-    });
-  }
   async ensureUserByWechat({openid,unionid,phone}, now=Date.now()){
     const appId=this.config.wechatAppId;invariant(appId,'LOGIN_NOT_CONFIGURED','微信登录暂未开通',503);
     const openKey=sha(`wechat:${appId}:${openid}`);const unionKey=unionid?sha(`wechat-union:${unionid}`):null;

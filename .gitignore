@@ -5,8 +5,13 @@ node_modules/
 var/
 .tmp/
 *.log
-apps/weapp/project.private.config.json
+apps/weapp-native/project.private.config.json
 .DS_Store
 
 __pycache__/
 *.pyc
+
+# Reproducible build outputs and local configuration
+dist/
+audit/local/
+deploy/client.local.json

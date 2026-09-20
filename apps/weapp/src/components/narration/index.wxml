@@ -1,6 +1,0 @@
-<view class="narration">
-<button wx:if="{{audioUrl}}" bindtap="toggleAudio">{{playing?'暂停讲解':'播放讲解'}}</button>
-<button bindtap="toggleText">{{expanded?'收起讲解':'阅读讲解'}}</button>
-<view wx:if="{{error}}" class="error">{{error}}</view>
-<view wx:if="{{expanded}}" class="copy">{{text}}</view>
-</view>

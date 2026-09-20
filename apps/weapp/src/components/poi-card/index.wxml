@@ -1,8 +1,0 @@
-<view class="card" bindtap="open">
-<nc-picture src="{{poi.cover}}" alt="{{poi.name}}" label="{{poi.category}}"/>
-<view class="body">
-<view class="name">{{poi.name}}</view>
-<view class="meta">{{nodeName || poi.subcategory}}</view>
-<view class="summary">{{poi.description}}</view>
-</view>
-</view>

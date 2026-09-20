@@ -1,14 +1,16 @@
+import { homeContent, contentTarget } from '../../shared/client-core.mjs';
 import { h } from '../runtime.mjs';
 import { Section, Switch, TransitCode, Icon, go } from '../components/common.mjs';
 import { PoiCard, WalkCard } from '../components/cards.mjs';
 export default function HomePage({ catalog, capabilities, mode, setMode }) {
+    const home = homeContent(catalog);
     return h('div', {
         className: 'home-page'
     }, h('div', {
         className: 'hero'
     }, h('span', {
         className: 'tag'
-    }, '城市漫游环线'), h('h1', null, '把南充，', h('br'), '坐成一段风景。'), h('p', null, '沿着嘉陵江，慢慢看这座城。'), h('svg', {
+    }, '城市漫游环线'), h('h1', null, home.heroTitle), h('p', null, home.heroSubtitle), h('svg', {
         className: 'hero-scene',
         viewBox: '0 0 460 210',
         'aria-hidden': true
@@ -72,7 +74,7 @@ export default function HomePage({ catalog, capabilities, mode, setMode }) {
     }, h(Icon, {
         name: 'info',
         size: 18
-    }), catalog.notice), h(Section, {
+    }), catalog.notice), ...home.banners.map(b => h('button', {className:'panel',key:b.id,onClick:()=>{const target=contentTarget(b.targetType,b.targetId);if(target)go(target);}}, h('strong',null,b.title),h('p',null,b.subtitle))), h(Section, {
         title: '一条线，慢游南充',
         more: '线路总览',
         onMore: () => go('route')
@@ -86,7 +88,7 @@ export default function HomePage({ catalog, capabilities, mode, setMode }) {
         size: 42
     })), h('div', {
         className: 'card-body'
-    }, h('h3', null, catalog.routeName), h('p', null, catalog.nodes.map(x => x.name.replace(/站$/, '')).join(' → ')), h('span', {
+    }, h('h3', null, catalog.routeName), h('p', null, home.routePath), h('span', {
         className: 'tag'
     }, '随到随上 · 随站下车')))), h(Section, {
         title: '漫游精选',
@@ -97,12 +99,12 @@ export default function HomePage({ catalog, capabilities, mode, setMode }) {
         onChange: setMode
     }), h('div', {
         className: 'horizontal-cards'
-    }, mode === 'walks' ? catalog.walks.map(w => h(WalkCard, {
+    }, mode === 'walks' ? home.walks.map(w => h(WalkCard, {
         key: w.id,
         walk: w,
         catalog,
         compact: true
-    })) : catalog.pois.slice(0, 5).map(p => h(PoiCard, {
+    })) : home.pois.map(p => h(PoiCard, {
         key: p.id,
         poi: p,
         compact: true,
@@ -138,6 +140,6 @@ export default function HomePage({ catalog, capabilities, mode, setMode }) {
         name: 'chevron'
     }))))), h('p', {
         className: 'brand-footer'
-    }, '一江风景 · 一城故事'));
+    }, '一江风景 · 一城故事'), ...home.announcements.map(a=>h('section',{className:'panel',key:a.id},h('h2',null,a.title),h('p',null,a.body||a.content))));
 }
 

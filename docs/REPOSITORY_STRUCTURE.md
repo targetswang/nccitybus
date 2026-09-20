@@ -34,7 +34,7 @@
 
 - PostgreSQL：正式环境；
 - SQLite：本地/自动测试；
-- `schema.sql` + `migrations/002..004`；
+- `schema.sql` + `migrations/002..005`；
 - repository / transaction / locking。
 
 正式环境 PostgreSQL 连接失败时不得静默降级 SQLite。
@@ -53,7 +53,7 @@ IVY Bus 接入协议实现：签名、AES、HTTP、MQTT、事件、坐标、同�
 
 ### `packages/client-core/` / `packages/design/`
 
-跨端共享的纯业务逻辑与设计令牌。构建时真实进入 H5/微信产物，不作为摆设目录。
+client-core 的纯函数生成 H5 ESM 和正式微信 CJS（首页、地图、坐标、站点匹配）。design 令牌生成 H5 CSS；原生 WXSS 独立维护。
 
 ## 3. deploy
 
@@ -87,3 +87,7 @@ IVY Bus 接入协议实现：签名、AES、HTTP、MQTT、事件、坐标、同�
 当前统一候选：`release/v4.4.0-rc1`。
 
 该 release 分支用于“可交接的同一版本”而非日常实验。新的功能开发应使用 feature 分支，经过 build/check/test/验收后再合并。不得把生产 secret、微信上传私钥、短信 token、AI key、IVY secret 提交到任何分支。
+
+## 8. 清理范围
+
+旧 apps/weapp 客户端、其专用样式编译器、未引用的旧 AuthService 和重复交接材料已删除。只维护 apps/weapp-native 的 19 页正式入口。已有数据库迁移和历史表保留，升级不删除业务数据。dist 由构建重建，不提交；本地检查写入 audit/local，最终结果以对应 commit 的 CI 为准。

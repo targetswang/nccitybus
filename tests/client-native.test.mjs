@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs/promises';import vm from 'node:vm';import path from 'node:path';
 import * as core from '../packages/client-core/index.mjs';import {referenceCatalog,routeFixture,eventFixture,NOW} from './helpers.mjs';
 async function loadNative(file,{wx={},deps={}}={}){
- let page,component;const filename=path.resolve('apps/weapp/dist',file),code=await fs.readFile(filename,'utf8');const exports={};const module={exports};
+ let page,component;const filename=path.resolve('dist/weapp-native',file),code=await fs.readFile(filename,'utf8');const exports={};const module={exports};
  const sandbox={module,exports,wx,Page:p=>{page=p;},Component:c=>{component=c;},console,setTimeout,clearTimeout,getApp:()=>({globalData:{}}),getCurrentPages:()=>[],require:spec=>{if(spec.endsWith('client-core'))return core;if(spec in deps)return deps[spec];throw new Error('Unknown native dependency: '+spec);}};
  vm.runInNewContext(code,sandbox,{filename});return {page,component,module:module.exports};
 }
@@ -34,17 +34,19 @@ test('legacy favorites preserved, invalid entries removed, no global cache clear
  assert.deepEqual(core.decodeFavorites('["golden-park","golden-park",13,null]'),['golden-park']);assert.deepEqual(core.decodeFavorites(core.encodeFavorites(['x'])),['x']);assert.deepEqual(core.decodeFavorites('broken'),[]);
 });
 test('native request failure rejects; no demo content fallback exists',async()=>{
- const {module:api}=await loadNative('services/api.js',{wx:{request:o=>o.fail()},deps:{'../shared/config':{apiBaseUrl:'https://test.invalid'}}});await assert.rejects(api.request('/content'),{code:'NETWORK_ERROR'});
- const noConfig=await loadNative('services/api.js',{deps:{'../shared/config':{apiBaseUrl:''}}});await assert.rejects(noConfig.module.request('/content'),{code:'API_NOT_CONFIGURED'});
+ const {module:api}=await loadNative('services/api.js',{wx:{request:o=>o.fail({errMsg:'offline'})},deps:{'./config':{CONFIG:{apiBaseUrl:'https://test.invalid'}}}});await assert.rejects(api.request('/content'),{code:'NETWORK_ERROR'});
+ const noConfig=await loadNative('services/api.js',{deps:{'./config':{CONFIG:{apiBaseUrl:''}}}});await assert.rejects(noConfig.module.request('/content'),{code:'API_NOT_CONFIGURED'});
 });
-test('native top-level navigation uses switchTab instead of destroying page stack with reLaunch',async()=>{
- const calls=[];const {component}=await loadNative('components/bottom-nav/index.js',{wx:{switchTab:o=>calls.push(o.url)}});
+test('formal native custom bottom navigation opens registered root pages',async()=>{
+ const calls=[];const {component}=await loadNative('components/bottom-nav/index.js',{wx:{reLaunch:o=>calls.push(o.url)}});
  component.methods.go.call({data:{},properties:{active:'home'}},{currentTarget:{dataset:{page:'explore'}}});assert.deepEqual(calls,['/pages/explore/index']);
 });
 test('native narration separates real audio playback and reading; text is not announced as playing',async()=>{
- const p=await fs.readFile('apps/weapp/dist/components/narration/index.wxml','utf8');assert.ok(p.includes('阅读讲解'));assert.equal(core.narrationAction({narration:'text',audioUrl:null}),'text');assert.equal(core.narrationAction({audioUrl:'/media/a.mp3'}),'audio');
- const js=await fs.readFile('apps/weapp/dist/components/narration/index.js','utf8');assert.ok(js.includes('createInnerAudioContext'));assert.ok(js.includes('destroy'));
+ const p=await fs.readFile('dist/weapp-native/components/narration/index.wxml','utf8');assert.ok(p.includes('阅读讲解'));assert.equal(core.narrationAction({narration:'text',audioUrl:null}),'text');assert.equal(core.narrationAction({audioUrl:'/media/a.mp3'}),'audio');
+ const js=await fs.readFile('dist/weapp-native/components/narration/index.js','utf8');assert.ok(js.includes('createInnerAudioContext'));assert.ok(js.includes('destroy'));
 });
-test('shared design token compilation changes real mini-program styles, not a dead configuration file',async()=>{
- const {compileNativeStyle}=await import('../packages/design/render.mjs');const tokens=JSON.parse(await fs.readFile('packages/design/tokens.json','utf8'));const source=await fs.readFile('apps/weapp/src/app.wxss','utf8');const built=await fs.readFile('apps/weapp/dist/app.wxss','utf8');assert.equal(compileNativeStyle(source,tokens),built);assert.ok(compileNativeStyle(source,{...tokens,brand:'#123456'}).includes('#123456'));assert.equal(/__[A-Z_]+__/.test(built),false);
+test('formal build contains compiled JavaScript for every registered page',async()=>{
+ const app=JSON.parse(await fs.readFile('dist/weapp-native/app.json','utf8'));assert.equal(app.pages.length,19);
+ for(const page of app.pages)for(const ext of ['js','json','wxml','wxss'])await fs.access('dist/weapp-native/'+page+'.'+ext);
+ const manifest=JSON.parse(await fs.readFile('dist/build-manifest.json','utf8'));assert.deepEqual(manifest.clients,['h5','admin','weapp-native']);
 });

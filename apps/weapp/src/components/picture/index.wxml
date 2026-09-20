@@ -1,8 +1,0 @@
-<view class="picture">
-<image wx:if="{{src && !failed}}" src="{{src}}" mode="aspectFill" binderror="failedImage"/>
-<view wx:else class="fallback">
-<image src="/assets/pin.png"/>
-<text>{{alt}}</text>
-</view>
-<text wx:if="{{label}}" class="label">{{label}}</text>
-</view>

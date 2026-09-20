@@ -18,6 +18,9 @@ jobs:
       - name: Install official WeChat compiler toolchain
         run: npm ci --prefix deploy/wechat-ci --ignore-scripts --no-audit --no-fund
       - name: Build native mini-program source
+        env:
+          WECHAT_MINIPROGRAM_APP_ID: ${{ secrets.WECHAT_MINIPROGRAM_APP_ID }}
+          WECHAT_API_BASE_URL: ${{ secrets.WECHAT_API_BASE_URL }}
         run: npm run build
       - name: Write upload private key to runner temp
         env:

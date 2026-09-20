@@ -1,6 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "nc-picture": "/components/picture/index"
-  }
-}

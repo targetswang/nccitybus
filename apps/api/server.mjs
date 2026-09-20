@@ -209,6 +209,8 @@ export function createApi({ config, repository, transport = fetch }) {
                 if (pathname === '/api/v1/admin/content/home' && method === 'POST') {
                     requirePermission('content.write'); const payload = await body(req); return send(res, 200, await content.save('home','home',payload.data||{}, { expectedRevision: payload.expectedRevision, actorUserId: actor.userId }));
                 }
+                if (pathname === '/api/v1/admin/content/route' && method === 'GET') { requirePermission('content.read'); return send(res, 200, await content.route()); }
+                if (pathname === '/api/v1/admin/content/route' && method === 'POST') { requirePermission('content.write'); const payload = await body(req); return send(res, 200, await content.saveRoute(payload.data||{}, { expectedRevision: payload.expectedRevision, actorUserId: actor.userId })); }
                 const listMatch = pathname.match(/^\/api\/v1\/admin\/content\/(nodes|pois|walks|banners|announcements|membershipPlans|benefits|events)$/);
                 if (listMatch && method === 'GET') { requirePermission('content.read'); return send(res, 200, { items: await content.list(listMatch[1]) }); }
                 if (listMatch && method === 'POST') { requirePermission('content.write'); const payload=await body(req); return send(res,201,await content.create(listMatch[1],payload.data||{},{actorUserId:actor.userId})); }

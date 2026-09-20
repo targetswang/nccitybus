@@ -12,7 +12,7 @@ async function setup(t,phone){
  const ctx=await database();t.after(()=>ctx.db.close());await new ContentService(ctx.db,ctx.repo).importCatalog(await referenceCatalog(),{publish:true});
  const auth=new UnifiedAuthService(ctx.db,ctx.config),c=await auth.requestChallenge(phone),login=await auth.verifyChallenge({...c,code:'246810'});
  const server=createApi({config:ctx.config,repository:ctx.repo});await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>server.close(r)));
- const request=async(path,{method='GET',data}={})=>{const r=await fetch(`http://127.0.0.1:${server.address().port}/api/v1${path}`,{method,headers:{'Content-Type':'application/json'},body:data===undefined?undefined:JSON.stringify(data)});const body=await r.json();if(!r.ok)throw Object.assign(new Error(body.error.message),body.error);return body;};
+ const request=async(path,{method='GET',data,token}={})=>{const r=await fetch(`http://127.0.0.1:${server.address().port}/api/v1${path}`,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:data===undefined?undefined:JSON.stringify(data)});const body=await r.json();if(!r.ok)throw Object.assign(new Error(body.error.message),body.error);return body;};
  return {...ctx,auth,login,request};
 }
 test('R6 H5 actual hook sends token for profile/action/logout, rejects malformed cached sessions',async t=>{
@@ -31,7 +31,7 @@ test('R6 H5 actual hook sends token for profile/action/logout, rejects malformed
 
 test('R6 formal mini-program source uses token and revokes on logout through real HTTP API',async t=>{
  const {auth,login,request}=await setup(t,'13900006002');const storage=new Map();
- const wx={getStorageSync:k=>storage.get(k),setStorageSync:(k,v)=>storage.set(k,v),removeStorageSync:k=>storage.delete(k),request:o=>{const p=new URL(o.url).pathname.replace('/api/v1','');request(p,{method:o.method,data:o.data}).then(data=>o.success({statusCode:200,data})).catch(e=>o.success({statusCode:401,data:{error:{code:e.code,message:e.message}}}));}};
+ const wx={getStorageSync:k=>storage.get(k),setStorageSync:(k,v)=>storage.set(k,v),removeStorageSync:k=>storage.delete(k),request:o=>{const p=new URL(o.url).pathname.replace('/api/v1','');const token=String(o.header?.Authorization||'').replace(/^Bearer\s+/i,'')||undefined;request(p,{method:o.method,data:o.data,token}).then(data=>o.success({statusCode:200,data})).catch(e=>o.success({statusCode:401,data:{error:{code:e.code,message:e.message}}}));}};
  const compile=async(file,deps)=>{const code=ts.transpileModule(await fs.readFile(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;const exports={};vm.runInNewContext(code,{exports,require:n=>deps[n],wx,Date,Error});return exports;};
  const api=await compile('apps/weapp-native/services/api.ts',{'./config':{CONFIG:{apiBaseUrl:'https://local-test.invalid'}}});
  const session=await compile('apps/weapp-native/services/session.ts',{'./api':api});

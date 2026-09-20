@@ -105,6 +105,32 @@ function positive(query, key, fallback, max) {
 }
 export function createApi({ config, repository, transport = fetch }) {
     const auth = new UnifiedAuthService(repository.db, config, transport), users = new UserService(repository.db), content = new ContentService(repository.db, repository), admin = new AdminService(repository.db, users), assistant = new AssistantService(repository.db, content, config, transport), operations = new OperationsService(repository.db, content, config, transport), integrations = new IntegrationVerificationService(repository.db, config, assistant, transport), rates = new Map();
+    const RATE_WINDOW_MS = 60000, rateLimit = config.ratePerMinute || 1200;
+    // Per-IP windows are shared through the database so every API replica enforces
+    // one combined limit; if the shared table is unavailable (migration 006 not
+    // applied yet), fall back to per-process counting instead of disabling limits.
+    const enforceRateLimit = async (ip, at) => {
+        const windowStart = Math.floor(at / RATE_WINDOW_MS) * RATE_WINDOW_MS;
+        try {
+            const total = await repository.flushRateWindow(ip, windowStart, 1);
+            return invariant(total <= rateLimit, 'RATE_LIMIT', '请求过于频繁', 429);
+        }
+        catch (e) {
+            if (e instanceof DomainError)
+                throw e;
+        }
+        const prior = rates.get(ip), local = prior && prior.at === windowStart ? prior : {
+            at: windowStart,
+            count: 0
+        };
+        local.count++;
+        rates.set(ip, local);
+        invariant(local.count <= rateLimit, 'RATE_LIMIT', '请求过于频繁', 429);
+        if (rates.size > 5000)
+            for (const [k, v] of rates)
+                if (at - v.at > RATE_WINDOW_MS)
+                    rates.delete(k);
+    };
     const server = http.createServer(async (req, res) => {
         const requestId = randomUUID(), started = Date.now();
         res.setHeader('X-Request-Id', requestId);
@@ -142,20 +168,8 @@ export function createApi({ config, repository, transport = fetch }) {
             const peer = req.socket.remoteAddress || 'unknown';
             const forwarded = String(req.headers['x-real-ip'] || '');
             const ip = config.trustedProxyIps?.includes(peer) && isIP(forwarded) ? forwarded : peer;
-            if (pathname.startsWith('/api/')) {
-                const at = Date.now(), prior = rates.get(ip);
-                const limit = prior && at - prior.at < 60000 ? prior : {
-                    at,
-                    count: 0
-                };
-                limit.count++;
-                rates.set(ip, limit);
-                invariant(limit.count <= (config.ratePerMinute || 1200), 'RATE_LIMIT', '请求过于频繁', 429);
-                if (rates.size > 5000)
-                    for (const [k, v] of rates)
-                        if (at - v.at > 60000)
-                            rates.delete(k);
-            }
+            if (pathname.startsWith('/api/'))
+                await enforceRateLimit(ip, Date.now());
             if (pathname === '/api/v1/health' && method === 'GET') {
                 await repository.db.query('SELECT 1');
                 return send(res, 200, {
@@ -289,7 +303,10 @@ export function createApi({ config, repository, transport = fetch }) {
                 const data = await body(req); return send(res, 200, await auth.wechatPhoneLogin(data.code, data.loginCode));
             }
             if (pathname === '/api/v1/auth/logout' && method === 'POST') {
-                const data = req.headers['content-length'] ? await body(req) : {}; await auth.logout(req.headers.authorization || data._session); return send(res, 200, { ok: true });
+                if (req.headers['content-length'])
+                    await body(req);
+                await auth.logout(req.headers.authorization);
+                return send(res, 200, { ok: true });
             }
             if (pathname === '/api/v1/auth/me' && method === 'GET') {
                 const s = await auth.session(req.headers.authorization); return send(res, 200, { user: { id: s.userId, phoneMasked: s.phoneMasked, role: s.role, audience: s.audience, permissions: s.permissions }, expiresAt: s.expiresAt });
@@ -298,10 +315,10 @@ export function createApi({ config, repository, transport = fetch }) {
                 const s = await auth.session(req.headers.authorization, 'user'); return send(res, 200, { id: s.userId });
             }
             if (pathname === '/api/v1/me/query' && method === 'POST') {
-                const data = await body(req); const s = await auth.session(req.headers.authorization || data._session, 'user'); return send(res, 200, await users.profile(s.userId));
+                await body(req); const s = await auth.session(req.headers.authorization, 'user'); return send(res, 200, await users.profile(s.userId));
             }
             if (pathname === '/api/v1/me/action' && method === 'POST') {
-                const data = await body(req); const s = await auth.session(req.headers.authorization || data._session, 'user'); const catalog = await repository.catalog(); invariant(catalog, 'CONTENT_UNAVAILABLE', '内容尚未发布', 503); return send(res, 200, await users.action(s.userId, data.action, data, catalog));
+                const data = await body(req); const s = await auth.session(req.headers.authorization, 'user'); const catalog = await repository.catalog(); invariant(catalog, 'CONTENT_UNAVAILABLE', '内容尚未发布', 503); return send(res, 200, await users.action(s.userId, data.action, data, catalog));
             }
             if (pathname === '/api/v1/analytics/event' && method === 'POST') {
                 const data = await body(req, 32768); const allowed = new Set(['banner_view','banner_click','content_view','navigation_click','transit_code_click','login_success','member_join','benefit_claim','event_register','support_submit']); invariant(allowed.has(data.event), 'INVALID_EVENT', '事件类型无效'); let userId = null; if (req.headers.authorization) { try { userId = (await auth.session(req.headers.authorization)).userId; } catch {} } await repository.db.query('INSERT INTO analytics_events(id,user_id,event,client,page,object_type,object_id,channel_code,content_version,properties_json,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', [data.eventId || randomUUID(), userId, data.event, String(data.client||'unknown').slice(0,20), String(data.page||'').slice(0,120), String(data.objectType||'').slice(0,80), String(data.objectId||'').slice(0,160), String(data.channelCode||'').slice(0,100), String(data.contentVersion||'').slice(0,160), JSON.stringify(data.properties||{}), Date.now()]); return send(res, 202, { accepted: true });

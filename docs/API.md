@@ -52,7 +52,7 @@ POST /api/v1/admin/content/publish 由 content.publish 权限调用。后台先 
 
 reviewedBy 取认证用户，reviewedAt 由服务端记录，不接受客户端冒用审核人。草稿变化返回 409 REVISION_CONFLICT；缺审核依据返回 APPROVAL_REQUIRED；正式环境禁止未审核发布，已 approved 当前版本也禁止被 reference 覆盖。独立媒体授权校验不放宽。失败保留旧版本。
 
-验证码响应和微信登录响应均为 {token,expiresAt,user}；游客请求体 _session 的值应取 token。后台会话每次请求检查当前 staff_roles，角色降级/禁用立即作用于旧 token。验证码失败次数会提交，5 次后当前挑战失效。
+验证码响应和微信登录响应均为 {token,expiresAt,user}；游客接口必须通过 `Authorization: Bearer <token>` 请求头携带会话，请求体不再接受 `_session`。后台会话每次请求检查当前 staff_roles，角色降级/禁用立即作用于旧 token。验证码失败次数会提交，5 次后当前挑战失效。
 
 ## 反馈重试
 

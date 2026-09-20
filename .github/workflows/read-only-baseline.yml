@@ -1,0 +1,38 @@
+name: Capture public baseline and database test runtime
+on:
+  push:
+    branches: [delivery/full-system-20260920]
+    paths:
+      - scripts/capture-public-baseline.py
+      - .github/workflows/read-only-baseline.yml
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read existing public content and original media without mutation
+        run: python3 scripts/capture-public-baseline.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nanchong-public-baseline-evidence
+          path: public-baseline-evidence
+          retention-days: 7
+  pg-runtime:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Preserve PostgreSQL library modules for local acceptance
+        run: |
+          set -euo pipefail
+          mkdir -p pg-library
+          cp -a "$(pg_config --pkglibdir)" pg-library/modules
+          pg_config > pg-library/build-paths.txt
+          tar -czf pg-library.tgz pg-library
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nanchong-postgres-library
+          path: pg-library.tgz
+          retention-days: 7

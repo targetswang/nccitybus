@@ -19,5 +19,8 @@
     "accept:postgres": "node scripts/postgres-acceptance.mjs",
     "accept:wechat-preview": "node scripts/wechat-preview.mjs",
     "accept:wechat-device": "node scripts/device-acceptance-check.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.8.3"
   }
 }

@@ -1,0 +1,54 @@
+<view class="screen">
+<view wx:if="{{error}}" class="error-box">
+<text>{{error}}</text>
+<button bindtap="retry">重新加载</button>
+</view>
+<view wx:if="{{loading}}" class="loading">正在读取…</view>
+<view class="content" wx:if="{{walk}}">
+<nc-picture src="{{cover}}" alt="{{walk.title}}" label="路线玩法"/>
+<view class="page-intro">
+<view class="h1">{{walk.title}}</view>
+<view class="copy secondary">{{walk.subtitle}}</view>
+</view>
+<view class="facts">
+<view>
+<view class="h3">{{walk.duration}}</view>
+<text>建议游览时长</text>
+</view>
+<view>
+<view class="h3">{{walk.bestTime}}</view>
+<text>建议时段，非运营时刻</text>
+</view>
+</view>
+<view class="panel">
+<view class="h2">这条路线为什么值得走</view>
+<view class="copy">{{walk.story}}</view>
+<view class="copy accent">{{walk.routeLine}}</view>
+<view class="copy">适合：{{walk.audience}}</view>
+</view>
+<view class="section-title">照着这样走</view>
+<view class="step" wx:for="{{steps}}" wx:key="key">
+<nc-picture src="{{item.cover}}" alt="{{item.title}}"/>
+<view class="card-body">
+<text class="step-no">{{index+1}}</text>
+<view class="h2">{{item.title}}</view>
+<view class="copy secondary">{{item.stay}}</view>
+<view class="copy">{{item.intro}}</view>
+<view class="local-tip">
+<view>像当地人一点</view>
+<view class="copy">{{item.localTip}}</view>
+</view>
+<button wx:if="{{item.canNavigate}}" class="button primary full" data-index="{{index}}" bindtap="navigateStep">地图导航</button>
+<view wx:else class="note">暂未确认精确位置，请按地址核实后出行。</view>
+<nc-narration text="{{item.narration}}" audio-url="{{item.audioUrl}}"/>
+<button wx:if="{{item.poiId}}" class="button secondary full" data-page="poi" data-id="{{item.poiId}}" bindtap="open">查看地点详情</button>
+</view>
+</view>
+<view class="panel">
+<view class="h2">出发前知道这些</view>
+<view class="copy" wx:for="{{walk.practical}}" wx:key="*this">{{item}}</view>
+</view>
+</view>
+<view wx:elif="{{!loading && !error}}" class="note">路线不存在或已下线</view>
+<bottom-nav active="{{active || 'home'}}"/>
+</view>

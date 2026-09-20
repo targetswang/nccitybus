@@ -1,0 +1,17 @@
+{
+  "desc": "Tourism pages; private user pages are not indexed.",
+  "rules": [
+    {
+      "action": "disallow",
+      "page": "pages/me/index"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/favorites/index"
+    },
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

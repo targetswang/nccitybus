@@ -1,0 +1,42 @@
+# API v1
+
+完整机器可读契约：[openapi.json](openapi.json)。所有公开端点只返回我方数据模型，不把 IVY 密钥、MQTT 密码或 driver 字段送到客户端。
+
+## 已实现端点
+
+| Method | 路径 | 含义 |
+|---|---|---|
+| GET | `/api/v1/health` | API + 数据库连接探测，不代表公交已连接 |
+| GET | `/api/v1/capabilities` | 可用地图/乘车码/登录能力与内部线路清单 |
+| GET | `/api/v1/transit/live?routeId=` | 线路版本、连接状态、位置、三种时间和新鲜度 |
+| GET | `/api/v1/transit/arrivals?routeId=&stationCode=` | 有证据的剩余站数，etaMinutes 固定 null |
+| GET | `/api/v1/content` | 同一版本完整内容，两端当前使用这个端点 |
+| GET | `/api/v1/content/pois` | nodeId/category/limit/cursor 分页 |
+| GET | `/api/v1/content/pois/{id}` | 单地点 |
+| GET | `/api/v1/content/walks/{id}` | 单路线玩法 |
+| GET | `/api/v1/content/nodes/{id}` | 单文旅节点（不是站牌坐标） |
+| POST | `/api/v1/auth/wechat` | wx.login 临时代码 → 我方 opaque session |
+| POST | `/api/v1/auth/logout` | 注销当前 session |
+| GET | `/api/v1/me` | 我方用户 ID |
+| GET/POST | `/api/v1/me/favorites` | 读取 / 增量合并自己的收藏 |
+| DELETE | `/api/v1/me/favorites/{id}` | 删除自己的收藏 |
+| GET | `/api/v1/admin/integrations` | 服务端管理 token 保护的诊断信息 |
+| POST | `/api/v1/integrations/ivy/events` | 签名加密 hello/排班事件回调 |
+
+## 错误与数据状态
+
+HTTP 错误统一为 `{"error":{"code":"...","message":"...","requestId":"..."}}`。401 表示登录失效，403 表示权限/来源拒绝，404 表示真实不存在（不跳第一个地点），409 表示游标/版本冲突，503 表示未配置/内容未发布，500 为内部错误。
+
+实时未配置时返回 200 + `integration.state=not_configured` + 空 vehicles。**200 不等于实时数据可用。**No-data 和零辆车正在运营不是同一事实。过期位置保留在列表以便解释，但地图隐藏超过不可用阈值的点。
+
+## 内容一致性
+
+`/content` 返回 ETag=version，可条件读取。分页游标绑定内容版本和筛选条件；条件变更返回409。当前规模21个地点，两个客户端读取完整内容快照确保 City Walk 的引用来自同一版本；分页接口可支持后续规模增长，不提前引入跨版本列表/详情不一致。
+
+## 身份
+
+Bearer token 为我方随机 opaque token，数据库只保存 hash；不同账号收藏严格隔离。微信 openid/session_key 不返回前端。H5 当前使用本机匿名收藏，没有伪装为微信已登录；微信端可在真实主体配置后登录并合并本机收藏。微信网页登录 OAuth 不在本次范围内。
+
+## 坐标与到站
+
+路线保留 rawPoint(WGS84) 及 mapPoint(GCJ02|null)，不转换成功不画地图。POI 的参考中心位置不能代替站牌。remainingStops 只使用同线路/跑法/方向且新鲜的进离站事件；起点、重复末站、刚离站跨圈均有测试。分钟预测未实现。

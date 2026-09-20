@@ -1,0 +1,2 @@
+import { loadContent } from '../../services/content';
+Page({data:{station:null as any,index:0,pois:[] as any[],error:''},async onLoad(q:any){try{const c=await loadContent();const i=(c.nodes||[]).findIndex((x:any)=>x.id===q.id);if(i<0)throw new Error('站点不存在或已下线');this.setData({station:c.nodes[i],index:i,pois:(c.pois||[]).filter((p:any)=>p.nodeId===q.id)});}catch(e:any){this.setData({error:e.message});}},live(){wx.reLaunch({url:'/pages/live/index'});}});

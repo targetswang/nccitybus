@@ -1,0 +1,12 @@
+# Place inside your HTTPS server block. Certificates and DNS are operator-managed.
+# API should bind localhost; never expose the database or admin token through this config.
+location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 20s;
+    client_max_body_size 2m;
+}
+# TRUSTED_PROXY_IPS must contain only the actual reverse-proxy peer seen by Node.

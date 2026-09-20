@@ -1,0 +1,22 @@
+[Unit]
+Description=Nanchong City Tour continuous IVY worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nanchong
+Group=nanchong
+WorkingDirectory=/opt/nanchong-city-tour
+EnvironmentFile=/etc/nanchong/server.env
+ExecStart=/usr/bin/node apps/transit-worker/main.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/nanchong-city-tour/var
+
+[Install]
+WantedBy=multi-user.target

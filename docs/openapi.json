@@ -1,0 +1,1782 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "南充城市漫游 API",
+    "version": "4.4.0-rc.1",
+    "description": "Local contract. Production upstream and WeChat integrations not certified."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:3000",
+      "description": "本地开发，不是生产地址"
+    }
+  ],
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "summary": "API/数据库健康，不代表供应商已连通",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/capabilities": {
+      "get": {
+        "summary": "公开能力及内部线路声明",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transit/live": {
+      "get": {
+        "summary": "最后有效位置及连接/新鲜度",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveSnapshot"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/transit/arrivals": {
+      "get": {
+        "summary": "保守剩余站数；分钟未实现",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Arrivals"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stationCode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/content": {
+      "get": {
+        "summary": "全版本内容快照",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentSnapshot"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "ETag版本未变"
+          }
+        }
+      }
+    },
+    "/api/v1/content/pois": {
+      "get": {
+        "summary": "地点分页",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "string"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Poi"
+                      }
+                    },
+                    "hasMore": {
+                      "type": "boolean"
+                    },
+                    "nextCursor": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nodeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/content/pois/{id}": {
+      "get": {
+        "summary": "地点详情",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "string"
+                    },
+                    "item": {
+                      "$ref": "#/components/schemas/Poi"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/content/walks/{id}": {
+      "get": {
+        "summary": "玩法详情",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "string"
+                    },
+                    "item": {
+                      "$ref": "#/components/schemas/Walk"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/content/nodes/{id}": {
+      "get": {
+        "summary": "文旅节点详情",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/wechat": {
+      "post": {
+        "summary": "微信临时代码换我方会话",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "summary": "注销当前session",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "summary": "当前账号",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/favorites": {
+      "get": {
+        "summary": "当前账号收藏",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "增量合并收藏",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "ids"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/favorites/{id}": {
+      "delete": {
+        "summary": "删除自己的收藏",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/integrations": {
+      "get": {
+        "summary": "受保护接入诊断",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/integrations/ivy/events": {
+      "post": {
+        "summary": "IVY签名加密HTTP事件（不是MQTT位置入口）",
+        "responses": {
+          "200": {
+            "description": "成功（实时需进一步检查数据状态）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "signature",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timestamp",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nonce",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "encrypt": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "encrypt"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/counts": {
+      "get": {
+        "summary": "counts",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/home": {
+      "post": {
+        "summary": "home",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "summary": "home",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/preview": {
+      "get": {
+        "summary": "preview",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/publish": {
+      "post": {
+        "summary": "publish",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users": {
+      "get": {
+        "summary": "users",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/tickets": {
+      "get": {
+        "summary": "tickets",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/messages": {
+      "post": {
+        "summary": "messages",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "summary": "messages",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff": {
+      "post": {
+        "summary": "staff",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "summary": "staff",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/challenge": {
+      "post": {
+        "summary": "challenge",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify": {
+      "post": {
+        "summary": "verify",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/wechat-phone": {
+      "post": {
+        "summary": "wechat phone",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "summary": "me",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/me/query": {
+      "post": {
+        "summary": "query",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/me/action": {
+      "post": {
+        "summary": "action",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/event": {
+      "post": {
+        "summary": "event",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/content/{kind}/{id}": {
+      "get": {
+        "summary": "Get admin content record",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Save admin content record",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users/{id}": {
+      "get": {
+        "summary": "Get unified user service profile",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/tickets/{id}": {
+      "post": {
+        "summary": "Update support ticket and optionally create inbox reply",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/assistant/status": {
+      "get": {
+        "summary": "AI operations assistant",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/assistant/ask": {
+      "post": {
+        "summary": "AI operations assistant",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/assistant/tasks": {
+      "get": {
+        "summary": "AI operations assistant",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/assistant/proposals/{id}/apply": {
+      "post": {
+        "summary": "AI operations assistant",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/media": {
+      "get": {
+        "summary": "List managed media assets",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/media/{id}/audit": {
+      "get": {
+        "summary": "Media audit trail",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/media/{id}/review": {
+      "post": {
+        "summary": "Review media rights and place match",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/media/{id}/assign": {
+      "post": {
+        "summary": "Assign confirmed owned media to a POI draft",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/discovery/status": {
+      "get": {
+        "summary": "POI discovery provider status",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/discovery/candidates": {
+      "get": {
+        "summary": "List POI discovery candidates",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/discovery/run": {
+      "post": {
+        "summary": "Run AMap nearby discovery into candidate pool",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/discovery/candidates/{id}/review": {
+      "post": {
+        "summary": "Approve or reject POI candidate",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/discovery/candidates/{id}/import": {
+      "post": {
+        "summary": "Import approved POI candidate as draft",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/integration-verifications": {
+      "get": {
+        "summary": "List redacted live integration verification records",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/integrations/verify/ai": {
+      "post": {
+        "summary": "Verify configured AI model with a live request",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/integrations/verify/wechat": {
+      "post": {
+        "summary": "Verify WeChat AppID and AppSecret against official API",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/integrations/verify/sms/start": {
+      "post": {
+        "summary": "Send live SMS delivery verification code",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/integrations/verify/sms/confirm": {
+      "post": {
+        "summary": "Confirm the SMS code was actually received",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "requestId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "requestId"
+            ]
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "GeoPoint": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "lng": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "crs": {
+            "type": "string",
+            "enum": [
+              "WGS84",
+              "GCJ02"
+            ]
+          }
+        },
+        "required": [
+          "lat",
+          "lng",
+          "crs"
+        ]
+      },
+      "StopOccurrence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer"
+          },
+          "tourismNodeId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rawPoint": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "mapPoint": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GeoPoint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "sequence",
+          "rawPoint",
+          "mapPoint"
+        ]
+      },
+      "TransitBranch": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "direction": {
+            "enum": [
+              "upward",
+              "downward"
+            ]
+          },
+          "circular": {
+            "type": "boolean"
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StopOccurrence"
+            }
+          },
+          "track": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeoPoint"
+            }
+          },
+          "mapTrack": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeoPoint"
+            }
+          }
+        },
+        "required": [
+          "code",
+          "direction",
+          "stops",
+          "track",
+          "mapTrack"
+        ]
+      },
+      "TransitRoute": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "lineCode": {
+            "type": "string"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "operatorId": {
+            "type": "string"
+          },
+          "branches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransitBranch"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "lineCode",
+          "branches"
+        ]
+      },
+      "PublicVehicle": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "lineCode": {
+            "type": "string"
+          },
+          "branchCode": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "mapPoint": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GeoPoint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "locatedAt": {
+            "type": "integer"
+          },
+          "publishedAt": {
+            "type": "integer"
+          },
+          "receivedAt": {
+            "type": "integer"
+          },
+          "freshness": {
+            "enum": [
+              "no_data",
+              "fresh",
+              "stale",
+              "unavailable"
+            ]
+          },
+          "operationState": {
+            "const": "unknown"
+          },
+          "speed": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "azimuth": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "lastStop": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "etaMinutes": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "mapPoint",
+          "locatedAt",
+          "publishedAt",
+          "receivedAt",
+          "freshness",
+          "operationState",
+          "etaMinutes"
+        ]
+      },
+      "LiveSnapshot": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "const": "v1"
+          },
+          "routeVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "route": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/TransitRoute"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "integration": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "enum": [
+                  "not_configured",
+                  "connecting",
+                  "connected",
+                  "error",
+                  "stopped"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "freshness": {
+            "enum": [
+              "no_data",
+              "fresh",
+              "stale",
+              "unavailable"
+            ]
+          },
+          "vehicles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicVehicle"
+            }
+          },
+          "serverTime": {
+            "type": "integer"
+          },
+          "thresholds": {
+            "type": "object",
+            "properties": {
+              "freshMs": {
+                "type": "integer"
+              },
+              "staleMs": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "freshMs",
+              "staleMs"
+            ]
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "routeVersion",
+          "route",
+          "integration",
+          "freshness",
+          "vehicles",
+          "serverTime",
+          "thresholds"
+        ]
+      },
+      "Arrivals": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "const": "v1"
+          },
+          "routeVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "stationCode": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "vehicleId": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "remainingStops": {
+                  "type": "integer"
+                },
+                "etaMinutes": {
+                  "type": "null"
+                },
+                "evidence": {
+                  "const": "vehicle_stop"
+                },
+                "observedAt": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "serverTime": {
+            "type": "integer"
+          }
+        }
+      },
+      "Poi": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nodeId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "enum": [
+              "吃什么",
+              "喝什么",
+              "看什么",
+              "玩什么",
+              "休息"
+            ]
+          },
+          "subcategory": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "mapPoint": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GeoPoint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cover": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "audioUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "narration": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "openingHours": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "priceAdvice": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "nodeId",
+          "name",
+          "description",
+          "mapPoint",
+          "cover"
+        ]
+      },
+      "WalkStep": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          },
+          "poiId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "stay": {
+            "type": "string"
+          },
+          "walkHint": {
+            "type": "string"
+          },
+          "intro": {
+            "type": "string"
+          },
+          "localTip": {
+            "type": "string"
+          },
+          "narration": {
+            "type": "string"
+          },
+          "audioUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "nodeId",
+          "title",
+          "intro",
+          "localTip",
+          "narration"
+        ]
+      },
+      "Walk": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "string"
+          },
+          "bestTime": {
+            "type": "string"
+          },
+          "audience": {
+            "type": "string"
+          },
+          "story": {
+            "type": "string"
+          },
+          "routeLine": {
+            "type": "string"
+          },
+          "coverPoiId": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "practical": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WalkStep"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "story",
+          "coverPoiId",
+          "steps",
+          "practical"
+        ]
+      },
+      "ContentSnapshot": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "publication": {
+            "type": "string"
+          },
+          "routeId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "persona": {
+                  "type": "string"
+                },
+                "mapPoint": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/GeoPoint"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "pois": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Poi"
+            }
+          },
+          "walks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Walk"
+            }
+          },
+          "guides": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "privacy": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "nodes",
+          "pois",
+          "walks"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

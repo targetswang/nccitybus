@@ -1,0 +1,56 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/live/index",
+    "pages/explore/index",
+    "pages/me/index",
+    "pages/route/index",
+    "pages/stations/index",
+    "pages/station/index",
+    "pages/walks/index",
+    "pages/walk/index",
+    "pages/poi/index",
+    "pages/guide/index",
+    "pages/favorites/index",
+    "pages/rights/index",
+    "pages/privacy/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "嘉陵江城市漫游",
+    "navigationBarBackgroundColor": "#fafaf4",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#fafaf4"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/live/index",
+        "text": "实时"
+      },
+      {
+        "pagePath": "pages/explore/index",
+        "text": "漫游"
+      },
+      {
+        "pagePath": "pages/me/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "仅在点击“我的位置”后，用于展示当前位置，不上传到业务服务器。"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

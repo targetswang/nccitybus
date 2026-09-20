@@ -1,0 +1,21 @@
+<view class="screen">
+<view wx:if="{{error}}" class="error-box">
+<text>{{error}}</text>
+<button bindtap="retry">重新加载</button>
+</view>
+<view wx:if="{{loading}}" class="loading">正在读取…</view>
+<view class="content" wx:if="{{catalog}}">
+<view class="h1">每一站，都是一个玩法入口。</view>
+<view class="station-list">
+<view wx:for="{{catalog.nodes}}" wx:key="id" class="station-row" data-page="station" data-id="{{item.id}}" bindtap="open">
+<text class="stop-index">{{index+1}}</text>
+<view class="grow">
+<view class="station-name">{{item.name}}</view>
+<view class="copy secondary">{{item.persona}}</view>
+</view>
+<text>›</text>
+</view>
+</view>
+</view>
+<bottom-nav active="{{active || 'home'}}"/>
+</view>

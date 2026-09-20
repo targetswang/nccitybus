@@ -1,0 +1,32 @@
+{
+  "kind": "synthetic local image pipeline test",
+  "passed": 5,
+  "failed": 0,
+  "results": [
+    {
+      "name": "1200x675 WebP, owned hash path and EXIF removal",
+      "status": "passed"
+    },
+    {
+      "name": "focus-controlled crop produces different real pixels",
+      "status": "passed"
+    },
+    {
+      "name": "small source rejected",
+      "status": "passed"
+    },
+    {
+      "name": "unsupported GIF rejected",
+      "status": "passed"
+    },
+    {
+      "name": "plaintext, credentials and unapproved source hosts rejected",
+      "status": "passed"
+    }
+  ],
+  "not_tested": [
+    "remote site access",
+    "photo-to-place match",
+    "redistribution rights"
+  ]
+}

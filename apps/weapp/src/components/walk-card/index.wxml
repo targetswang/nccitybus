@@ -1,0 +1,11 @@
+<view class="card" bindtap="open">
+<nc-picture src="{{cover}}" alt="{{walk.title}}" label="路线玩法"/>
+<view class="body">
+<view class="meta">{{walk.duration}} · {{walk.bestTime}}</view>
+<view class="name">{{walk.title}}</view>
+<view class="summary">{{walk.subtitle}}</view>
+<view class="tags">
+<text wx:for="{{walk.tags}}" wx:key="*this">{{item}}</text>
+</view>
+</view>
+</view>

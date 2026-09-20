@@ -1,0 +1,31 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/live/index",
+    "pages/explore/index",
+    "pages/me/index",
+    "pages/route/index",
+    "pages/stations/index",
+    "pages/station/index",
+    "pages/walks/index",
+    "pages/walk/index",
+    "pages/poi/index",
+    "pages/guide/index",
+    "pages/favorites/index",
+    "pages/rights/index",
+    "pages/privacy/index",
+    "pages/login/index",
+    "pages/member/index",
+    "pages/events/index",
+    "pages/messages/index",
+    "pages/support/index"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#fafaf4",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

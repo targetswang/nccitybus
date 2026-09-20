@@ -111,6 +111,8 @@ CREATE TABLE IF NOT EXISTS inbox_messages (
   read_at BIGINT,
   created_at BIGINT NOT NULL
 );
+
+-- Normalized tourism/content tables. payload_json keeps the complete source object losslessly.
 CREATE TABLE IF NOT EXISTS tourism_routes (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,

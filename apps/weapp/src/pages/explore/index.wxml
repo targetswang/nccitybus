@@ -1,0 +1,32 @@
+<view class="screen">
+<view wx:if="{{error}}" class="error-box">
+<text>{{error}}</text>
+<button bindtap="retry">重新加载</button>
+</view>
+<view wx:if="{{loading}}" class="loading">正在读取…</view>
+<view class="content" wx:if="{{catalog}}">
+<view class="page-intro">
+<view class="h1">像当地人一样，
+慢慢认识南充。</view>
+<view class="copy secondary">选择一条完整玩法，或发现这一站值得去的地方。</view>
+</view>
+<view class="segmented">
+<button class="{{mode==='walks'?'selected':''}}" data-mode="walks" bindtap="modeChange">路线玩法</button>
+<button class="{{mode==='places'?'selected':''}}" data-mode="places" bindtap="modeChange">沿线地点</button>
+</view>
+<view wx:if="{{mode==='walks'}}">
+<walk-card wx:for="{{walks}}" wx:key="id" walk="{{item}}" cover="{{item.cover}}"/>
+</view>
+<view wx:else>
+<scroll-view scroll-x class="filters">
+<button wx:for="{{categories}}" wx:key="*this" data-value="{{item}}" bindtap="categoryChange" class="{{category===item?'selected':''}}">{{item}}</button>
+</scroll-view>
+<picker mode="selector" range="{{nodeOptions}}" range-key="name" value="{{nodeIndex}}" bindchange="nodeChange">
+<view class="picker-row">按站点筛选 <text>{{nodeOptions[nodeIndex].name}} ﹀</text>
+</view>
+</picker>
+<poi-card wx:for="{{pois}}" wx:key="id" poi="{{item}}"/>
+<view wx:if="{{!pois.length}}" class="note">当前筛选条件下没有地点。</view>
+</view>
+</view>
+</view>

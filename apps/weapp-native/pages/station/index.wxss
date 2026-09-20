@@ -1,0 +1,1 @@
+.hero{display:flex;gap:20rpx;align-items:center;margin-bottom:24rpx}.dot{width:82rpx;height:82rpx;border-radius:50%;background:#eaf2e5;color:#2e6a55;display:flex;align-items:center;justify-content:center;font-size:28rpx}.name{font-size:42rpx;font-family:serif;color:#244f40}.label{font-size:22rpx;color:#8c9783;margin-top:18rpx;margin-bottom:6rpx}

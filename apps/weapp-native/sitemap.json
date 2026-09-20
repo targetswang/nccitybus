@@ -1,0 +1,9 @@
+{
+  "desc": "南充嘉陵江城市漫游 sitemap",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

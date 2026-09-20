@@ -36,8 +36,15 @@ export function integer(value, label, min = 0, max = Number.MAX_SAFE_INTEGER) {
 }
 export function coordinate(lat, lng, crs) {
     invariant(Number.isFinite(lat) && Math.abs(lat) <= 90 && Number.isFinite(lng) && Math.abs(lng) <= 180, 'INVALID_COORDINATE', 'Invalid geographic coordinate');
-    invariant(['WGS84','GCJ02'].includes(crs), 'INVALID_CRS', 'Coordinate system must be explicit');
-    return { lat, lng, crs };
+    invariant([
+        'WGS84',
+        'GCJ02'
+    ].includes(crs), 'INVALID_CRS', 'Coordinate system must be explicit');
+    return {
+        lat,
+        lng,
+        crs
+    };
 }
 export function safeTime(value, now, futureMs = 30000) {
     integer(value, 'time', 1);
@@ -47,7 +54,11 @@ export function safeTime(value, now, futureMs = 30000) {
 export function validateCatalog(value) {
     object(value);
     text(value.version, 'version');
-    for (const key of ['nodes','pois','walks'])
+    for (const key of [
+        'nodes',
+        'pois',
+        'walks'
+    ])
         invariant(Array.isArray(value[key]), 'INVALID_CATALOG', `Missing ${key}`);
     const unique = (rows, field) => {
         const ids = new Set();
@@ -96,7 +107,12 @@ export function validateCatalog(value) {
             if (value.publication === 'approved' && s.audioUrl)
                 invariant(/^\/media\/[a-f0-9]{64}\.(mp3|ogg)$/.test(s.audioUrl) && s.audioApproval?.rightsEvidence, 'UNAPPROVED_AUDIO', w.id);
             invariant(nodes.has(s.nodeId) && (!s.poiId || pois.has(s.poiId)), 'DANGLING_REFERENCE', `Walk ${w.id} step`);
-            for (const key of ['title','intro','localTip','narration'])
+            for (const key of [
+                'title',
+                'intro',
+                'localTip',
+                'narration'
+            ])
                 text(s[key], key, 5000);
         }
         invariant(Array.isArray(w.practical), 'INVALID_CATALOG', 'Walk practical tips missing');
@@ -112,7 +128,10 @@ export function validateRoute(route) {
     const keys = new Set();
     for (const branch of route.branches) {
         identifier(branch.code, 'branchCode');
-        invariant(['upward','downward'].includes(branch.direction), 'INVALID_DIRECTION', 'Unknown direction');
+        invariant([
+            'upward',
+            'downward'
+        ].includes(branch.direction), 'INVALID_DIRECTION', 'Unknown direction');
         const key = `${branch.code}:${branch.direction}`;
         invariant(!keys.has(key), 'DUPLICATE_BRANCH', key);
         keys.add(key);
@@ -137,3 +156,4 @@ export function validateRoute(route) {
     }
     return route;
 }
+

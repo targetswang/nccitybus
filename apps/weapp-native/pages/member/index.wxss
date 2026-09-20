@@ -1,0 +1,1 @@
+.title{font-size:34rpx;font-weight:700}.copy{font-size:25rpx;line-height:1.8;margin:14rpx 0}.hint{background:#edf5e9;color:#4f724e;padding:16rpx;border-radius:14rpx;margin-bottom:18rpx}.error{background:#fff1ec;color:#995c4a;padding:16rpx;border-radius:14rpx;margin-bottom:18rpx}.primary-btn{margin-top:20rpx}

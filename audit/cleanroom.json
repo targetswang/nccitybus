@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "method": "extract candidate ZIP into a new directory; no copied var/node_modules",
+  "commands": [
+    "npm ci --offline --ignore-scripts --no-audit --no-fund",
+    "npm run audit:local"
+  ],
+  "sameBuildManifest": true,
+  "thirdPartyProductionDriversTested": false,
+  "differentTeamTested": false
+}

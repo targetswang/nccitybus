@@ -10,8 +10,12 @@ export async function openDatabase(config) {
         let release;
         tail = new Promise(r => release = r);
         await before;
-        try { return await fn(); }
-        finally { release(); }
+        try {
+            return await fn();
+        }
+        finally {
+            release();
+        }
     };
     if (config.dbDriver === 'postgres') {
         const { Pool } = loadDriver('pg', config.root);
@@ -19,40 +23,62 @@ export async function openDatabase(config) {
             connectionString: config.databaseUrl,
             max: 8,
             connectionTimeoutMillis: 5000,
-            ssl: config.databaseCaFile ? { ca: readFileSync(config.databaseCaFile, 'utf8'), rejectUnauthorized: true } : undefined
+            ssl: config.databaseCaFile ? {
+                ca: readFileSync(config.databaseCaFile, 'utf8'),
+                rejectUnauthorized: true
+            } : undefined
         });
         const exec = async (sql, params = []) => (await pool.query(sql, params)).rows;
         return {
             driver: 'postgres',
             query: exec,
-            exec: async (sql) => { await pool.query(sql); },
+            exec: async (sql) => {
+                await pool.query(sql);
+            },
             transaction: async (key, fn) => {
                 const c = await pool.connect();
                 try {
                     await c.query('BEGIN');
-                    await c.query('SELECT pg_advisory_xact_lock(hashtext($1))', [key]);
+                    await c.query('SELECT pg_advisory_xact_lock(hashtext($1))', [
+                        key
+                    ]);
                     const tx = {
                         query: async (sql, p = []) => (await c.query(sql, p)).rows,
-                        exec: async (sql) => { await c.query(sql); }
+                        exec: async (sql) => {
+                            await c.query(sql);
+                        }
                     };
                     const r = await fn(tx);
                     await c.query('COMMIT');
                     return r;
-                } catch (e) {
+                }
+                catch (e) {
                     await c.query('ROLLBACK');
                     throw e;
-                } finally { c.release(); }
+                }
+                finally {
+                    c.release();
+                }
             },
             close: () => pool.end()
         };
     }
     const { DatabaseSync } = await import('node:sqlite');
-    if (config.sqlitePath !== ':memory:') mkdirSync(dirname(config.sqlitePath), { recursive: true });
-    const db = new DatabaseSync(config.sqlitePath, { timeout: 5000 });
+    if (config.sqlitePath !== ':memory:')
+        mkdirSync(dirname(config.sqlitePath), {
+            recursive: true
+        });
+    const db = new DatabaseSync(config.sqlitePath, {
+        timeout: 5000
+    });
     db.exec('PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;');
     const query = async (sql, params = []) => {
+        // Preserve parameter order, including repeated $n references.
         const bound = [];
-        const rewritten = sql.replace(/\$(\d+)/g, (_, n) => { bound.push(params[Number(n) - 1]); return '?'; });
+        const rewritten = sql.replace(/\$(\d+)/g, (_, n) => {
+            bound.push(params[Number(n) - 1]);
+            return '?';
+        });
         const st = db.prepare(rewritten);
         return st.all(...bound);
     };
@@ -63,10 +89,14 @@ export async function openDatabase(config) {
         transaction: (key, fn) => serialize(async () => {
             db.exec('BEGIN IMMEDIATE');
             try {
-                const result = await fn({ query, exec: async (sql) => db.exec(sql) });
+                const result = await fn({
+                    query,
+                    exec: async (sql) => db.exec(sql)
+                });
                 db.exec('COMMIT');
                 return result;
-            } catch (e) {
+            }
+            catch (e) {
                 db.exec('ROLLBACK');
                 throw e;
             }
@@ -92,3 +122,4 @@ export async function migrate(db) {
         });
     }
 }
+

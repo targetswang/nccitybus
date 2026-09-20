@@ -1,0 +1,871 @@
+{
+  "version": "2026-09-19.reference.2",
+  "publication": "reference",
+  "routeId": "jialing-loop",
+  "title": "嘉陵江城市漫游",
+  "routeName": "嘉陵江城市漫游环线",
+  "description": "查车 · 找站 · 城市漫游 · 刷码上车",
+  "notice": "环线无需预约，随到随上、随站下车；实际运营信息以公交集团为准。",
+  "nodes": [
+    {
+      "id": "golden",
+      "name": "黄金江岸站",
+      "persona": "日落 · 露营 · 亲子 · 户外",
+      "mapPoint": null
+    },
+    {
+      "id": "qinghui",
+      "name": "清晖阁码头站",
+      "persona": "宋韵 · 江景 · 夜游",
+      "mapPoint": null
+    },
+    {
+      "id": "1227",
+      "name": "1227广场站",
+      "persona": "美食 · 茶饮 · 城市街区",
+      "mapPoint": null
+    },
+    {
+      "id": "wangfujing",
+      "name": "王府井广场站",
+      "persona": "商业 · 餐饮 · 室内休闲",
+      "mapPoint": null
+    },
+    {
+      "id": "wetland",
+      "name": "缤纷水岸湿地公园站",
+      "persona": "湿地 · 江景 · 亲子",
+      "mapPoint": null
+    }
+  ],
+  "pois": [
+    {
+      "id": "golden-park",
+      "nodeId": "golden",
+      "name": "黄金江岸湿地公园",
+      "category": "看什么",
+      "subcategory": "湿地公园",
+      "address": "黄金江岸片区",
+      "description": "嘉陵江日落、露营、水上体验和亲子场景较突出。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "这里是黄金江岸。嘉陵江在南充城区留下了很长的滨水空间，而黄金江岸最适合用来开启一场慢游。先别急着赶下一站，沿江走一段，看水面、草地和城市天际线慢慢进入同一个画面。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": "https://imgcdn.scol.com.cn/NEWS_DA6CC9D15182C03111CB74F29DB06184.JPG",
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "golden-hotel",
+      "nodeId": "golden",
+      "name": "南充碧桂园凤悦凤凰酒店",
+      "category": "休息",
+      "subcategory": "酒店/度假",
+      "address": "嘉陵区黄金江岸生态公园",
+      "description": "公园内综合度假配套，适合亲子和休息。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "公园内综合度假配套，适合亲子和休息。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "golden-cafe",
+      "nodeId": "golden",
+      "name": "江岸咖啡厅（凤凰酒店内）",
+      "category": "喝什么",
+      "subcategory": "咖啡/早餐",
+      "address": "南充碧桂园凤悦凤凰酒店内",
+      "description": "适合早餐、咖啡和江景休息。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "适合早餐、咖啡和江景休息。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "golden-cn",
+      "nodeId": "golden",
+      "name": "凤凰轩中餐厅",
+      "category": "吃什么",
+      "subcategory": "中餐",
+      "address": "南充碧桂园凤悦凤凰酒店内",
+      "description": "本地菜与家庭用餐场景。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "本地菜与家庭用餐场景。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "qinghui-pavilion",
+      "nodeId": "qinghui",
+      "name": "南门坝生态公园-清晖阁",
+      "category": "看什么",
+      "subcategory": "文化地标",
+      "address": "滨江中路四段20号南门坝生态公园内",
+      "description": "嘉陵江畔宋式城市地标，适合夜景与文化体验。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "清晖阁的历史记忆可以追溯到唐宋。古籍里曾用“下瞰大江，其景清绝”形容这里。今天的清晖阁重建在南门坝生态公园，飞檐、青瓦和嘉陵江重新连在一起，也让这座城市的宋韵有了可以被看见的空间。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": "https://img.mala.cn/forum/202304/02/095131p5bl315wqqmooojw.jpg",
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "qinghui-park",
+      "nodeId": "qinghui",
+      "name": "南门坝生态公园",
+      "category": "看什么",
+      "subcategory": "公园/江岸",
+      "address": "滨江中路四段",
+      "description": "江岸漫步、绿道和休闲空间。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "南门坝生态公园更像一块城市客厅。清晖阁、江岸步道和绿化空间都在这里交汇，从这里开始一段没有明确终点的散步，反而最像生活在南充的人。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": "https://img.mala.cn/forum/202212/21/231620xk9fllzkllbjjb1l.jpg",
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "qinghui-baguo",
+      "nodeId": "qinghui",
+      "name": "巴国布衣",
+      "category": "吃什么",
+      "subcategory": "川菜",
+      "address": "滨江中路南门坝生态公园内",
+      "description": "游览后的正餐候选，门店现状待运营方核实。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "游览后的正餐候选，门店现状待运营方核实。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "qinghui-culture",
+      "nodeId": "qinghui",
+      "name": "清晖阁文化休闲业态",
+      "category": "玩什么",
+      "subcategory": "汉服/书吧/茶园",
+      "address": "清晖阁临江片区",
+      "description": "文旅业态参考，不指代已核验的具体门店。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "夜里的清晖阁和白天完全是两种气质。灯光把飞檐和楼阁轮廓拉出来，水面又把它们复制一遍。这里最适合放慢脚步，不用急着走完全程。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": "https://img.mala.cn/forum/202310/03/221019qy6bismtpbybsbsi.jpg",
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "1227-chagee",
+      "nodeId": "1227",
+      "name": "霸王茶姬(1227店)",
+      "category": "喝什么",
+      "subcategory": "茶饮",
+      "address": "红光路1227购物广场8栋1层",
+      "description": "商圈内茶饮，适合作为短时休息点。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "到了1227，城市的节奏会明显变快。这里更像南充人的夜生活入口：吃饭、喝茶、逛夜市、看表演。它和清晖阁的古意不同，却恰好让你看到同一座城市的另一面。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": "https://qcloud.dpfile.com/pc/tzYcLHMY1lVpWdujfr9_iHn2SEJH66p7O1QsNf2zfKKZkJb4YhkFwcxp4A9US9h1l0cm-Lf9tDMlLZpO7rb3bg.jpg",
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "1227-hotpot",
+      "nodeId": "1227",
+      "name": "土货重庆火锅(美宇·1227购物广场店)",
+      "category": "吃什么",
+      "subcategory": "火锅",
+      "address": "1227广场福利街5栋1层",
+      "description": "商圈内火锅候选，适合晚餐和多人聚餐。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "南充的夜晚，不一定从景区开始。1227更像一个生活场：很多人先在这里吃饭、喝茶，再去江边散步。把晚餐放在路线第一站，会更接近本地人的节奏。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": "https://img.mala.cn/forum/201911/21/102229bxt3neccf1cji3az.jpg",
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "1227-cafe",
+      "nodeId": "1227",
+      "name": "暖城咖啡餐吧(1227购物广场店)",
+      "category": "喝什么",
+      "subcategory": "咖啡餐吧",
+      "address": "红光路1013号",
+      "description": "逛街休息和下午茶候选。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "一条好的慢游路线，不需要用景点把时间塞满。到了1227，找个地方坐下来喝点东西，看看周围的人，这一段城市漫游就已经完整了。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": "https://dimg04.c-ctrip.com/images/010461200092fg53gF4F1_W_640_10000.jpg?proc=autoorient",
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "1227-billiards",
+      "nodeId": "1227",
+      "name": "星辰台球俱乐部(1227购物广场店)",
+      "category": "玩什么",
+      "subcategory": "台球",
+      "address": "红光路86号美宇·1227购物广场F3层",
+      "description": "室内休闲娱乐候选。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "室内休闲娱乐候选。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "1227-cinema",
+      "nodeId": "1227",
+      "name": "红天瑞国际影城",
+      "category": "玩什么",
+      "subcategory": "电影院",
+      "address": "1227广场5栋4层",
+      "description": "商圈内室内娱乐候选。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "商圈内室内娱乐候选。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "wf-mall",
+      "nodeId": "wangfujing",
+      "name": "王府井广场(南充店)",
+      "category": "玩什么",
+      "subcategory": "购物中心",
+      "address": "江东中路五段(白塔公园旁)",
+      "description": "商业综合体，适合作为餐饮、购物和雨天室内方案。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "从缤纷水岸到王府井，路线会从草地和江风突然切回城市商业。这种反差其实很适合家庭出行：孩子先在户外活动，大人最后能找到吃饭、休息和补给的地方。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": "https://p9.itc.cn/q_70/images03/20210530/52bda0bc6f7641dc991bcdbab3a38c9e.png",
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "wf-hotpot",
+      "nodeId": "wangfujing",
+      "name": "金黔多安顺夺夺粉火锅(王府井店)",
+      "category": "吃什么",
+      "subcategory": "火锅",
+      "address": "望鹤路一段63号",
+      "description": "王府井周边餐饮候选。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "王府井周边餐饮候选。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "wf-billiards",
+      "nodeId": "wangfujing",
+      "name": "名将台球俱乐部(王府井店)",
+      "category": "玩什么",
+      "subcategory": "台球",
+      "address": "王府井广场五国风情街LG层",
+      "description": "商场内娱乐候选。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "商场内娱乐候选。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "wf-steak",
+      "nodeId": "wangfujing",
+      "name": "豪客来牛排(南充王府井餐厅)",
+      "category": "吃什么",
+      "subcategory": "西餐/牛排",
+      "address": "王府井广场商圈",
+      "description": "家庭和日常西餐候选。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "家庭和日常西餐候选。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "wf-juice",
+      "nodeId": "wangfujing",
+      "name": "森林子健康果蔬茶(王府井广场店)",
+      "category": "喝什么",
+      "subcategory": "果蔬茶",
+      "address": "王府井广场商圈",
+      "description": "商圈饮品候选，门店现状待核验。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "商圈饮品候选，门店现状待核验。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "wetland-park",
+      "nodeId": "wetland",
+      "name": "嘉陵江下中坝缤纷水岸湿地公园",
+      "category": "看什么",
+      "subcategory": "湿地公园",
+      "address": "下中坝缤纷水岸片区",
+      "description": "江景、露营、遛娃和户外休闲场景。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "这里是缤纷水岸湿地公园。很多南充人把这里当作离城市很近的“周末草地”。露营、运动、遛娃和江边散步可以同时发生，也让这里成了最适合家庭慢慢待上几个小时的一站。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": "https://www.cscec.com/xwzx_new/zqydt_new/201903/W020190310475198198216.jpg",
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "wetland-hyatt",
+      "nodeId": "wetland",
+      "name": "南充高坪凯悦嘉轩酒店",
+      "category": "休息",
+      "subcategory": "酒店/观景",
+      "address": "江东中路三段1号楼",
+      "description": "滨水休息和观景配套候选。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "滨水休息和观景配套候选。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    },
+    {
+      "id": "wetland-wanda",
+      "nodeId": "wetland",
+      "name": "万达广场(高坪店)",
+      "category": "玩什么",
+      "subcategory": "购物中心",
+      "address": "江东中路片区",
+      "description": "餐饮和室内休闲补充。",
+      "mapPoint": null,
+      "cover": null,
+      "audioUrl": null,
+      "narration": "餐饮和室内休闲补充。",
+      "openingHours": null,
+      "priceAdvice": null,
+      "imageLabel": null,
+      "source": {
+        "kind": "inherited_h5_content",
+        "snapshot": "1789775010896",
+        "verifiedAt": null,
+        "status": "operator_review_required"
+      },
+      "mediaCandidate": {
+        "originalUrl": null,
+        "rightsConfirmed": false,
+        "verifiedAt": null
+      },
+      "publication": "reference"
+    }
+  ],
+  "walks": [
+    {
+      "id": "river-sunset",
+      "title": "嘉陵江日落到宋韵夜色",
+      "subtitle": "从江岸草地走到清晖阁，再去1227吃一顿南充夜宵",
+      "duration": "约2.5小时",
+      "bestTime": "17:00–20:30",
+      "audience": "第一次来南充 / 拍照 / 情侣朋友",
+      "tags": [
+        "日落",
+        "宋韵",
+        "夜市"
+      ],
+      "routeLine": "黄金江岸 → 清晖阁码头 → 1227广场",
+      "story": "南充最适合慢下来的时刻，是太阳开始往嘉陵江面上落的时候。先在黄金江岸看水面变成金色，再坐环线去清晖阁，看宋式飞檐在夜色里亮起来。最后把一晚的烟火气留给1227：夜市、小吃、茶饮和年轻人扎堆的街区，让这条路线从“风景”落回真正的城市生活。",
+      "steps": [
+        {
+          "title": "黄金江岸：先把节奏慢下来",
+          "stay": "建议停留40–50分钟",
+          "walkHint": "查看地点与交通站点信息，按实际位置出行",
+          "intro": "黄金江岸沿嘉陵江展开，适合散步、看日落和在草地边坐一会儿。这里不需要安排太多项目，最好的玩法就是沿江慢慢走，等光线变柔，再开始今天的城市漫游。",
+          "localTip": "晴天傍晚优先；如果想拍人像，日落前30–45分钟的光线最柔和。",
+          "nodeId": "golden",
+          "poiId": "golden-park",
+          "narration": "这里是黄金江岸。嘉陵江在南充城区留下了很长的滨水空间，而黄金江岸最适合用来开启一场慢游。先别急着赶下一站，沿江走一段，看水面、草地和城市天际线慢慢进入同一个画面。",
+          "audioUrl": null
+        },
+        {
+          "title": "清晖阁：看一座城怎样把古意留在江边",
+          "stay": "建议停留45–60分钟",
+          "walkHint": "查看地点与交通站点信息，按实际位置出行",
+          "intro": "清晖阁位于南门坝生态公园，今天看到的建筑是重建后的宋式仿古建筑群。主阁与左右辅塔面向嘉陵江，周边还有景观湖、廊亭等空间。傍晚以后灯光亮起，古建、江面与城市夜色会形成非常有辨识度的南充画面。",
+          "localTip": "喜欢拍照可以先绕湖一圈，再从靠江一侧看主阁；节假日可能有实景演艺和文旅活动。",
+          "nodeId": "qinghui",
+          "poiId": "qinghui-pavilion",
+          "narration": "清晖阁的历史记忆可以追溯到唐宋。古籍里曾用“下瞰大江，其景清绝”形容这里。今天的清晖阁重建在南门坝生态公园，飞檐、青瓦和嘉陵江重新连在一起，也让这座城市的宋韵有了可以被看见的空间。",
+          "audioUrl": null
+        },
+        {
+          "title": "1227：把夜晚交给烟火气",
+          "stay": "建议停留60分钟以上",
+          "walkHint": "查看地点与交通站点信息，按实际位置出行",
+          "intro": "1227购物广场和周边夜市是顺庆夜间消费的重要场景。官方公开报道提到，这里聚集美食、文创、潮玩和夜间活动，已经成为南充城区较有代表性的夜间消费打卡点之一。",
+          "localTip": "如果只是想快速感受氛围，沿夜市主通道走一圈即可；想吃饭可以再从“吃什么”里选一家。",
+          "nodeId": "1227",
+          "poiId": "1227-chagee",
+          "narration": "到了1227，城市的节奏会明显变快。这里更像南充人的夜生活入口：吃饭、喝茶、逛夜市、看表演。它和清晖阁的古意不同，却恰好让你看到同一座城市的另一面。",
+          "audioUrl": null
+        }
+      ],
+      "practical": [
+        "晴天体验最佳；雨天可把黄金江岸缩短，增加1227室内停留。",
+        "环线随到随上，不需要提前预约。",
+        "夜间人流较大，返程前建议先在“实时”查看车辆状态。"
+      ],
+      "coverPoiId": "qinghui-pavilion",
+      "publication": "reference",
+      "verifiedAt": null,
+      "source": {
+        "kind": "inherited_h5_editorial",
+        "snapshot": "1789775010896",
+        "reviewStatus": "operator_review_required"
+      }
+    },
+    {
+      "id": "local-night",
+      "title": "像南充人一样过一个夜晚",
+      "subtitle": "夜市、江风、清晖阁，把游客路线走成本地生活",
+      "duration": "约3小时",
+      "bestTime": "18:30–21:30",
+      "audience": "朋友结伴 / 夜游 / 美食",
+      "tags": [
+        "本地感",
+        "夜生活",
+        "江风"
+      ],
+      "routeLine": "1227广场 → 清晖阁码头 → 嘉陵江夜景",
+      "story": "如果不想像赶景点一样逛南充，就从一顿饭开始。先在1227解决晚餐或夜市小吃，再去清晖阁吹江风、看夜景。顺庆公开报道中也出现过“1227吃饭—夜游嘉陵江—清晖阁”的本地待客方式，这条路线的重点不是打卡数量，而是把南充人的夜生活节奏走一遍。",
+      "steps": [
+        {
+          "title": "1227：先认真吃顿饭",
+          "stay": "建议停留60–90分钟",
+          "walkHint": "查看地点与交通站点信息，按实际位置出行",
+          "intro": "1227周边餐饮密集，火锅、烤肉、茶饮和夜市小吃都比较集中。这里适合把晚餐作为路线起点，不需要先去景区再回来找吃的。",
+          "localTip": "周末热门餐厅可能排队；想节省时间可以优先选择广场内或夜市沿线的店。",
+          "nodeId": "1227",
+          "poiId": "1227-hotpot",
+          "narration": "南充的夜晚，不一定从景区开始。1227更像一个生活场：很多人先在这里吃饭、喝茶，再去江边散步。把晚餐放在路线第一站，会更接近本地人的节奏。",
+          "audioUrl": null
+        },
+        {
+          "title": "清晖阁：夜里再来看它",
+          "stay": "建议停留45分钟",
+          "walkHint": "查看地点与交通站点信息，按实际位置出行",
+          "intro": "清晖阁夜间灯光会把建筑轮廓、景观湖和嘉陵江边的空间重新勾出来。和白天相比，晚上更适合慢走、拍照，也更能感受到古建与现代城市夜景并置的感觉。",
+          "localTip": "夜景拍摄建议找有水面倒影的位置，画面会更完整。",
+          "nodeId": "qinghui",
+          "poiId": "qinghui-culture",
+          "narration": "夜里的清晖阁和白天完全是两种气质。灯光把飞檐和楼阁轮廓拉出来，水面又把它们复制一遍。这里最适合放慢脚步，不用急着走完全程。",
+          "audioUrl": null
+        }
+      ],
+      "practical": [
+        "适合把1227作为晚餐起点。",
+        "如果当天夜游嘉陵江开放，可把游船作为清晖阁之后的延伸项目，具体班次以运营方当日信息为准。",
+        "夜间拍照和步行请注意江边湿滑路段。"
+      ],
+      "coverPoiId": "1227-chagee",
+      "publication": "reference",
+      "verifiedAt": null,
+      "source": {
+        "kind": "inherited_h5_editorial",
+        "snapshot": "1789775010896",
+        "reviewStatus": "operator_review_required"
+      }
+    },
+    {
+      "id": "family-river",
+      "title": "江边草地与亲子半日",
+      "subtitle": "缤纷水岸先撒欢，王府井再吃饭休息",
+      "duration": "约3–4小时",
+      "bestTime": "15:00–19:00",
+      "audience": "亲子 / 家庭 / 周末",
+      "tags": [
+        "露营",
+        "亲子",
+        "室内备选"
+      ],
+      "routeLine": "缤纷水岸湿地公园 → 王府井广场",
+      "story": "这条路线把“户外放电”和“室内休息”放在一起。缤纷水岸湿地公园近年来形成了比较成熟的城市露营与运动场景，草地、江风、球场和亲子活动都适合家庭停留。玩够以后去王府井吃饭、休息，天气突然变化也不至于打乱整个半天。",
+      "steps": [
+        {
+          "title": "缤纷水岸：把下午交给草地和江风",
+          "stay": "建议停留90–120分钟",
+          "walkHint": "查看地点与交通站点信息，按实际位置出行",
+          "intro": "缤纷水岸湿地公园沿嘉陵江东岸展开。2025年的公开报道提到，这里已经形成“露营+宠物”“露营+美食”“露营+运动”等分区，桥下运动空间也有篮球、羽毛球等设施，是南充城市露营比较成熟的地点之一。",
+          "localTip": "带孩子建议预留更长时间；夏季注意防晒，傍晚体验更舒服。",
+          "nodeId": "wetland",
+          "poiId": "wetland-park",
+          "narration": "这里是缤纷水岸湿地公园。很多南充人把这里当作离城市很近的“周末草地”。露营、运动、遛娃和江边散步可以同时发生，也让这里成了最适合家庭慢慢待上几个小时的一站。",
+          "audioUrl": null
+        },
+        {
+          "title": "王府井：从户外切回城市",
+          "stay": "建议停留60–90分钟",
+          "walkHint": "查看地点与交通站点信息，按实际位置出行",
+          "intro": "南充王府井购物中心位于高坪江东中路，集合餐饮、购物和室内休闲。对于亲子路线来说，它最大的价值不是“必须购物”，而是提供一个稳定的吃饭、补给和室内休息点。",
+          "localTip": "遇到下雨或高温，可以直接把这一站提前，变成室内主场。",
+          "nodeId": "wangfujing",
+          "poiId": "wf-mall",
+          "narration": "从缤纷水岸到王府井，路线会从草地和江风突然切回城市商业。这种反差其实很适合家庭出行：孩子先在户外活动，大人最后能找到吃饭、休息和补给的地方。",
+          "audioUrl": null
+        }
+      ],
+      "practical": [
+        "户外段请根据天气灵活调整。",
+        "露营装备、宠物管理和具体开放区域以公园现场规定为准。",
+        "王府井当前地图信息显示为常规购物中心营业，具体营业时间出发前建议再次确认。"
+      ],
+      "coverPoiId": "wetland-park",
+      "publication": "reference",
+      "verifiedAt": null,
+      "source": {
+        "kind": "inherited_h5_editorial",
+        "snapshot": "1789775010896",
+        "reviewStatus": "operator_review_required"
+      }
+    },
+    {
+      "id": "slow-river",
+      "title": "江岸绿道慢生活",
+      "subtitle": "不追景点数量，沿江走一段，再坐车换一个街区",
+      "duration": "约2小时",
+      "bestTime": "08:00–11:00 / 16:00以后",
+      "audience": "独自旅行 / 骑行 / 慢游",
+      "tags": [
+        "绿道",
+        "散步",
+        "咖啡"
+      ],
+      "routeLine": "清晖阁码头 → 嘉陵江绿道 → 1227广场",
+      "story": "嘉陵江风景绿道把南充很多看似分散的城市空间串了起来。公开文旅资料把它形容为穿城而过的一条“彩带”：一边是江面，一边是树荫和步道。最好的方式不是把它当作一个景点，而是把它当作城市本身的一部分。",
+      "steps": [
+        {
+          "title": "南门坝生态公园：从江边开始",
+          "stay": "建议停留30–40分钟",
+          "walkHint": "查看地点与交通站点信息，按实际位置出行",
+          "intro": "南门坝生态公园与清晖阁、嘉陵江步道连成一片。早上和傍晚都适合从这里开始，沿水边和绿道慢慢走，不需要给自己设置固定打卡点。",
+          "localTip": "如果天气舒服，可以少坐一站车，多走一段江边。",
+          "nodeId": "qinghui",
+          "poiId": "qinghui-park",
+          "narration": "南门坝生态公园更像一块城市客厅。清晖阁、江岸步道和绿化空间都在这里交汇，从这里开始一段没有明确终点的散步，反而最像生活在南充的人。",
+          "audioUrl": null
+        },
+        {
+          "title": "1227：找杯咖啡结束这一段",
+          "stay": "建议停留40–60分钟",
+          "walkHint": "查看地点与交通站点信息，按实际位置出行",
+          "intro": "走累以后不一定要继续打卡，可以在1227找咖啡、茶饮或甜品休息。把商业街放在路线最后，会让整个行程从“看城市”自然过渡到“坐下来生活一会儿”。",
+          "localTip": "上午适合咖啡和轻食，晚上则更适合夜市和小吃。",
+          "nodeId": "1227",
+          "poiId": "1227-cafe",
+          "narration": "一条好的慢游路线，不需要用景点把时间塞满。到了1227，找个地方坐下来喝点东西，看看周围的人，这一段城市漫游就已经完整了。",
+          "audioUrl": null
+        }
+      ],
+      "practical": [
+        "适合一个人或两三人慢慢走。",
+        "绿道段根据体力自由缩短或延长。",
+        "骑行时请优先使用允许骑行的路段，并留意行人。"
+      ],
+      "coverPoiId": "qinghui-park",
+      "publication": "reference",
+      "verifiedAt": null,
+      "source": {
+        "kind": "inherited_h5_editorial",
+        "snapshot": "1789775010896",
+        "reviewStatus": "operator_review_required"
+      }
+    }
+  ],
+  "guides": [
+    {
+      "title": "需要预约吗？",
+      "body": "按已确认的一期规划，环线无需预约，随到随上、随站下车。实际运营安排以公交集团为准。"
+    },
+    {
+      "title": "怎么支付？",
+      "body": "沿用南充公交既有乘车码体系；微信乘车码入口完成授权配置后可直接打开。"
+    },
+    {
+      "title": "怎么找车？",
+      "body": "进入“实时”。只显示公交系统真实上报的位置；没有数据时不会生成模拟车辆或到站时间。"
+    },
+    {
+      "title": "下车后去哪？",
+      "body": "在“漫游”选择路线玩法，或按站点、兴趣寻找沿线地点。营业情况、门票和消费信息请出发前核实。"
+    }
+  ],
+  "privacy": "浏览路线不要求登录。收藏默认保存在当前设备，正式微信登录后可同步至账号。只有点击“我的位置”时才请求定位，用于当前地图，不向后端上传个人位置。公交接口密钥不进入客户端。"
+}

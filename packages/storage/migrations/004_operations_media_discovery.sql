@@ -1,4 +1,3 @@
--- Phase 4.3 operations: auditable media workflow, POI discovery/review and live integration verification.
 CREATE TABLE IF NOT EXISTS poi_discovery_candidates (
   id TEXT PRIMARY KEY,
   provider TEXT NOT NULL,
@@ -12,6 +11,8 @@ CREATE TABLE IF NOT EXISTS poi_discovery_candidates (
   distance_m INTEGER,
   source_payload_json TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending_review' CHECK (status IN ('pending_review','approved','rejected','imported')),
+  mapped_category TEXT NOT NULL DEFAULT '',
+  description_draft TEXT NOT NULL DEFAULT '',
   review_note TEXT NOT NULL DEFAULT '',
   reviewer_user_id TEXT,
   imported_poi_id TEXT REFERENCES pois(id),
@@ -44,3 +45,14 @@ CREATE TABLE IF NOT EXISTS integration_verifications (
   created_at BIGINT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_integration_verify_kind_time ON integration_verifications(integration,created_at);
+
+CREATE TABLE IF NOT EXISTS sms_delivery_challenges (
+  id TEXT PRIMARY KEY,
+  phone_hash TEXT NOT NULL,
+  phone_mask TEXT NOT NULL,
+  code_hash TEXT NOT NULL,
+  expires_at BIGINT NOT NULL,
+  consumed_at BIGINT,
+  created_at BIGINT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_sms_delivery_challenge_phone ON sms_delivery_challenges(phone_hash,created_at);

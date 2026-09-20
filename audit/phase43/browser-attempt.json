@@ -1,0 +1,6 @@
+{
+  "status": "blocked",
+  "reason": "Chromium execution policy blocks localhost: ERR_BLOCKED_BY_ADMINISTRATOR",
+  "claimedPassed": false,
+  "note": "No browser E2E success is claimed; Node HTTP tests cover API lifecycle separately."
+}

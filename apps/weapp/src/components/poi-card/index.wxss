@@ -1,0 +1,28 @@
+.card {
+  background: white;
+  border: 1rpx solid __BORDER__;
+  border-radius: 32rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx
+}
+.body {
+  padding: 28rpx
+}
+.name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: __TEXT__;
+  line-height: 1.5
+}
+.meta,.summary {
+  font-size: __SECONDARY_RPX__;
+  line-height: 1.75;
+  color: __MUTED__;
+  margin-top: 12rpx
+}
+.summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden
+}

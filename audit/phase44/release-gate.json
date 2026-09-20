@@ -1,0 +1,67 @@
+{
+  "status": "blocked",
+  "checks": [
+    {
+      "name": "production integration lock",
+      "status": "passed",
+      "detail": {
+        "pg": "8.16.3",
+        "mqtt": "5.10.4"
+      }
+    },
+    {
+      "name": "PostgreSQL 16 compatibility evidence",
+      "status": "passed",
+      "detail": {
+        "verifiedAt": "2026-09-20T07:54:09.560Z",
+        "counts": {
+          "routes": 1,
+          "nodes": 5,
+          "pois": 21,
+          "media": 0,
+          "walks": 4,
+          "steps": 9
+        }
+      }
+    },
+    {
+      "name": "official WeChat toolchain lock",
+      "status": "passed",
+      "detail": {
+        "version": "2.1.31",
+        "note": "isolated build tool; audit evidence is retained separately"
+      }
+    },
+    {
+      "name": "official WeChat preview evidence",
+      "status": "blocked",
+      "reason": "real miniprogram-ci preview has not been run with AppID/upload key"
+    },
+    {
+      "name": "iOS + Android device evidence",
+      "status": "blocked",
+      "reason": "physical-device evidence missing"
+    },
+    {
+      "name": "pg runtime",
+      "status": "blocked",
+      "reason": "pg is not installed: run the production integration install/lock gate"
+    },
+    {
+      "name": "mqtt runtime",
+      "status": "blocked",
+      "reason": "mqtt is not installed: run the production integration install/lock gate"
+    },
+    {
+      "name": "production configuration",
+      "status": "blocked",
+      "reason": "NODE_ENV is not production"
+    }
+  ],
+  "mustBeRunAfterCredentials": [
+    "supplier IVY HTTP/MQTT replay",
+    "official WeChat preview with upload key/IP whitelist",
+    "iOS + Android physical-device acceptance",
+    "on-route field acceptance"
+  ]
+}

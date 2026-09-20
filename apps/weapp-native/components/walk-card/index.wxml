@@ -1,0 +1,11 @@
+<view class="card" bindtap="open">
+  <view class="cover">
+    <view class="cover-title">CITY WALK</view>
+    <view class="cover-sub">{{walk.duration}} · {{walk.bestTime}}</view>
+  </view>
+  <view class="body">
+    <view class="name">{{walk.title}}</view>
+    <view class="desc">{{walk.subtitle}}</view>
+    <view class="tags"><text wx:for="{{walk.tags}}" wx:key="*this">{{item}}</text></view>
+  </view>
+</view>

@@ -1,0 +1,24 @@
+import { randomUUID } from 'node:crypto';
+import { DomainError, invariant } from '../contracts/index.mjs';
+const ROLES=new Set(['admin','publisher','operator','customer_service','viewer']);
+const TICKET_STATES=new Set(['open','processing','waiting','resolved','closed']);
+const text=(v,max=3000)=>{const s=String(v??'').trim();invariant(s.length<=max,'INVALID_TEXT','文本过长');return s;};
+export class AdminService{
+  constructor(db,userService){this.db=db;this.users=userService;}
+  async listUsers(){const rows=await this.db.query('SELECT id,phone_mask,nickname,avatar_url,status,created_at,updated_at FROM users ORDER BY created_at DESC LIMIT 100');return{items:rows.map(x=>({...x,createdAt:Number(x.created_at),updatedAt:Number(x.updated_at)})),limited:true};}
+  async userDetail(userId){invariant(typeof userId==='string'&&userId.length<=160,'INVALID_ID','用户ID无效');return this.users.profile(userId);}
+  async listTickets({status=null,kind=null}={}){
+    invariant(!status||TICKET_STATES.has(status),'INVALID_STATE','工单状态无效');invariant(!kind||['ticket','privacy'].includes(kind),'INVALID_KIND','工单类型无效');
+    let sql='SELECT t.*,u.phone_mask FROM support_tickets t JOIN users u ON u.id=t.user_id',args=[],where=[];
+    if(status){args.push(status);where.push(`t.status=$${args.length}`);}if(kind){args.push(kind);where.push(`t.kind=$${args.length}`);}if(where.length)sql+=' WHERE '+where.join(' AND ');sql+=' ORDER BY t.created_at DESC LIMIT 100';
+    const rows=await this.db.query(sql,args);return{items:rows.map(x=>({...x,phoneMasked:x.phone_mask,createdAt:Number(x.created_at),updatedAt:Number(x.updated_at)})),limited:true};
+  }
+  async updateTicket(id,{status,publicReply='',internalNote=''},actorUserId,now=Date.now()){
+    invariant(typeof id==='string'&&id.length<=160,'INVALID_ID','工单ID无效');invariant(TICKET_STATES.has(status),'INVALID_STATE','工单状态无效');publicReply=text(publicReply);internalNote=text(internalNote);
+    return this.db.transaction(`support:${id}`,async tx=>{const row=(await tx.query('SELECT * FROM support_tickets WHERE id=$1',[id]))[0];invariant(row,'NOT_FOUND','工单不存在',404);const changedReply=publicReply&&publicReply!==String(row.public_reply||'');await tx.query('UPDATE support_tickets SET status=$1,public_reply=$2,internal_note=$3,updated_at=$4 WHERE id=$5',[status,publicReply,internalNote,now,id]);let messageId=null;if(changedReply){messageId=randomUUID();await tx.query('INSERT INTO inbox_messages(id,user_id,title,body,target,read_at,created_at) VALUES($1,$2,$3,$4,$5,$6,$7)',[messageId,row.user_id,'客服回复',publicReply,'support/'+id,null,now]);}await tx.query('INSERT INTO content_edit_history(id,kind,business_id,before_json,after_json,revision,actor_user_id,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[randomUUID(),'support_ticket',id,JSON.stringify({status:row.status,publicReply:row.public_reply||''}),JSON.stringify({status,publicReply}),1,actorUserId,now]);return{record:{id,userId:row.user_id,status,publicReply,updatedAt:now},messageId};});
+  }
+  async listMessages(){const rows=await this.db.query('SELECT m.id,m.user_id,m.title,m.body,m.target,m.read_at,m.created_at,u.phone_mask FROM inbox_messages m JOIN users u ON u.id=m.user_id ORDER BY m.created_at DESC LIMIT 100');return{items:rows.map(x=>({...x,phoneMasked:x.phone_mask,readAt:x.read_at?Number(x.read_at):null,createdAt:Number(x.created_at)})),limited:true};}
+  async sendMessage({userId,title,body,target=''},now=Date.now()){title=text(title,120);body=text(body,3000);target=text(target,300);const u=(await this.db.query('SELECT status FROM users WHERE id=$1',[userId]))[0];invariant(u?.status==='active','USER_UNAVAILABLE','用户不存在或不可用',404);const id=randomUUID();await this.db.query('INSERT INTO inbox_messages(id,user_id,title,body,target,read_at,created_at) VALUES($1,$2,$3,$4,$5,$6,$7)',[id,userId,title,body,target,null,now]);return{id,userId,title,target,createdAt:now};}
+  async listStaff(){const rows=await this.db.query('SELECT s.user_id,s.role,s.enabled,s.updated_at,u.phone_mask,u.nickname FROM staff_roles s JOIN users u ON u.id=s.user_id ORDER BY s.updated_at DESC');return{items:rows.map(x=>({userId:x.user_id,role:x.role,enabled:Boolean(x.enabled),updatedAt:Number(x.updated_at),phoneMasked:x.phone_mask,nickname:x.nickname}))};}
+  async setStaff({userId,role,enabled=true},now=Date.now()){invariant(ROLES.has(role),'INVALID_ROLE','角色无效');const u=(await this.db.query('SELECT status FROM users WHERE id=$1',[userId]))[0];invariant(u?.status==='active','USER_UNAVAILABLE','用户不存在或不可用',404);await this.db.query('INSERT INTO staff_roles(user_id,role,enabled,updated_at) VALUES($1,$2,$3,$4) ON CONFLICT(user_id) DO UPDATE SET role=excluded.role,enabled=excluded.enabled,updated_at=excluded.updated_at',[userId,role,enabled?1:0,now]);return{userId,role,enabled:Boolean(enabled),updatedAt:now};}
+}

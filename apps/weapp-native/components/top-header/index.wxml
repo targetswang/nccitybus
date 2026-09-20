@@ -1,0 +1,9 @@
+<view class="header safe-top">
+  <view wx:if="{{showBack}}" class="back" bindtap="back">‹</view>
+  <view wx:else class="brand">巴</view>
+  <view class="meta">
+    <view class="title">{{title}}</view>
+    <view class="sub">{{subtitle}}</view>
+  </view>
+  <view class="help" bindtap="help">?</view>
+</view>

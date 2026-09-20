@@ -1,0 +1,6 @@
+<view class="nav safe-bottom">
+  <view class="item {{active==='home'?'active':''}}" data-page="home" bindtap="go"><text class="icon">⌂</text><text>首页</text></view>
+  <view class="item {{active==='live'?'active':''}}" data-page="live" bindtap="go"><text class="icon">⌖</text><text>实时</text></view>
+  <view class="item {{active==='explore'?'active':''}}" data-page="explore" bindtap="go"><text class="icon">◇</text><text>漫游</text></view>
+  <view class="item {{active==='me'?'active':''}}" data-page="me" bindtap="go"><text class="icon">○</text><text>我的</text></view>
+</view>

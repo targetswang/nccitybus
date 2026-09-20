@@ -1,0 +1,23 @@
+{
+  "name": "nanchong-city-tour",
+  "version": "4.4.0-rc.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.16.0 <23"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node apps/api/main.mjs",
+    "worker": "node apps/transit-worker/main.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check.mjs",
+    "audit:local": "npm run build && npm run check && npm test",
+    "content:publish": "node scripts/publish-content.mjs",
+    "db:migrate": "node scripts/migrate.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "accept:postgres": "node scripts/postgres-acceptance.mjs",
+    "accept:wechat-preview": "node scripts/wechat-preview.mjs",
+    "accept:wechat-device": "node scripts/device-acceptance-check.mjs"
+  }
+}

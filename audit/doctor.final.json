@@ -1,0 +1,21 @@
+{
+  "node": "22.16.0",
+  "databaseDriver": "sqlite",
+  "missingIvy": [
+    "IVY_BUS_HOST",
+    "IVY_APP_KEY",
+    "IVY_APP_SECRET",
+    "IVY_ENCODING_AES_KEY",
+    "at least one mapped route",
+    "IVY_MQTT_BROKER",
+    "IVY_MQTT_USERNAME",
+    "IVY_MQTT_PASSWORD",
+    "IVY_MQTT_CLIENT_ID",
+    "IVY_PROTOCOL_CONFIRMED"
+  ],
+  "h5MapConfigured": false,
+  "coordinateConversionConfigured": false,
+  "transitCodeConfigured": false,
+  "wechatLoginConfigured": false,
+  "notice": "Only configuration presence is inspected; this does not prove third-party connectivity."
+}

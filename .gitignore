@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.*
+!.env.example
+var/
+.tmp/
+*.log
+apps/weapp/project.private.config.json
+.DS_Store
+
+__pycache__/
+*.pyc

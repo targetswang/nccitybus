@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "全部环线站点",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index",
+    "nc-picture": "/components/picture/index",
+    "poi-card": "/components/poi-card/index",
+    "walk-card": "/components/walk-card/index",
+    "nc-narration": "/components/narration/index"
+  },
+  "enablePullDownRefresh": true
+}

@@ -67,6 +67,14 @@ export class ContentService {
     });
   }
   async saveHome(patch,{expectedRevision,actorUserId=null,now=Date.now()}={}){return this.db.transaction('content:home',async tx=>{const row=(await tx.query('SELECT payload_json,revision FROM home_config WHERE singleton=1'))[0];invariant(row,'NOT_FOUND','首页配置不存在',404);const revision=Number(row.revision);invariant(revision===expectedRevision,'REVISION_CONFLICT','首页配置已变化',409);const before=decode(row.payload_json),after=merge(before,patch),next=revision+1;await tx.query('UPDATE home_config SET payload_json=$1,revision=$2,updated_at=$3 WHERE singleton=1',[encode(after),next,now]);await tx.query('INSERT INTO content_edit_history(id,kind,business_id,before_json,after_json,revision,actor_user_id,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[randomUUID(),'home','home',encode(before),encode(after),next,actorUserId,now]);return {id:'home',revision:next,data:after};});}
+  async route(){const r=(await this.db.query('SELECT * FROM tourism_routes ORDER BY sort_order,id LIMIT 1'))[0];return r?{id:r.id,status:r.status||'active',revision:Number(r.updated_at),data:decode(r.payload_json)}:null;}
+  async saveRoute(patch,{expectedRevision,actorUserId=null,now=Date.now()}={}){return this.db.transaction('content:route',async tx=>{
+    const row=(await tx.query('SELECT * FROM tourism_routes ORDER BY sort_order,id LIMIT 1'))[0];invariant(row,'NOT_FOUND','线路配置不存在',404);
+    invariant(expectedRevision===Number(row.updated_at),'REVISION_CONFLICT','线路配置已变化，请刷新',409);
+    const before=decode(row.payload_json),after=merge(before,patch);
+    await tx.query('UPDATE tourism_routes SET name=$1,description=$2,payload_json=$3,updated_at=$4 WHERE id=$5',[after.name||row.name,after.description||'',encode(after),now,row.id]);
+    await tx.query('INSERT INTO content_edit_history(id,kind,business_id,before_json,after_json,revision,actor_user_id,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[randomUUID(),'route',row.id,encode(before),encode(after),1,actorUserId,now]);
+    return {id:row.id,status:row.status||'active',revision:now,data:after};});}
   async buildCatalog(){
     const route=(await this.db.query('SELECT * FROM tourism_routes ORDER BY sort_order,id LIMIT 1'))[0];invariant(route,'CONTENT_UNAVAILABLE','线路内容尚未导入',503);const meta=decode(route.payload_json);const nodes=(await this.db.query("SELECT payload_json FROM tourism_nodes ORDER BY sequence,id")).map(r=>decode(r.payload_json));
     const pois=(await this.db.query("SELECT p.payload_json,m.storage_path,m.source_url FROM pois p LEFT JOIN media_assets m ON m.id=p.cover_media_id WHERE p.status!='offline' ORDER BY p.sort_order,p.id")).map(r=>{const p=decode(r.payload_json);if(!p.cover&&r.storage_path)p.cover='/media/'+r.storage_path;if(!p.cover&&r.source_url)p.mediaCandidate={...(p.mediaCandidate||{}),originalUrl:r.source_url};return p;});

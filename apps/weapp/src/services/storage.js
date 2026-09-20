@@ -31,14 +31,10 @@ async function toggleFavorite(id) {
     const session = getSession();
     if (session) {
         try {
-            await api.request(selected ? '/me/favorites/' + encodeURIComponent(id) : '/me/favorites', {
-                method: selected ? 'DELETE' : 'POST',
-                data: selected ? undefined : {
-                    ids: [
-                        id
-                    ]
-                },
-                token: session.token
+            // 与 H5 统一：收藏走 /me/action 的 favorite 动作，不再使用旧的 REST 收藏端点。
+            await api.meAction(session.token, 'favorite', {
+                id,
+                operation: selected ? 'remove' : 'add'
             });
         }
         catch (error) {
@@ -66,19 +62,15 @@ async function syncFavorites(catalog) {
     if (!session)
         return;
     const valid = getFavorites().filter(id => catalog.pois.some(p => p.id === id));
-    await api.request('/me/favorites', {
-        method: 'POST',
-        data: {
-            ids: valid
-        },
-        token: session.token
+    // 与 H5 统一：合并与读取都走 /me/action 的 favorite 动作 / /me/query。
+    await api.meAction(session.token, 'favorite', {
+        operation: 'merge',
+        ids: valid
     });
-    const remote = await api.request('/me/favorites', {
-        token: session.token
-    });
+    const profile = await api.meQuery(session.token);
     wx.setStorageSync(KEY, encodeFavorites([
         ...getFavorites(),
-        ...remote.ids
+        ...(profile.favorites || [])
     ]));
 }
 module.exports = {

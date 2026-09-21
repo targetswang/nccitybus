@@ -57,6 +57,11 @@ jobs:
           REVIEW_POSTGRES_URL: postgresql://nanchong:acceptance-only@127.0.0.1:5432/nanchong_acceptance
           POSTGRES_ACCEPTANCE_CONFIRM: I_UNDERSTAND_THIS_DATABASE_IS_FOR_TESTING
         run: node --test tests/review-regressions.test.mjs | tee audit/postgres/review-tests.tap
+      - name: Verify lossless content reconciliation on PostgreSQL
+        env:
+          REVIEW_POSTGRES_URL: postgresql://nanchong:acceptance-only@127.0.0.1:5432/nanchong_acceptance
+          POSTGRES_ACCEPTANCE_CONFIRM: I_UNDERSTAND_THIS_DATABASE_IS_FOR_TESTING
+        run: node --test tests/content-sync.test.mjs | tee audit/postgres/content-sync.tap
       - uses: actions/upload-artifact@v4
         if: always()
         with:

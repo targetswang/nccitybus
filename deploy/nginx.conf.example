@@ -10,3 +10,13 @@ location / {
     client_max_body_size 2m;
 }
 # TRUSTED_PROXY_IPS must contain only the actual reverse-proxy peer seen by Node.
+
+# Base64 upload envelope for decoded images up to 3 MiB. Other API limits remain unchanged.
+location = /api/v1/admin/media/upload {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    client_max_body_size 5m;
+    proxy_read_timeout 20s;
+}

@@ -22,8 +22,6 @@ jobs:
         run: npm run build
       - name: Static and cross-client integrity checks
         run: npm run check
-      - name: Run Node regression suite
-        run: npm test
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -31,6 +29,8 @@ jobs:
           cache-dependency-path: requirements-dev.txt
       - name: Install media test dependency
         run: pip install -r requirements-dev.txt
+      - name: Run Node regression suite
+        run: npm test
       - name: Run media pipeline regression
         run: python tests/media_test.py
       - uses: actions/upload-artifact@v4

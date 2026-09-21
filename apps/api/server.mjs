@@ -1,3 +1,4 @@
+import { uploadImage } from '../../packages/core/media-upload.mjs';
 import { isIP } from 'node:net';
 import http from 'node:http';
 import fs from 'node:fs/promises';
@@ -61,6 +62,7 @@ function publicPoi(p, base = '') {
 function publicCatalog(c, base) {
     return {
         ...Object.fromEntries(Object.entries(c).filter(([k]) => !['approval', 'source'].includes(k))),
+        ...Object.fromEntries(['events','banners','benefits','membershipPlans','announcements'].map(kind=>[kind,(c[kind]||[]).map(({mediaApproval,coverMediaId,...item})=>({...item,cover:mediaUrl(item.cover,base)}))])),
         pois: c.pois.map(p => publicPoi(p, base)),
         walks: c.walks.map(({ source, ...w }) => ({
             ...w,
@@ -214,13 +216,18 @@ export function createApi({ config, repository, transport = fetch }) {
                         poiDiscovery: operations.discoveryStatus()
                     });
                 }
+                if (pathname === '/api/v1/admin/content/comparison' && method === 'GET') { requirePermission('content.read'); return send(res,200,await content.comparison()); }
+                if (pathname === '/api/v1/admin/content/reconcile' && method === 'POST') { requirePermission('content.write'); const payload=await body(req); invariant(typeof payload.expectedVersion==='string','VERSION_REQUIRED','请先核对线上版本'); return send(res,200,await content.reconcilePublished({actorUserId:actor.userId,expectedVersion:payload.expectedVersion})); }
                 if (pathname === '/api/v1/admin/content/counts' && method === 'GET') { requirePermission('content.read'); return send(res, 200, await content.counts()); }
                 if (pathname === '/api/v1/admin/content/home' && method === 'GET') { requirePermission('content.read'); return send(res, 200, await content.home()); }
                 if (pathname === '/api/v1/admin/content/home' && method === 'POST') {
                     requirePermission('content.write'); const payload = await body(req); return send(res, 200, await content.save('home','home',payload.data||{}, { expectedRevision: payload.expectedRevision, actorUserId: actor.userId }));
                 }
+                if (pathname === '/api/v1/admin/content/route' && method === 'GET') { requirePermission('content.read'); return send(res, 200, await content.route()); }
+                if (pathname === '/api/v1/admin/content/route' && method === 'POST') { requirePermission('content.write'); const payload = await body(req); return send(res, 200, await content.saveRoute(payload.data||{}, { expectedRevision: payload.expectedRevision, actorUserId: actor.userId })); }
                 const listMatch = pathname.match(/^\/api\/v1\/admin\/content\/(nodes|pois|walks|banners|announcements|membershipPlans|benefits|events)$/);
                 if (listMatch && method === 'GET') { requirePermission('content.read'); return send(res, 200, { items: await content.list(listMatch[1]) }); }
+                if (listMatch && method === 'POST') { requirePermission('content.write'); const payload=await body(req); return send(res,201,await content.create(listMatch[1],payload.data||{},{actorUserId:actor.userId})); }
                 const itemMatch = pathname.match(/^\/api\/v1\/admin\/content\/(nodes|pois|walks|banners|announcements|membershipPlans|benefits|events)\/([^/]+)$/);
                 if (itemMatch && method === 'GET') { requirePermission('content.read'); const item = await content.get(itemMatch[1], itemMatch[2]); invariant(item, 'NOT_FOUND', '内容不存在', 404); return send(res, 200, item); }
                 if (itemMatch && method === 'POST') { requirePermission('content.write'); const payload = await body(req); return send(res, 200, await content.save(itemMatch[1], itemMatch[2], payload.data||{}, { expectedRevision: payload.expectedRevision, actorUserId: actor.userId })); }
@@ -237,6 +244,8 @@ export function createApi({ config, repository, transport = fetch }) {
                 if (pathname === '/api/v1/admin/staff' && method === 'GET') { requirePermission('*'); return send(res, 200, await admin.listStaff()); }
                 if (pathname === '/api/v1/admin/staff' && method === 'POST') { requirePermission('*'); return send(res, 200, await admin.setStaff(await body(req))); }
                 if (pathname === '/api/v1/admin/media' && method === 'GET') { requirePermission('media.manage'); return send(res, 200, await operations.listMedia({ rightsStatus:url.searchParams.get('rightsStatus'), matchStatus:url.searchParams.get('matchStatus') })); }
+                if (pathname === '/api/v1/admin/media/upload' && method === 'POST') { requirePermission('media.manage'); return send(res,201,await uploadImage(repository.db,config.root,await body(req,5*1024*1024),actor.userId)); }
+                if (pathname === '/api/v1/admin/registrations' && method === 'GET') { requirePermission('user.read'); const items=await repository.db.query('SELECT r.id,r.event_id,r.title,r.status,r.registered_at,u.phone_mask FROM event_registrations r JOIN users u ON u.id=r.user_id ORDER BY r.registered_at DESC LIMIT 500'); return send(res,200,{items,limited:true}); }
                 const mediaAuditMatch=pathname.match(/^\/api\/v1\/admin\/media\/([^/]+)\/audit$/);
                 if (mediaAuditMatch && method === 'GET') { requirePermission('media.manage'); return send(res, 200, await operations.mediaAudit(mediaAuditMatch[1])); }
                 const mediaReviewMatch=pathname.match(/^\/api\/v1\/admin\/media\/([^/]+)\/review$/);

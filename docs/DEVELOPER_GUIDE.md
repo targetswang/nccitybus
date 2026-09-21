@@ -49,9 +49,9 @@ npm start
 
 程序不会自动加载 `.env`。仅复制 `.env.example` 不会生效；上面使用 shell 环境变量。服务重启后需重新注入配置。
 
-首次导入会填充后台规范化内容表，并发布参考版本。预期 counts：routes=1、nodes=5、pois=21、media=9、walks=4、steps=9。**只执行 npm run content:publish 不会初始化后台规范化表**，可能出现游客端有内容、后台计数为零。
+首次导入会填充后台规范化内容表，并发布参考版本。预期 counts：routes=1、nodes=5、pois=21、media=9、walks=4、steps=9。历史版本曾允许发布快照与业务表脱节；现已统一入库，并在 API 启动时补齐当前已发布内容。参见 [内容同步与升级](CONTENT-SYNC.md)。
 
-`import-content-model.mjs` 只用于新建、隔离的开发数据库首次初始化；它会覆盖部分内容和首页草稿，不能每次启动执行，也不能直接对生产库执行。
+`import-content-model.mjs` 只用于新建、隔离的开发数据库首次初始化；它只插入缺失记录；已有线上版本时拒绝初始化发布。生产升级使用当前线上快照补齐流程，不导入参考示例。
 
 | 入口 | 本地地址 |
 |---|---|

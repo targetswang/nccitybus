@@ -1,3 +1,4 @@
+import {hydrateCatalog} from '../core/content-hydration.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { invariant, validateCatalog, validateRoute } from '../contracts/index.mjs';
 export const digest = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
@@ -15,6 +16,7 @@ export class Repository {
                 catalog.version
             ]);
             invariant(!existing.length || existing[0].payload === payload, 'IMMUTABLE_VERSION', '该内容版本已发布且不可修改：请更换版本号后重试，或先用 --rollback 回滚到此版本之前再变更内容', 409);
+            await hydrateCatalog(tx,catalog,{actor:'publication',now});
             await tx.query('INSERT INTO content_releases(version,payload,created_at) VALUES($1,$2,$3) ON CONFLICT(version) DO NOTHING', [
                 catalog.version,
                 payload,
@@ -32,10 +34,11 @@ export class Repository {
     }
     async rollbackCatalog(version) {
         return this.db.transaction('content-publish', async (tx) => {
-            const r = await tx.query('SELECT version FROM content_releases WHERE version=$1', [
+            const r = await tx.query('SELECT version,payload FROM content_releases WHERE version=$1', [
                 version
             ]);
             invariant(r.length, 'NOT_FOUND', 'Unknown content version', 404);
+            await hydrateCatalog(tx,JSON.parse(r[0].payload),{actor:'rollback'});
             await tx.query('UPDATE content_active SET version=$1 WHERE singleton=1', [
                 version
             ]);

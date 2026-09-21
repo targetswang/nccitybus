@@ -38,3 +38,30 @@ test('HTTP admin console assets and user-service lifecycle share one real databa
   const replied=await call('/api/v1/admin/tickets/'+tickets.data.items[0].id,{method:'POST',headers:{...adminHeaders,'Content-Type':'application/json'},body:JSON.stringify({status:'resolved',publicReply:'API回复完成',internalNote:'仅后台可见'})});assert.equal(replied.status,200);
   const profile=await call('/api/v1/me/query',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+user.data.token},body:'{}'});assert.equal(profile.data.tickets[0].reply,'API回复完成');assert.equal(profile.data.messages[0].title,'客服回复');assert.ok(!JSON.stringify(profile.data).includes('仅后台可见'));
 });
+
+test('admin route config: GET/POST /admin/content/route edits line-level copy behind optimistic lock',async t=>{
+  const {db,repo,config}=await database();config.testLoginCode='246810';const adminPhone='13900002004';config.initialAdminPhoneHash=phoneHash(adminPhone);config.adminToken='';config.publicBaseUrl='http://127.0.0.1';
+  await new ContentService(db,repo).importCatalog(await referenceCatalog(),{publish:true});
+  const server=createApi({config,repository:repo});await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(async()=>{await new Promise(r=>server.close(r));await db.close();});const origin=`http://127.0.0.1:${server.address().port}`;
+  const call=async(path,options={})=>{const r=await fetch(origin+path,options),txt=await r.text();return{status:r.status,data:txt&&r.headers.get('content-type')?.includes('json')?JSON.parse(txt):txt};};
+  const challenge=await call('/api/v1/auth/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:adminPhone,audience:'admin'})});
+  const login=await call('/api/v1/auth/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...challenge.data,code:'246810',clientType:'admin'})});
+  const h={Authorization:'Bearer '+login.data.token,'Content-Type':'application/json'};
+
+  // GET returns route singleton with line-level copy
+  const got=await call('/api/v1/admin/content/route',{headers:h});
+  assert.equal(got.status,200);assert.ok(got.data.data.name);assert.ok('notice' in got.data.data);assert.ok('privacy' in got.data.data);assert.ok('guides' in got.data.data);
+  const revision=got.data.revision;
+
+  // POST saves patch; draft catalog reflects line-owned fields before publish
+  const saved=await call('/api/v1/admin/content/route',{method:'POST',headers:h,body:JSON.stringify({expectedRevision:revision,data:{description:'线路描述由后台更新',privacy:got.data.data.privacy,guides:got.data.data.guides}})});
+  assert.equal(saved.status,200);assert.equal(saved.data.data.description,'线路描述由后台更新');
+  const draft=await call('/api/v1/admin/content/preview',{headers:h});assert.equal(draft.data.description,'线路描述由后台更新');
+  // H5 not affected until explicit publish
+  const stale=await call('/api/v1/content');assert.notEqual(stale.data.description,'线路描述由后台更新');
+
+  // Stale revision → 409; history recorded
+  const conflict=await call('/api/v1/admin/content/route',{method:'POST',headers:h,body:JSON.stringify({expectedRevision:revision,data:{notice:'冲突写入'}})});
+  assert.equal(conflict.status,409);
+  const history=await db.query("SELECT * FROM content_edit_history WHERE kind='route'");assert.equal(history.length,1);
+});

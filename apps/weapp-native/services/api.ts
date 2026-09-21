@@ -12,6 +12,7 @@ export class ApiError extends Error {
 export function request(path: string, options: {
     method?: Method;
     data?: any;
+    token?: string;
 } = {}) {
     return new Promise<any>((resolve, reject) => {
         const method = options.method || 'GET';
@@ -23,7 +24,7 @@ export function request(path: string, options: {
             method,
             data: options.data,
             timeout: 15000,
-            header: { Accept: 'application/json', ...(method === 'POST' ? { 'Content-Type': 'application/json' } : {}) },
+            header: { Accept: 'application/json', ...(method === 'POST' ? { 'Content-Type': 'application/json' } : {}), ...(options.token ? { Authorization: 'Bearer ' + options.token } : {}) },
             success: res => {
                 const body: any = res.data;
                 if (res.statusCode >= 200 && res.statusCode < 300 && body && !body.error)
@@ -39,7 +40,7 @@ export const getCapabilities = () => request('/capabilities');
 export const getTransit = (routeId = 'jialing-loop') => request('/transit/live?routeId=' + encodeURIComponent(routeId));
 export const challenge = (phone: string, audience: 'user' | 'admin' = 'user') => request('/auth/challenge', { method: 'POST', data: { phone, audience } });
 export const verify = (payload: any) => request('/auth/verify', { method: 'POST', data: { ...payload, clientType: 'weapp' } });
-export const getMe = (session: string) => request('/me/query', { method: 'POST', data: { _session: session } });
+export const getMe = (session: string) => request('/me/query', { method: 'POST', data: {}, token: session });
 const submissionKeys = new Map<string, string>();
 export async function meAction(session: string, action: string, data: any = {}) {
     const signature = JSON.stringify([session, action, data]);
@@ -48,10 +49,10 @@ export async function meAction(session: string, action: string, data: any = {}) 
             submissionKeys.set(signature, `${Date.now()}-${Math.random().toString(36).slice(2)}-submit`);
         data = { ...data, idempotencyKey: submissionKeys.get(signature) };
     }
-    const result = await request('/me/action', { method: 'POST', data: { ...data, action, _session: session } });
+    const result = await request('/me/action', { method: 'POST', data: { ...data, action }, token: session });
     submissionKeys.delete(signature);
     return result;
 }
 export const wechatPhoneLogin = (code: string, loginCode: string) => request('/auth/wechat-phone', { method: 'POST', data: { code, loginCode } });
 export const track = (event: string, data: any = {}) => request('/analytics/event', { method: 'POST', data: { event, eventId: `${Date.now()}-${Math.random().toString(36).slice(2)}`, client: 'weapp', page: data.page || '', objectType: data.objectType || '', objectId: data.objectId || '', channelCode: data.channelCode || '', contentVersion: data.contentVersion || '', properties: data.properties || {} } }).catch(() => null);
-export const logout = (token: string) => request('/auth/logout', { method: 'POST', data: { _session: token } });
+export const logout = (token: string) => request('/auth/logout', { method: 'POST', data: {}, token });

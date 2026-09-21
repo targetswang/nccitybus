@@ -107,3 +107,39 @@ test('R5: migration 005 upgrades populated 004 database without rewriting old mi
   await db.query('INSERT INTO tourism_nodes(id,route_id,name,persona,sequence,payload_json,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7)',['n','r','preserved','',1,'{}',1]);
   await migrate(db);const n=(await db.query('SELECT name,revision FROM tourism_nodes WHERE id=$1',['n']))[0];assert.equal(n.name,'preserved');assert.equal(Number(n.revision),1);
 });
+
+test('R7: session tokens travel only via Authorization header; body _session channel is closed',async t=>{
+  const ctx=await setup(t);await new ContentService(ctx.db,ctx.repo).importCatalog(await referenceCatalog(),{publish:true});
+  const s=await login(new UnifiedAuthService(ctx.db,ctx.config),'13900005004');
+  const call=await serverFor(t,ctx);
+  assert.equal((await call('/me/query',{},s.token)).status,200);
+  assert.equal((await call('/me/query',{_session:s.token})).status,401);
+  assert.equal((await call('/me/action',{_session:s.token,action:'favorite',operation:'add',id:'golden-park'})).status,401);
+  assert.equal((await call('/me/action',{action:'favorite',operation:'add',id:'golden-park'},s.token)).status,200);
+  const auth=new UnifiedAuthService(ctx.db,ctx.config);
+  assert.ok(await auth.session(s.token),'session stays valid without a header');
+  assert.equal((await call('/auth/logout',{_session:s.token})).status,200);
+  assert.ok(await auth.session(s.token),'logout without Authorization must not revoke');
+  assert.equal((await call('/auth/logout',{},s.token)).status,200);
+  await assert.rejects(auth.session(s.token),{code:'UNAUTHORIZED'});
+});
+
+test('R8: rate-limit windows are shared through the database and purged by housekeeping',async t=>{
+  const {db,repo}=await setup(t),now=Date.now(),windowStart=Math.floor(now/60000)*60000;
+  assert.equal(await repo.flushRateWindow('203.0.113.9',windowStart,1),1);
+  assert.equal(await repo.flushRateWindow('203.0.113.9',windowStart,2),3);
+  assert.equal(await repo.flushRateWindow('203.0.113.8',windowStart,1),1);
+  await repo.housekeeping(now);
+  assert.equal(await repo.rateWindowTotal?.('203.0.113.9',windowStart) ?? Number((await db.query('SELECT count FROM rate_limit_windows WHERE ip=$1',['203.0.113.9']))[0]?.count ?? 0),3);
+  await repo.housekeeping(now+600000);
+  assert.equal((await db.query('SELECT count FROM rate_limit_windows')).length,0);
+});
+
+test('R9: analytics events expire after the retention window',async t=>{
+  const {db,repo}=await setup(t),now=Date.now();
+  await db.query('INSERT INTO analytics_events(id,user_id,event,client,page,object_type,object_id,channel_code,content_version,properties_json,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',['keep',null,'banner_view','h5','','','','','','{}',now]);
+  await db.query('INSERT INTO analytics_events(id,user_id,event,client,page,object_type,object_id,channel_code,content_version,properties_json,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',['drop',null,'banner_view','h5','','','','','','{}',now-91*86400000]);
+  await repo.housekeeping(now);
+  const ids=(await db.query('SELECT id FROM analytics_events')).map(r=>r.id);
+  assert.deepEqual(ids,['keep']);
+});

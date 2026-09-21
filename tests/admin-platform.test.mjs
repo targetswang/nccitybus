@@ -33,10 +33,10 @@ test('HTTP admin console assets and user-service lifecycle share one real databa
   const challenge=await call('/api/v1/auth/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:adminPhone,audience:'admin'})});const login=await call('/api/v1/auth/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...challenge.data,code:'246810',clientType:'admin'})});const adminHeaders={Authorization:'Bearer '+login.data.token};
   assert.equal((await call('/admin/')).status,200);assert.match((await call('/admin/')).data,/运营工作台/);
   let c=await call('/api/v1/auth/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:'13900002003',audience:'user'})});let user=await call('/api/v1/auth/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...c.data,code:'246810'})});
-  let action=await call('/api/v1/me/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_session:user.data.token,action:'ticket',category:'活动',description:'QA API工单'})});assert.equal(action.status,200);
+  let action=await call('/api/v1/me/action',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+user.data.token},body:JSON.stringify({action:'ticket',category:'活动',description:'QA API工单'})});assert.equal(action.status,200);
   const tickets=await call('/api/v1/admin/tickets',{headers:adminHeaders});assert.equal(tickets.data.items.length,1);
   const replied=await call('/api/v1/admin/tickets/'+tickets.data.items[0].id,{method:'POST',headers:{...adminHeaders,'Content-Type':'application/json'},body:JSON.stringify({status:'resolved',publicReply:'API回复完成',internalNote:'仅后台可见'})});assert.equal(replied.status,200);
-  const profile=await call('/api/v1/me/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_session:user.data.token})});assert.equal(profile.data.tickets[0].reply,'API回复完成');assert.equal(profile.data.messages[0].title,'客服回复');assert.ok(!JSON.stringify(profile.data).includes('仅后台可见'));
+  const profile=await call('/api/v1/me/query',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+user.data.token},body:'{}'});assert.equal(profile.data.tickets[0].reply,'API回复完成');assert.equal(profile.data.messages[0].title,'客服回复');assert.ok(!JSON.stringify(profile.data).includes('仅后台可见'));
 });
 
 test('admin route config: GET/POST /admin/content/route edits line-level copy behind optimistic lock',async t=>{

@@ -1,0 +1,93 @@
+diff --git a/.github/workflows/release.yml b/.github/workflows/release.yml
+new file mode 100644
+index 0000000..aa50663
+--- /dev/null
++++ b/.github/workflows/release.yml
+@@ -0,0 +1,87 @@
++name: Tagged release
++on:
++  push:
++    tags:
++      - 'v*'
++permissions:
++  contents: write
++jobs:
++  release:
++    runs-on: ubuntu-latest
++    timeout-minutes: 20
++    steps:
++      - uses: actions/checkout@v4
++
++      - name: Reject non-SemVer tag names
++        run: |
++          set -euo pipefail
++          TAG="${GITHUB_REF_NAME}"
++          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+|-beta\.[0-9]+)?$ ]]; then
++            echo "::error::Tag $TAG 不符合 SemVer 规范(应为 v1.2.3 / v1.2.3-rc.1)"
++            exit 1
++          fi
++          VER="$(cat VERSION)"
++          if [[ "v${VER}" != "$TAG" ]]; then
++            echo "::error::Tag $TAG 与 VERSION 文件(v${VER})不一致;发版必须先改 VERSION 再打 tag"
++            exit 1
++          fi
++
++      - uses: actions/setup-node@v4
++        with:
++          node-version: '22.16.0'
++          cache: npm
++      - run: npm ci --ignore-scripts --no-audit --no-fund
++
++      - name: Quality gate (build + check + tests)
++        run: npm run audit:local
++
++      - name: Secret scan (gitleaks)
++        uses: gitleaks/gitleaks-action@v2
++        env:
++          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++
++      - name: Dependency audit gate (root + integrations)
++        run: |
++          set -euo pipefail
++          npm audit --omit=dev --audit-level=high || {
++            echo "::error::根目录依赖存在 high/critical 漏洞,发布终止"; exit 1; }
++          (cd deploy/integrations && npm ci --ignore-scripts --no-audit --no-fund && \
++           npm audit --omit=dev --audit-level=high) || {
++            echo "::error::deploy/integrations 依赖存在 high/critical 漏洞,发布终止"; exit 1; }
++
++      - name: Create source archive with checksum
++        run: |
++          set -euo pipefail
++          VER="$(cat VERSION)"
++          NAME="nanchong-city-tour-v${VER}"
++          git archive --format=zip --prefix="${NAME}/" --output="${NAME}.zip" HEAD
++          sha256sum "${NAME}.zip" > "${NAME}.zip.sha256"
++          printf '{"version":"%s","commit":"%s"}\n' "$VER" "$(git rev-parse HEAD)" > release-manifest.json
++
++      - name: Extract Release Notes from CHANGELOG
++        run: |
++          set -euo pipefail
++          VER="$(cat VERSION)"
++          awk -v ver="$VER" '
++            $0 ~ "^## \\[" ver "\\]" {flag=1; next}
++            /^## \[/ && flag {exit}
++            flag {print}
++          ' CHANGELOG.md > RELEASE_NOTES.md
++          if [ ! -s RELEASE_NOTES.md ]; then
++            echo "::error::CHANGELOG.md 中找不到 [${VER}] 小节;请补齐后再打 tag"
++            exit 1
++          fi
++          {
++            echo "## ${VER}"
++            cat RELEASE_NOTES.md
++          } > RELEASE_NOTES.md.tmp && mv RELEASE_NOTES.md.tmp RELEASE_NOTES.md
++
++      - name: Create GitHub Release
++        uses: softprops/action-gh-release@v2
++        with:
++          name: v${{ github.ref_name }}
++          body_path: RELEASE_NOTES.md
++          files: |
++            nanchong-city-tour-*.zip
++            nanchong-city-tour-*.zip.sha256
++            release-manifest.json

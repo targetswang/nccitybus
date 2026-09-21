@@ -1,5 +1,8 @@
 import { CONFIG } from './config';
 
+// Half-screen (embedded) mini-program launch for the transit code.
+// Requires base library >= 2.20.1; older clients fall back to a full
+// navigation so the entry never dead-ends.
 export function openTransitCode() {
   if (!CONFIG.transitMiniProgramAppId) {
     wx.showModal({
@@ -9,9 +12,14 @@ export function openTransitCode() {
     });
     return;
   }
-  wx.navigateToMiniProgram({
+  const target = {
     appId: CONFIG.transitMiniProgramAppId,
-    path: CONFIG.transitMiniProgramPath || undefined,
-    fail: () => wx.showToast({ title: '乘车码暂不可用', icon: 'none' })
-  });
+    path: CONFIG.transitMiniProgramPath || undefined
+  };
+  const fail = () => wx.showToast({ title: '乘车码暂不可用', icon: 'none' });
+  if (typeof wx.openEmbeddedMiniProgram === 'function') {
+    wx.openEmbeddedMiniProgram({ ...target, fail });
+    return;
+  }
+  wx.navigateToMiniProgram({ ...target, fail });
 }

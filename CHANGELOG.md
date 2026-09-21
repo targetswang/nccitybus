@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Changed
+- 微信小程序乘车码改为半屏拉起(wx.openEmbeddedMiniProgram,基础库 ≥2.20.1;低版本自动降级全屏跳转),真机验收清单新增 transitCodeHalfScreen 检查项
+
 ### Planned(4.4.1 补丁,对应审计报告)
 - 修复权益/活动容量校验竞态(审计 M3)
 - 新增 OTP 获取配额,缓解短信轰炸(审计 M5)

@@ -12,6 +12,9 @@
 - [三端一致性](docs/CLIENT_PARITY.md)：后台发布到两端、用户服务往返、平台差异和验收边界。
 - [目录与责任边界](docs/REPOSITORY_STRUCTURE.md)：代码入口、共享逻辑、已删除旧代码。
 - [当前状态](docs/STATUS.md)：验证结果及未完成的现场验收。
+- [仓库导航](docs/REPOSITORY_GUIDE.md)：小程序/H5/后台/后端/数据库/部署目录一眼定位。
+- [v4.4 交付状态](docs/DELIVERY_STATUS_V4.4.md)：当前候选范围与版本边界。
+- [真实外部验收](docs/LIVE_ACCEPTANCE.md)：微信真机、正式短信、真实 AI、IVY 现场验收清单。
 - [文档索引](docs/00_START_HERE.md)：接口、数据库、部署和运维说明。
 
 固定验证码只用于显式配置的非生产环境。正式短信使用实际收到的验证码；后台还需服务端角色授权。

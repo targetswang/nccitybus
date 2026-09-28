@@ -45,7 +45,7 @@ H5：`http://127.0.0.1:3000/`；后台：`http://127.0.0.1:3000/admin/`。这是
 | apps/weapp-native | 唯一正式小程序源码，构建到 dist/weapp-native |
 | apps/api、packages/core | HTTP、认证、内容发布和用户业务规则 |
 | apps/transit-worker、packages/ivy | 公交同步及实时事件 |
-| packages/storage | PostgreSQL / SQLite、迁移 001～005 |
+| packages/storage | PostgreSQL / SQLite、迁移 001～006 |
 | packages/client-core | 两端共用的首页、地图、坐标与路由纯函数 |
 
 ## 提交前检查

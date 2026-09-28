@@ -13,7 +13,7 @@
 - 内容、线路、站点、POI、攻略、首页、活动、权益、媒体
 - 客服/消息/用户服务
 - AI 运营提案基础能力
-- PostgreSQL / SQLite 持久层及 migration 001～005
+- PostgreSQL / SQLite 持久层及 migration 001～006
 - IVY 协议适配
 - OpenAPI、部署、运维、测试、审计、交接文档
 - GitHub Actions 生产数据库和微信工具链门禁
